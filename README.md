@@ -28,9 +28,6 @@ https://terraform-ibm-modules.github.io/documentation/#/implementation-guideline
 <!-- BEGIN OVERVIEW HOOK -->
 ## Overview
 * [terraform-ibm-powervs-powerha](#terraform-ibm-powervs-powerha)
-* [Examples](./examples)
-    * [Basic example](./examples/basic)
-    * [Complete example](./examples/complete)
 * [Contributing](#contributing)
 <!-- END OVERVIEW HOOK -->
 
@@ -81,9 +78,7 @@ statement instead the previous block.
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ### Requirements
 
-| Name | Version |
-|------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.3.0, <1.7.0 |
+No requirements.
 
 ### Modules
 
