@@ -5,7 +5,7 @@
 resource "ibm_pi_placement_group" "different_server" {
   pi_placement_group_name   = "${var.powervs_cluster_name}-cluster"
   pi_placement_group_policy = "anti-affinity"
-  pi_cloud_instance_id      = var.powervs_workspace_guid
+  pi_cloud_instance_id      = local.powervs_workspace_guid
 }
 
 #####################################################
@@ -13,7 +13,7 @@ resource "ibm_pi_placement_group" "different_server" {
 #####################################################
 
 data "ibm_pi_storage_pools_capacity" "pools" {
-  pi_cloud_instance_id = var.powervs_workspace_guid
+  pi_cloud_instance_id = local.powervs_workspace_guid
 }
 
 locals {
@@ -32,12 +32,11 @@ resource "ibm_pi_volume" "cluster_volumes" {
   pi_volume_size       = var.powervs_shareable_volumes[count.index].size
   pi_volume_type       = var.powervs_shareable_volumes[count.index].tier
   pi_volume_pool       = local.highest_capacity_pool_name
-  pi_cloud_instance_id = var.powervs_workspace_guid
+  pi_cloud_instance_id = local.powervs_workspace_guid
 
   timeouts {
     create = "15m"
   }
-
 }
 
 locals {
@@ -57,12 +56,12 @@ module "powervs_instance_node_1" {
   #version = "1.0.3"
   source = "git::https://github.com/terraform-ibm-modules/terraform-ibm-powervs-instance.git?ref=power_ha"
 
-  pi_workspace_guid          = var.powervs_workspace_guid
-  pi_ssh_public_key_name     = var.powervs_sshkey_name
-  pi_image_id                = var.powervs_image_id
+  pi_workspace_guid          = local.powervs_workspace_guid
+  pi_ssh_public_key_name     = local.powervs_sshkey_name
+  pi_image_id                = local.powervs_image_id
   pi_boot_image_storage_tier = var.powervs_boot_image_storage_tier
   pi_boot_image_storage_pool = local.highest_capacity_pool_name
-  pi_networks                = var.powervs_networks
+  pi_networks                = local.powervs_networks
   pi_instance_name           = "${var.powervs_cluster_name}-1"
   pi_cpu_proc_type           = var.powervs_cpu_proc_type
   pi_server_type             = var.powervs_server_type
@@ -82,12 +81,12 @@ module "powervs_instance_node_2" {
   count      = var.powervs_cluster_nodes > 1 ? 1 : 0
   depends_on = [module.powervs_instance_node_1]
 
-  pi_workspace_guid          = var.powervs_workspace_guid
-  pi_ssh_public_key_name     = var.powervs_sshkey_name
-  pi_image_id                = var.powervs_image_id
+  pi_workspace_guid          = local.powervs_workspace_guid
+  pi_ssh_public_key_name     = local.powervs_sshkey_name
+  pi_image_id                = local.powervs_image_id
   pi_boot_image_storage_tier = var.powervs_boot_image_storage_tier
   pi_boot_image_storage_pool = local.highest_capacity_pool_name
-  pi_networks                = var.powervs_networks
+  pi_networks                = local.powervs_networks
   pi_instance_name           = "${var.powervs_cluster_name}-2"
   pi_cpu_proc_type           = var.powervs_cpu_proc_type
   pi_server_type             = var.powervs_server_type
@@ -107,12 +106,12 @@ module "powervs_instance_node_3" {
   count      = var.powervs_cluster_nodes > 2 ? 1 : 0
   depends_on = [module.powervs_instance_node_2]
 
-  pi_workspace_guid          = var.powervs_workspace_guid
-  pi_ssh_public_key_name     = var.powervs_sshkey_name
-  pi_image_id                = var.powervs_image_id
+  pi_workspace_guid          = local.powervs_workspace_guid
+  pi_ssh_public_key_name     = local.powervs_sshkey_name
+  pi_image_id                = local.powervs_image_id
   pi_boot_image_storage_tier = var.powervs_boot_image_storage_tier
   pi_boot_image_storage_pool = local.highest_capacity_pool_name
-  pi_networks                = var.powervs_networks
+  pi_networks                = local.powervs_networks
   pi_instance_name           = "${var.powervs_cluster_name}-3"
   pi_cpu_proc_type           = var.powervs_cpu_proc_type
   pi_server_type             = var.powervs_server_type
@@ -132,37 +131,12 @@ module "powervs_instance_node_4" {
   count      = var.powervs_cluster_nodes > 3 ? 1 : 0
   depends_on = [module.powervs_instance_node_3]
 
-  pi_workspace_guid          = var.powervs_workspace_guid
-  pi_ssh_public_key_name     = var.powervs_sshkey_name
-  pi_image_id                = var.powervs_image_id
+  pi_workspace_guid          = local.powervs_workspace_guid
+  pi_ssh_public_key_name     = local.powervs_sshkey_name
+  pi_image_id                = local.powervs_image_id
   pi_boot_image_storage_tier = var.powervs_boot_image_storage_tier
   pi_boot_image_storage_pool = local.highest_capacity_pool_name
-  pi_networks                = var.powervs_networks
-  pi_instance_name           = "${var.powervs_cluster_name}-4"
-  pi_cpu_proc_type           = var.powervs_cpu_proc_type
-  pi_server_type             = var.powervs_server_type
-  pi_number_of_processors    = var.powervs_number_of_processors
-  pi_memory_size             = var.powervs_memory_size
-  pi_placement_group_id      = ibm_pi_placement_group.different_server.placement_group_id
-  pi_storage_config          = local.powervs_dedicated_filesystem_config
-  pi_existing_volume_ids     = local.shareable_volume_ids
-
-}
-
-module "powervs_instance_node_5" {
-  #source  = "terraform-ibm-modules/powervs-instance/ibm"
-  #version = "1.0.3"
-  source = "git::https://github.com/terraform-ibm-modules/terraform-ibm-powervs-instance.git?ref=power_ha"
-
-  count      = var.powervs_cluster_nodes > 4 ? 1 : 0
-  depends_on = [module.powervs_instance_node_4]
-
-  pi_workspace_guid          = var.powervs_workspace_guid
-  pi_ssh_public_key_name     = var.powervs_sshkey_name
-  pi_image_id                = var.powervs_image_id
-  pi_boot_image_storage_tier = var.powervs_boot_image_storage_tier
-  pi_boot_image_storage_pool = local.highest_capacity_pool_name
-  pi_networks                = var.powervs_networks
+  pi_networks                = local.powervs_networks
   pi_instance_name           = "${var.powervs_cluster_name}-4"
   pi_cpu_proc_type           = var.powervs_cpu_proc_type
   pi_server_type             = var.powervs_server_type

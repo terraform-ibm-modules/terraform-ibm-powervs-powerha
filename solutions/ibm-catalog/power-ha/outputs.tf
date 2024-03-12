@@ -5,12 +5,12 @@ output "powervs_zone" {
 
 output "powervs_workspace_guid" {
   description = "Existing GUID of the PowerVS workspace. The GUID of the service instance associated with an account."
-  value       = var.powervs_workspace_guid
+  value       = local.powervs_workspace_guid
 }
 
 output "powervs_ssh_public_key" {
   description = "Existing SSH public key name in PowerVS infrastructure."
-  value       = var.powervs_sshkey_name
+  value       = local.powervs_sshkey_name
 }
 
 output "powervs_node_1_primary_ip" {

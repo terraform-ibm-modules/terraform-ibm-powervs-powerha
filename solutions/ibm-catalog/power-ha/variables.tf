@@ -4,28 +4,13 @@ variable "ibmcloud_api_key" {
   sensitive   = true
 }
 
+variable "prerequisite_workspace_id" {
+  description = "IBM Cloud Schematics workspace ID of an existing 'Power Virtual Server with VPC landing zone' catalog solution. If you do not yet have an existing deployment, click [here](https://cloud.ibm.com/catalog/architecture/deploy-arch-ibm-pvs-inf-2dd486c7-b317-4aaa-907b-42671485ad96-global?) to create one."
+  type        = string
+}
+
 variable "powervs_zone" {
-  description = "IBM Cloud data center location."
-  type        = string
-}
-
-variable "powervs_workspace_guid" {
-  description = "Existing GUID of the PowerVS workspace. The GUID of the service instance associated with an account."
-  type        = string
-}
-
-variable "powervs_sshkey_name" {
-  description = "Name of the existing PowerVS SSH public key."
-  type        = string
-}
-
-variable "powervs_image_id" {
-  description = "Image ID used for PowerVS instance. Run 'ibmcloud pi images' to list available images."
-  type        = string
-}
-
-variable "powervs_boot_image_storage_tier" {
-  description = "Storage type for server deployment; Possible values tier0, tier1 and tier3"
+  description = "IBM Cloud data center location corresponding to the location used in 'Power Virtual Server with VPC landing zone' pre-requisite deployment."
   type        = string
 }
 
@@ -34,8 +19,18 @@ variable "powervs_cluster_nodes" {
   type        = number
 }
 
+variable "powervs_os_image" {
+  description = "Aix image name to use for all instances"
+  type        = string
+}
+
+variable "powervs_boot_image_storage_tier" {
+  description = "Storage type for server deployment; Possible values tier0, tier1 and tier3"
+  type        = string
+}
+
 variable "powervs_cluster_name" {
-  description = "Name of instance which will be created."
+  description = "Cluster name for all instances which will be created."
   type        = string
 }
 
@@ -45,7 +40,7 @@ variable "powervs_server_type" {
 }
 
 variable "powervs_cpu_proc_type" {
-  description = "Dedicated shared or capped processors."
+  description = "Dedicated, shared or capped processors."
   type        = string
 }
 
@@ -59,19 +54,8 @@ variable "powervs_memory_size" {
   type        = string
 }
 
-variable "powervs_networks" {
-  description = "Existing list of private subnet ids to be attached to an instance. The first element will become the primary interface."
-  type = list(
-    object({
-      name = string
-      id   = string
-      cidr = optional(string)
-    })
-  )
-}
-
 variable "powervs_shareable_volumes" {
-  description = "Shareable volumes to be created and attached to the cluster nodes."
+  description = "Shareable volumes to be created and attached to the cluster nodes"
   type = list(object({
     name = string
     size = string
