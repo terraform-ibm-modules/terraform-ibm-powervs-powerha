@@ -56,6 +56,9 @@ It provisions the following components in IBM cloud:
 
 | Name | Description |
 |------|-------------|
+| <a name="output_powervs_node_1_instance_id"></a> [powervs\_node\_1\_instance\_id](#output\_powervs\_node\_1\_instance\_id) | he unique identifier of the instance. The ID is composed of <power\_instance\_id>/<instance\_id>. |
+| <a name="output_powervs_node_1_instance_instance_id"></a> [powervs\_node\_1\_instance\_instance\_id](#output\_powervs\_node\_1\_instance\_instance\_id) | The unique identifier of PowerVS instance. |
+| <a name="output_powervs_node_1_name"></a> [powervs\_node\_1\_name](#output\_powervs\_node\_1\_name) | Name of PowerVS instance. |
 | <a name="output_powervs_node_1_primary_ip"></a> [powervs\_node\_1\_primary\_ip](#output\_powervs\_node\_1\_primary\_ip) | IP address of the primary network interface of IBM PowerVS node 1. |
 | <a name="output_powervs_node_1_private_ips"></a> [powervs\_node\_1\_private\_ips](#output\_powervs\_node\_1\_private\_ips) | All private IP addresses (as a list) of IBM PowerVS PowerVS node 1. |
 | <a name="output_powervs_ssh_public_key"></a> [powervs\_ssh\_public\_key](#output\_powervs\_ssh\_public\_key) | Existing SSH public key name in PowerVS infrastructure. |

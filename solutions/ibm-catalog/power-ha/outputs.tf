@@ -13,6 +13,21 @@ output "powervs_ssh_public_key" {
   value       = local.powervs_sshkey_name
 }
 
+output "powervs_node_1_name" {
+  description = "Name of PowerVS instance."
+  value       = module.powervs_instance_node_1.pi_instance_name
+}
+
+output "powervs_node_1_instance_id" {
+  description = "he unique identifier of the instance. The ID is composed of <power_instance_id>/<instance_id>."
+  value       = module.powervs_instance_node_1.pi_instance_id
+}
+
+output "powervs_node_1_instance_instance_id" {
+  description = "The unique identifier of PowerVS instance."
+  value       = module.powervs_instance_node_1.pi_instance_instance_id
+}
+
 output "powervs_node_1_primary_ip" {
   description = "IP address of the primary network interface of IBM PowerVS node 1."
   value       = module.powervs_instance_node_1.pi_instance_primary_ip
