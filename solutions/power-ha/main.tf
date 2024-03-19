@@ -53,9 +53,8 @@ locals {
 #####################################################
 
 module "powervs_instance_node_1" {
-  #source  = "terraform-ibm-modules/powervs-instance/ibm"
-  #version = "1.0.3"
-  source = "git::https://github.com/terraform-ibm-modules/terraform-ibm-powervs-instance.git?ref=power_ha"
+  source  = "terraform-ibm-modules/powervs-instance/ibm"
+  version = "1.1.0"
 
   pi_workspace_guid          = var.powervs_workspace_guid
   pi_ssh_public_key_name     = var.powervs_sshkey_name
@@ -75,9 +74,8 @@ module "powervs_instance_node_1" {
 }
 
 module "powervs_instance_node_2" {
-  #source  = "terraform-ibm-modules/powervs-instance/ibm"
-  #version = "1.0.3"
-  source = "git::https://github.com/terraform-ibm-modules/terraform-ibm-powervs-instance.git?ref=power_ha"
+  source  = "terraform-ibm-modules/powervs-instance/ibm"
+  version = "1.1.0"
 
   count      = var.powervs_cluster_nodes > 1 ? 1 : 0
   depends_on = [module.powervs_instance_node_1]
@@ -100,9 +98,8 @@ module "powervs_instance_node_2" {
 }
 
 module "powervs_instance_node_3" {
-  #source  = "terraform-ibm-modules/powervs-instance/ibm"
-  #version = "1.0.3"
-  source = "git::https://github.com/terraform-ibm-modules/terraform-ibm-powervs-instance.git?ref=power_ha"
+  source  = "terraform-ibm-modules/powervs-instance/ibm"
+  version = "1.1.0"
 
   count      = var.powervs_cluster_nodes > 2 ? 1 : 0
   depends_on = [module.powervs_instance_node_2]
@@ -125,9 +122,8 @@ module "powervs_instance_node_3" {
 }
 
 module "powervs_instance_node_4" {
-  #source  = "terraform-ibm-modules/powervs-instance/ibm"
-  #version = "1.0.3"
-  source = "git::https://github.com/terraform-ibm-modules/terraform-ibm-powervs-instance.git?ref=power_ha"
+  source  = "terraform-ibm-modules/powervs-instance/ibm"
+  version = "1.1.0"
 
   count      = var.powervs_cluster_nodes > 3 ? 1 : 0
   depends_on = [module.powervs_instance_node_3]
@@ -150,9 +146,8 @@ module "powervs_instance_node_4" {
 }
 
 module "powervs_instance_node_5" {
-  #source  = "terraform-ibm-modules/powervs-instance/ibm"
-  #version = "1.0.3"
-  source = "git::https://github.com/terraform-ibm-modules/terraform-ibm-powervs-instance.git?ref=power_ha"
+  source  = "terraform-ibm-modules/powervs-instance/ibm"
+  version = "1.1.0"
 
   count      = var.powervs_cluster_nodes > 4 ? 1 : 0
   depends_on = [module.powervs_instance_node_4]

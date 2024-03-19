@@ -19,10 +19,10 @@ It provisions the following components in IBM cloud:
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_powervs_instance_node_1"></a> [powervs\_instance\_node\_1](#module\_powervs\_instance\_node\_1) | git::https://github.com/terraform-ibm-modules/terraform-ibm-powervs-instance.git | power_ha |
-| <a name="module_powervs_instance_node_2"></a> [powervs\_instance\_node\_2](#module\_powervs\_instance\_node\_2) | git::https://github.com/terraform-ibm-modules/terraform-ibm-powervs-instance.git | power_ha |
-| <a name="module_powervs_instance_node_3"></a> [powervs\_instance\_node\_3](#module\_powervs\_instance\_node\_3) | git::https://github.com/terraform-ibm-modules/terraform-ibm-powervs-instance.git | power_ha |
-| <a name="module_powervs_instance_node_4"></a> [powervs\_instance\_node\_4](#module\_powervs\_instance\_node\_4) | git::https://github.com/terraform-ibm-modules/terraform-ibm-powervs-instance.git | power_ha |
+| <a name="module_powervs_instance_node_1"></a> [powervs\_instance\_node\_1](#module\_powervs\_instance\_node\_1) | terraform-ibm-modules/powervs-instance/ibm | 1.1.0 |
+| <a name="module_powervs_instance_node_2"></a> [powervs\_instance\_node\_2](#module\_powervs\_instance\_node\_2) | terraform-ibm-modules/powervs-instance/ibm | 1.1.0 |
+| <a name="module_powervs_instance_node_3"></a> [powervs\_instance\_node\_3](#module\_powervs\_instance\_node\_3) | terraform-ibm-modules/powervs-instance/ibm | 1.1.0 |
+| <a name="module_powervs_instance_node_4"></a> [powervs\_instance\_node\_4](#module\_powervs\_instance\_node\_4) | terraform-ibm-modules/powervs-instance/ibm | 1.1.0 |
 
 ### Resources
 
