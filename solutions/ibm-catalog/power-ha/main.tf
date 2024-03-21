@@ -17,7 +17,7 @@ data "ibm_pi_storage_pools_capacity" "pools" {
 }
 
 locals {
-  highest_capacity_pool_name = data.ibm_pi_storage_pools_capacity.pools.maximum_storage_allocation.storage_pool
+  highest_capacity_pool_name = data.ibm_pi_storage_pools_capacity.pools.max_storage_allocation.storage_pool
 }
 
 #####################################################
