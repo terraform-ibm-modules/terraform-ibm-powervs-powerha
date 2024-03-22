@@ -1,0 +1,371 @@
+import math
+import sys
+import json
+
+RG_DEFAULT = {
+    "name"   : "",
+    "startup": "OHN",
+    "fallover": "FNPN",
+    "fallback": "FBHPN"
+}
+VG_DEFAULT = {"name": "","rg_name":"","physical_volume_count":1, "type": 'original'}
+FS_DEFAULT = { "name":"fs1", "type":"enhanced", "volume_group":"", "units": "100", "size_per_unit": "megabytes", "block_size": "1024"}
+RG_AUTO_PREFIX = "autoRG"
+VG_AUTO_PREFIX = "autoVG"
+FS_AUTO_PREFIX = "autoFS"
+
+def is_value_present(key, value, obj_list):
+    for item in obj_list:
+        if item.get(key).lower() == value.lower():
+            return True
+    return False
+
+
+def resource_compute(resource_data, resource_prefix, default_dict,total_count, key):
+    AUTO_COUNT = 1
+    user_data = resource_data.copy()
+    if len(resource_data)<total_count:
+        for index in range(len(resource_data),total_count):
+            if(len(user_data)>1):
+                default_rg_dict = default_dict.copy()
+            else:
+                default_rg_dict = user_data[0].copy()
+            if is_value_present(key,resource_prefix+str(AUTO_COUNT), resource_data):
+                AUTO_COUNT+=1
+                while(is_value_present(resource_prefix+str(AUTO_COUNT), resource_data)):
+                    AUTO_RG_COUNT+=1
+                default_rg_dict[key] = resource_prefix+str(AUTO_COUNT)
+                resource_data.append(default_rg_dict)
+                AUTO_COUNT+=1
+            else:
+                default_rg_dict[key] = resource_prefix+str(AUTO_COUNT)
+                resource_data.append(default_rg_dict)
+                AUTO_COUNT+=1
+    else:
+        resource_data = [resource_data[index] for index in range(len(resource_data)) if index<=(total_count-1)]
+    return resource_data
+
+
+def get_value_by_key(key,computed_resource_list):
+    return [item.get(key) for item in computed_resource_list]
+
+
+def vg_corrective_actions(computed_vg_list, computed_rg_list,total_vg_count):
+    # RG Related corrective actions
+    rg_names = get_value_by_key("name",computed_rg_list) * math.ceil((len(computed_vg_list)/len(computed_rg_list)))
+    vg_with_correct_rg = [item for item in computed_vg_list if item.get('rg_name') in rg_names]
+    vg_with_incorrect_rg = [item for item in computed_vg_list if not item.get('rg_name') in rg_names]
+    for index in range(len(vg_with_incorrect_rg)):
+        vg_with_incorrect_rg[index]["rg_name"] = rg_names[index] 
+    vg_with_correct_rg = vg_with_correct_rg + vg_with_incorrect_rg
+
+    # disk related corrective actions
+    vg_with_correct_disk = []
+    for vg_data in vg_with_correct_rg:
+        vg_disk_count = vg_data.get("physical_volume_count")
+        if(vg_disk_count)<=total_vg_count and total_vg_count>0:
+            total_vg_count-=vg_disk_count
+            vg_with_correct_disk.append(vg_data)
+        elif(total_vg_count)>0 and vg_disk_count>total_vg_count:
+            vg_data["physical_volume_count"] = total_vg_count
+            vg_with_correct_disk.append(vg_data)
+            total_vg_count-=vg_disk_count
+    return vg_with_correct_disk
+    
+
+def fs_corrective_actions(computed_fs_list, filtered_vg_list):
+    # FS Related corrective actions
+    vg_names = get_value_by_key("name",filtered_vg_list) * math.ceil((len(computed_fs_list)/len(filtered_vg_list)))
+    fs_with_correct_vg = [item for item in computed_fs_list if item.get('volume_group') in vg_names]
+    fs_with_incorrect_vg = [item for item in computed_fs_list if not item.get('volume_group') in vg_names]
+    for index in range(len(fs_with_incorrect_vg)):
+        fs_with_incorrect_vg[index]["volume_group"] = vg_names[index] 
+    fs_with_correct_vg = fs_with_correct_vg + fs_with_incorrect_vg
+    return fs_with_correct_vg
+    
+
+def get_rg_with_vg(filtered_vg_list, computed_rg_list):
+    rg_names = get_value_by_key("name",computed_rg_list)
+    rg_with_vg =[]
+    for rg_name in rg_names:
+        rg_vg_dict = {"vg_names" : [], "rg_name" : rg_name}
+        for vg_data in filtered_vg_list:
+            if rg_name == vg_data.get("rg_name"):
+                rg_vg_dict["vg_names"].append(vg_data.get("name"))
+        if len(rg_vg_dict["vg_names"])>0:
+            rg_with_vg.append(rg_vg_dict)
+    return rg_with_vg
+
+
+def get_pha_network_list(subnet_list):
+    pha_netwok_list = []
+    for index in range(math.ceil(len(subnet_list)/2)):
+        net_dict = {"NAME": "net_ether_"+"{0:02d}".format(index+1), "TYPE": "ether"}
+        pha_netwok_list.append(net_dict)
+    return pha_netwok_list 
+
+
+def get_pha_interface_list(node_list,subnet_length, pha_networks):
+    pha_interaface_list = []
+    count = 0
+    for node in node_list:
+        node_name = node.get("pi_instance_name")
+        node_ips =  node.get("pi_instance_private_ips")[:subnet_length] #4 ip here 
+        primary_ip = node.get("pi_instance_primary_ip")
+        count = 0
+        for network in pha_networks:
+            for index in range(count,len(node_ips)):
+                interface_dict = { "NAME": "en"+str(index)+"_"+node_name, "NETWORK": network.get("NAME"), "NODE": node_name, "INTERFACE": "en"+str(index), "IP": node_ips[index]}
+                pha_interaface_list.append(interface_dict)
+                if (index+1)%2==0:
+                    count+=count
+                    break
+                count+=1
+        
+        pha_interaface_list = [data for data in pha_interaface_list if data.get("IP")!= primary_ip]
+    return pha_interaface_list
+
+
+def get_service_ip_list(subnets,reserve_ip_details, pha_network_list):
+    pha_service_ip_list = []
+    count = 0
+    subnet_count = 0
+    for network in pha_network_list:
+        for index in range(subnet_count,len(subnets)):
+            start = count
+            end = count+subnets[index].get("reserved_ip_count")
+            for item in reserve_ip_details[start:end]:
+                pha_service_ip_list.append({ "NAME": 'service_ip'+str(count), "IP": item.get("ip"), "NETWORK": network.get("NAME")})
+                count=count+1
+            if (index+1)%2==0:
+                subnet_count+=1
+                break
+            subnet_count+=1
+    return pha_service_ip_list
+
+
+def get_serviceip_with_vg(pha_service_ip_list,computed_rg_list):
+    rg_names = get_value_by_key("name",computed_rg_list) 
+    serviceip_names = get_value_by_key("NAME",pha_service_ip_list)
+    serviceip_vg_list = []
+    serviceip_with_vg_obj =[]
+    if(len(rg_names)>0 and len(serviceip_names)>0):
+        rg_names_extended = (rg_names * math.ceil((len(serviceip_names)/len(rg_names))))[:len(serviceip_names)]
+        for serviceip_name, rg_name in zip(serviceip_names,rg_names_extended):
+            serviceip_vg_list.append({"SERVICE_IP_NAME":serviceip_name,"RG_NAME":rg_name})
+        for rg_name in rg_names:
+            service_ip_list = []
+            for item in serviceip_vg_list:
+                if(item.get("RG_NAME")==rg_name):
+                    service_ip_list.append(item["SERVICE_IP_NAME"])
+            if(len(service_ip_list)>0):
+                serviceip_with_vg_obj.append({"SERVICE_IP_NAMES":(",").join(service_ip_list), "RG_NAME":rg_name})
+    return serviceip_with_vg_obj
+
+
+def create_obj_to_str(obj_list):
+    obj_str = ""
+    for data in obj_list:
+        obj_str+="  - { "
+        obj_str+=(", ").join([(key + ": '" + str(value) + "'") for key, value in data.items()])
+        obj_str+="}\n"
+    obj_str += "\n"  
+    return obj_str  
+
+
+def create_rg_object(rg_data):
+    rg_yml_data = []
+    rg_string = ""
+    for rg_obj in rg_data:
+        rg_dict = {"name": "", "STARTUP": "", "FALLOVER": "", "FALLBACK": ""}
+        for key, value in rg_obj.items():
+            if(key=="name"):
+                rg_dict.update({"name" : value})
+            if(key=="startup"):
+                rg_dict.update({"STARTUP" : value})
+            if(key=="fallover"):
+                rg_dict.update({"FALLOVER" : value})
+            if(key=="fallback"):
+                rg_dict.update({"FALLBACK" : value})
+        rg_yml_data.append(rg_dict)
+
+    for data in rg_yml_data:
+        rg_string+="  - { "
+        rg_string+=(", ").join([(key + ": '" + value + "'") for key, value in data.items()])
+        rg_string+="}\n"
+    rg_string += "\n"        
+    return rg_string
+
+
+
+def create_vg_object(vg_data, shared_disks, node_details):
+    vg_yml_data = []
+    vg_string = ""
+    count = 0
+    for vg_obj in vg_data:
+        vg_dict = {"NAME":"", "NODES":"","PHYSICAL_VOLUMES":"", "TYPE":""}
+        for key, value in vg_obj.items():
+            if(key == "name"):
+                vg_dict.update({"NAME" : value})
+            if(key== "type"):
+                vg_dict.update({"TYPE" : value})
+            if(key=="physical_volume_count"):
+                vg_dict.update({"PHYSICAL_VOLUMES" : (",").join(shared_disks[count:count+value])})
+                count = count+value
+        vg_dict.update({"NODES" : (",").join([node.get("pi_instance_name") for node in node_details])})
+        vg_yml_data.append(vg_dict)
+    
+    for data in vg_yml_data:
+        vg_string+="  - { "
+        vg_string+=(", ").join([(key + ": '" + value + "'") for key, value in data.items()])
+        vg_string+="}\n"
+    vg_string += "\n"        
+    return vg_string
+
+
+def create_rg_with_vg(rg_with_vg):
+    rg_vg_yml_data = []
+    rg_vg_string = ""
+    for obj in rg_with_vg:
+        rg_vg_dict = {"VG_NAMES":"", "RG_NAME":""}
+        for key, value in obj.items():
+            if(key == "vg_names"):
+                rg_vg_dict.update({"VG_NAMES" : (",").join(value)})
+            if(key== "rg_name"):
+                rg_vg_dict.update({"RG_NAME" : value})
+        rg_vg_yml_data.append(rg_vg_dict)
+    for data in rg_vg_yml_data:
+        rg_vg_string+="  - { "
+        rg_vg_string+=(", ").join([(key + ": '" + value + "'") for key, value in data.items()])
+        rg_vg_string+="}\n"
+    rg_vg_string += "\n"        
+    return rg_vg_string
+
+
+def create_fs_object(fs_data):
+    fs_yml_data = []
+    fs_string = ""
+    for fs_obj in fs_data:
+        fs_dict = { "NAME": "", "TYPE": "", "VOLUME_GROUP": "", "UNITS": "", "SIZE_PER_UNIT": "", "BLOCK_SIZE": ""}
+        for key, value in fs_obj.items():
+            if(key == "name"):
+                fs_dict.update({"NAME" : value})
+            if(key== "type"):
+                fs_dict.update({"TYPE" : value})
+            if(key=="volume_group"):
+                fs_dict.update({"VOLUME_GROUP" : value})
+            if(key=="units"):
+                fs_dict.update({"UNITS" : value})
+            if(key=="size_per_unit"):
+                fs_dict.update({"SIZE_PER_UNIT" : value})
+            if(key=="block_size"):
+                fs_dict.update({"BLOCK_SIZE" : value})
+        fs_yml_data.append(fs_dict)
+    
+    for data in fs_yml_data:
+        fs_string+="  - { "
+        fs_string+=(", ").join([(key + ": '" + str(value) + "'") for key, value in data.items()])
+        fs_string+="}\n"
+    
+    fs_string += "\n"        
+    return fs_string
+
+
+def create_yaml_content(node_details, wwn_shared_disks, powerha_build_path, rg_data, vg_data, rg_with_vg, fs_data, pha_network_list, pha_interface_list, pha_service_ip_list, serviceip_with_rg):
+    repository_disk = wwn_shared_disks[0]
+    shared_disks = wwn_shared_disks[1:]
+    yaml_string = ""
+    yaml_string += "Using_for_Cloud_catalog: True\n\n"
+
+    # Add Nodes
+    yaml_string +="NODES: " + (",").join([node.get("pi_instance_name") for node in node_details]) +"\n\n"
+    
+    # Add Node details
+    yaml_string +="NODE_DETAILS:\n"
+    for node in node_details:
+        yaml_string +="- full_name: " + node.get("pi_instance_name") + "\n" \
+                      "  ip: " + node.get("pi_instance_primary_ip") + "\n" \
+                      "  name: " + node.get("pi_instance_name") + "\n" 
+    yaml_string +="\n"
+
+    #Repository disk
+    yaml_string += "REPOSITORIES: " + str(repository_disk) + "\n\n"
+
+    #Powerha build path
+    yaml_string += "POWERHA_BLD_PATH: "+ str(powerha_build_path) + "\n\n"
+
+    # RG data
+    yaml_string +="RGNAMES:\n"
+    rg_yml_data = create_rg_object(rg_data)
+    yaml_string += rg_yml_data
+
+    yaml_string +="VG:\n"
+    vg_yml_data = create_vg_object(vg_data, shared_disks, node_details)
+    yaml_string += vg_yml_data
+    
+    # # VG_RG data
+    yaml_string +="VG_RG:\n"
+    rg_vg_yml_data = create_rg_with_vg(rg_with_vg)
+    yaml_string += rg_vg_yml_data
+
+
+    yaml_string +="FS:\n"
+    fs_yml_data = create_fs_object(fs_data)
+    yaml_string += fs_yml_data
+
+    yaml_string +="NETWORK:\n"
+    network_yml_data = create_obj_to_str(pha_network_list)
+    yaml_string += network_yml_data
+
+    if(len(pha_interface_list)>0):
+        yaml_string +="INTERFACES:\n"
+        interface_yml_data = create_obj_to_str(pha_interface_list)
+        yaml_string += interface_yml_data
+
+    if(len(pha_service_ip_list)>0):
+        yaml_string +="SERVICE_IP:\n"
+        service_yml_data = create_obj_to_str(pha_service_ip_list)
+        yaml_string += service_yml_data
+
+        yaml_string +="SERVICE_IP_RG:\n"
+        service_with_rg_yml_data = create_obj_to_str(serviceip_with_rg)
+        yaml_string += service_with_rg_yml_data
+
+
+    return yaml_string
+
+
+if __name__ == "__main__":
+
+    rg_count = ${rg_count}
+    rg_data = ${rg_list}
+    vg_count = ${vg_count}
+    vg_data = ${vg_list}
+    fs_count = ${fs_count}
+    fs_data = ${fs_list}
+    shared_disks = ${shared_wwn_disks}
+    node_details = ${node_details}
+    subnets = ${subnet_list}
+    reserve_ip_details = ${reserve_ip_data}
+    powerha_build_path = ${pha_build_path}
+    ansible_dir = ${destination_ansible_yml_file}
+    # # Object Validation and creation
+    reporsitory_disk = 1
+    shared_disk_count = len(shared_disks)
+    total_vg_disk_count = shared_disk_count-reporsitory_disk
+    computed_rg_list = resource_compute(rg_data,RG_AUTO_PREFIX,RG_DEFAULT,rg_count,"name")
+    computed_vg_list = resource_compute(vg_data,VG_AUTO_PREFIX,VG_DEFAULT,vg_count,"name")
+    filtered_vg_list = vg_corrective_actions(computed_vg_list, computed_rg_list, total_vg_disk_count) 
+    computed_fs_list = resource_compute(fs_data,FS_AUTO_PREFIX,FS_DEFAULT,fs_count,"name")
+    filtered_fs_list = fs_corrective_actions(computed_fs_list, filtered_vg_list) 
+    rg_with_vg = get_rg_with_vg(filtered_vg_list, computed_rg_list)
+    pha_network_list = get_pha_network_list(subnets)
+    pha_interface_list = get_pha_interface_list(node_details,len(subnets),pha_network_list)
+    pha_service_ip_list = get_service_ip_list(subnets,reserve_ip_details, pha_network_list)
+    serviceip_with_rg = get_serviceip_with_vg(pha_service_ip_list,computed_rg_list)
+     
+    # Create YAML String
+    yaml_data = create_yaml_content(node_details, shared_disks, powerha_build_path,computed_rg_list,filtered_vg_list, rg_with_vg, filtered_fs_list, pha_network_list, pha_interface_list, pha_service_ip_list, serviceip_with_rg)
+    # # write data in yaml file
+    with open(ansible_dir,"w+") as fp:
+        fp.write(yaml_data)

@@ -1,0 +1,48 @@
+#!/usr/bin/ksh93
+
+index=${index}
+proxy_host=${proxy_ip_and_port}
+
+# Set proxy for PowerVS nodes
+export http_proxy=$proxy_host
+export https_proxy=$proxy_host
+export PYTHONIOENCODING=utf-8
+
+# Increase filesystem sizes
+for i in /usr /opt /var /; do
+  chfs -a size=+1G $i
+done
+
+# Install Curl
+if [ -f /opt/freeware/bin/dnf ]; then
+  echo 'y' | /opt/freeware/bin/dnf install curl-7.52*
+elif [ -f /opt/freeware/bin/yum ]; then
+  echo 'y' | /opt/freeware/bin/yum install curl-7.52*
+fi
+
+# Install Ansible and update python version in all nodes
+if [ -f /opt/freeware/bin/dnf ]; then
+  echo 'y' | /opt/freeware/bin/dnf install ansible-2.9.25-2*
+elif [ -f /opt/freeware/bin/yum ]; then
+  echo 'y' | /opt/freeware/bin/yum install ansible-2.9.25-2*
+fi
+
+# Install Ansible and update python version in all nodes
+if [ -f /opt/freeware/bin/dnf ]; then
+  echo 'y' | /opt/freeware/bin/dnf install python3.9-pip
+elif [ -f /opt/freeware/bin/yum ]; then
+  echo 'y' | /opt/freeware/bin/yum install python3.9-pip
+fi
+
+# Install boto3
+# /usr/bin/pip3 install boto3
+/opt/freeware/bin/pip3.9 install boto3
+
+# Check and fix language issue
+cd /usr/sys/inst.images/installp/ppc
+installp -agXYd . bos.loc.utf.EN_US
+export LC_ALL=en_US.UTF-8
+
+# Download GLVM dependencies
+cd /usr/sys/inst.images/installp/ppc
+installp -acqXY -d. glvm.rpv
