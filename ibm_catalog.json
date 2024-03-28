@@ -1,0 +1,541 @@
+{
+    "products": [
+        {
+            "name": "deploy-arch-ibm-pvs-pha",
+            "label": "Power Virtual Server with PowerHA",
+            "product_kind": "solution",
+            "tags": [
+                "network_vpc",
+                "terraform",
+                "solution",
+                "support_ibm"
+            ],
+            "keywords": [
+                "powervs",
+                "poworha",
+                "standard powerha"
+            ],
+            "short_description": "Build a IBM Cloud® Power Virtual Servers (PowerVS) With PowerHA SystemMirror for AIX offering according to the best practices and requirements from the IBM Cloud.",
+            "long_description": "This deployable architecture is designed to assist you in deploying PowerHA SystemMirror for AIX into IBM Cloud on the IBM Power Virtual Server infrastructure. This is the second step in the deployment process for creating a full environment. Before starting this step, you should first deploy 'Power Virtual Server with VPC landing zone'. Once this is completed, you are prepared to start this step. \n \n PowerHA on Power Virtual Server creates and prepares Power Virtual Server instances for PowerHA SystemMirror workloads. After deployment completes, you may (depending on the framework you chose) begin login to your newly created virtual server instances directly and validate the PowerHA SystemMirror configuration based on the provided options. You may even modify the configuration if required.",
+            "offering_docs_url": "https://cloud.ibm.com/docs/power-iaas?topic=power-iaas-ha-dr",
+            "offering_icon_url": "data:image/png;base64,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",
+            "features": [
+                {
+                    "title": "Create Power Virtual Server instances",
+                    "description": "Power Virtual Server instances are created for you along with PowerHA SystemMirror installation and configuration which includes volume groups, file systems and resource groups."
+                }
+            ],
+            "flavors": [
+                {
+                    "label": "PowerHA Standard Edition ready for PowerVS",
+                    "name": "powerha-standard-powervs",
+                    "install_type": "standard",
+                    "index": 1,
+                    "working_directory": "solution/standard_powervs",
+                    "compliance": {},
+                    "dependencies": [
+                        {
+                            "flavors": [
+                                "powervs-quickstart"
+                            ],
+                            "id": "2dd486c7-b317-4aaa-907b-42671485ad96-global",
+                            "name": "deploy-arch-ibm-pvs-inf",
+                            "install_type": "fullstack",
+                            "version": ">=3.0.0"
+                        }
+                    ],
+                    "configuration": [
+                        {
+                            "key": "prerequisite_workspace_id",
+                            "required": true,
+                            "default_value": "",
+                            "custom_config": {
+                                "config_constraints": {
+                                    "catalogID": "1082e7d2-5e2f-0a11-a3bc-f88a8e1931fc",
+                                    "offeringID": "2dd486c7-b317-4aaa-907b-42671485ad96-global",
+                                    "versionConstraint": ">=3.0.0"
+                                },
+                                "grouping": "deployment",
+                                "original_grouping": "deployment",
+                                "type": "schematics_workspace"
+                            }
+                        },
+                        {
+                            "key": "prefix",
+                            "required": true,
+                            "default_value": ""
+                        },
+                        {
+                            "key": "powervs_zone",
+                            "type": "string",
+                            "required": true,
+                            "default_value": "",
+                            "options": [
+                                {
+                                    "displayname": "Dallas (dallas)",
+                                    "value": "us-south"
+                                },
+                                {
+                                    "displayname": "Dallas 10 (dal10) PER",
+                                    "value": "dal10"
+                                },
+                                {
+                                    "displayname": "Dallas 12 (dal12) PER",
+                                    "value": "dal12"
+                                },
+                                {
+                                    "displayname": "Frankfurt 1 (eu-de-1) PER",
+                                    "value": "eu-de-1"
+                                },
+                                {
+                                    "displayname": "Frankfurt 2 (eu-de-2) PER",
+                                    "value": "eu-de-2"
+                                },
+                                {
+                                    "displayname": "London 04 (lon04)",
+                                    "value": "lon04"
+                                },
+                                {
+                                    "displayname": "London 06 (lon06)",
+                                    "value": "lon06"
+                                },
+                                {
+                                    "displayname": "Madrid 02 (mad02) PER",
+                                    "value": "mad02"
+                                },
+                                {
+                                    "displayname": "Madrid 04 (mad04) PER",
+                                    "value": "mad04"
+                                },
+                                {
+                                    "displayname": "Montreal 01 (mon01)",
+                                    "value": "mon01"
+                                },
+                                {
+                                    "displayname": "Osaka 21 (osa21)",
+                                    "value": "osa21"
+                                },
+                                {
+                                    "displayname": "Sao Paulo 01 (sao01) PER",
+                                    "value": "sao01"
+                                },
+                                {
+                                    "displayname": "Sao Paulo 04 (sao04) PER",
+                                    "value": "sao04"
+                                },
+                                {
+                                    "displayname": "Sydney 04 (syd04)",
+                                    "value": "syd04"
+                                },
+                                {
+                                    "displayname": "Sydney 05 (syd05)",
+                                    "value": "syd05"
+                                },
+                                {
+                                    "displayname": "Tokyo 04 (tok04)",
+                                    "value": "tok04"
+                                },
+                                {
+                                    "displayname": "Toronto 01 (tor01)",
+                                    "value": "tor01"
+                                },
+                                {
+                                    "displayname": "Washington DC (us-east)",
+                                    "value": "us-east"
+                                },
+                                {
+                                    "displayname": "Washington DC 06 (wdc06) PER",
+                                    "value": "wdc06"
+                                },
+                                {
+                                    "displayname": "Washington DC 07 (wdc07) PER",
+                                    "value": "wdc07"
+                                }
+                            ],
+                            "custom_config": {}
+                        },
+                        {
+                            "key": "ssh_public_key",
+                            "type": "multiline_secure_value",
+                            "display_name": "Multiline secure value",
+                            "required": true,
+                            "default_value": "",
+                            "custom_config": {
+                                "grouping": "deployment",
+                                "original_grouping": "deployment",
+                                "type": "multiline_secure_value"
+                            }
+                        },
+                        {
+                            "key": "ssh_private_key",
+                            "type": "multiline_secure_value",
+                            "display_name": "Multiline secure value",
+                            "required": true,
+                            "custom_config": {
+                                "grouping": "deployment",
+                                "original_grouping": "deployment",
+                                "type": "multiline_secure_value"
+                            }
+                        },
+                        {
+                            "key": "ibmcloud_api_key",
+                            "type": "multiline_secure_value",
+                            "display_name": "Multiline secure value",
+                            "required": true,
+                            "custom_config": {
+                                "grouping": "deployment",
+                                "original_grouping": "deployment",
+                                "type": "multiline_secure_value"
+                            }
+                        },
+                        {
+                            "key": "powervs_resource_group_name",
+                            "required": true,
+                            "default_value": "",
+                            "custom_config": {
+                                "config_constraints": {
+                                    "identifier": "rg_name"
+                                },
+                                "grouping": "deployment",
+                                "original_grouping": "deployment",
+                                "type": "resource_group"
+                            }
+                        },
+                        {
+                            "key": "power_virtual_server",
+                            "type": "number",
+                            "required": true,
+                            "default_value": 2
+                        },
+                        {
+                            "key": "tshirt_size",
+                            "type": "string",
+                            "required": true,
+                            "default_value": "",
+                            "options": [
+                                {
+                                    "displayname": "aix_xs",
+                                    "value": "aix_xs"
+                                },
+                                {
+                                    "displayname": "aix_s",
+                                    "value": "aix_s"
+                                },
+                                {
+                                    "displayname": "aix_m",
+                                    "value": "aix_m"
+                                },
+                                {
+                                    "displayname": "aix_l",
+                                    "value": "aix_l"
+                                },
+                                {
+                                    "displayname": "aix_xl",
+                                    "value": "aix_xl"
+                                }
+                            ],
+                            "custom_config": {}
+                        },
+                        {
+                            "key": "powervs_image_names",
+                            "type": "string",
+                            "required": true,
+                            "default_value": "",
+                            "options": [
+                                {
+                                    "displayname": "AIX 7300-01-02",
+                                    "value": "7300-01-02"
+                                },
+                                {
+                                    "displayname": "AIX 7300-00-01",
+                                    "value": "7300-00-01"
+                                },
+                                {
+                                    "displayname": "AIX 7200-05-06",
+                                    "value": "7200-05-06"
+                                }
+                            ],
+                            "custom_config": {}
+                        },
+                        {
+                            "key": "powervs_subnet_list",
+                            "required": true,
+                            "custom_config": {
+                                "grouping": "deployment",
+                                "original_grouping": "deployment",
+                                "type": "json_editor"
+                            },
+                            "default_value": [
+                                {
+                                    "cidr": "10.61.0.0/24",
+                                    "name": "mgmt_net",
+                                    "reserved_ip_count": 2
+                                },
+                                {
+                                    "cidr": "10.62.0.0/24",
+                                    "name": "bkp_net",
+                                    "reserved_ip_count": 0
+                                }
+                            ]
+                        },
+                        {
+                            "key": "dedicated_volume",
+                            "type": "number",
+                            "required": true,
+                            "default_value": 2
+                        },
+                        {
+                            "key": "shared_volume",
+                            "type": "number",
+                            "required": true,
+                            "default_value": 3
+                        },
+                        {
+                            "key": "cos_powerha_image_download",
+                            "required": true,
+                            "custom_config": {
+                                "grouping": "deployment",
+                                "original_grouping": "deployment",
+                                "type": "json_editor"
+                            },
+                            "default_value": {
+                                "bucket_name": "",
+                                "cos_access_key_id": "",
+                                "cos_secret_access_key": "",
+                                "cos_endpoint": "",
+                                "folder_name": "",
+                                "ssl_file_path": ""
+                            }
+                        },
+                        {
+                            "key": "powerha_resource_group",
+                            "type": "number",
+                            "required": true,
+                            "default_value": 1
+                        },
+                        {
+                            "key": "volume_group",
+                            "type": "number",
+                            "required": true,
+                            "default_value": 1
+                        },
+                        {
+                            "key": "file_system",
+                            "type": "number",
+                            "required": true,
+                            "default_value": 1
+                        },
+                        {
+                            "key": "cloud_connection",
+                            "required": false,
+                            "custom_config": {
+                                "grouping": "deployment",
+                                "original_grouping": "deployment",
+                                "type": "json_editor"
+                            },
+                            "default_value": {
+                                "count": 1,
+                                "speed": 50,
+                                "global_routing": true,
+                                "metered": true
+                            }
+                        },
+                        {
+                            "key": "powerha_resource_group_list",
+                            "required": false,
+                            "custom_config": {
+                                "grouping": "deployment",
+                                "original_grouping": "deployment",
+                                "type": "json_editor"
+                            },
+                            "default_value": [
+                                {
+                                    "name": "RG1",
+                                    "startup": "OHN",
+                                    "fallover": "FNPN",
+                                    "fallback": "NFB"
+                                }
+                            ]
+                        },
+                        {
+                            "key": "volume_group_list",
+                            "required": false,
+                            "custom_config": {
+                                "grouping": "deployment",
+                                "original_grouping": "deployment",
+                                "type": "json_editor"
+                            },
+                            "default_value": [
+                                {
+                                    "name": "VG1",
+                                    "rg_name": "RG1",
+                                    "physical_volume_count": 1,
+                                    "type": "original"
+                                }
+                            ]
+                        },
+                        {
+                            "key": "file_system_list",
+                            "required": false,
+                            "custom_config": {
+                                "grouping": "deployment",
+                                "original_grouping": "deployment",
+                                "type": "json_editor"
+                            },
+                            "default_value": [
+                                {
+                                    "block_size": 1024,
+                                    "name": "fs1",
+                                    "size_per_unit": "megabytes",
+                                    "type": "enhanced",
+                                    "units": 100,
+                                    "volume_group": "VG1"
+                                }
+                            ]
+                        },
+                        {
+                            "key": "tags"
+                        }
+                    ],
+                    "outputs": [
+                        {
+                            "key": "powervs_zone"
+                        },
+                        {
+                            "key": "powervs_resource_group_name"
+                        },
+                        {
+                            "key": "proxy_ip_and_port"
+                        },
+                        {
+                            "key": "bastion_host_ip"
+                        },
+                        {
+                            "key": "transit_gateway_connection"
+                        },
+                        {
+                            "key": "powervs_workspace_name"
+                        },
+                        {
+                            "key": "powervs_workspace_id"
+                        },
+                        {
+                            "key": "powervs_workspace_guid"
+                        },
+                        {
+                            "key": "powervs_ssh_public_key"
+                        },
+                        {
+                            "key": "powervs_subnet_list"
+                        },
+                        {
+                            "key": "powervs_subnet_ids"
+                        },
+                        {
+                            "key": "powervs_images"
+                        },
+                        {
+                            "key": "cloud_connection"
+                        },
+                        {
+                            "key": "pi_instances"
+                        },
+                        {
+                            "key": "reserve_ips"
+                        },
+                        {
+                            "key": "pi_port_data"
+                        },
+                        {
+                            "key": "pi_shared_volume_data"
+                        },
+                        {
+                            "key": "node_details"
+                        }
+                    ],
+                    "iam_permissions": [
+                        {
+                            "role_crns": [
+                                "crn:v1:bluemix:public:iam::::serviceRole:Manager"
+                            ],
+                            "service_name": "cloud-object-storage"
+                        },
+                        {
+                            "role_crns": [
+                                "crn:v1:bluemix:public:iam::::serviceRole:Manager"
+                            ],
+                            "service_name": "hs-crypto"
+                        },
+                        {
+                            "role_crns": [
+                                "crn:v1:bluemix:public:iam::::role:Administrator"
+                            ],
+                            "service_name": "iam-identity"
+                        },
+                        {
+                            "role_crns": [
+                                "crn:v1:bluemix:public:iam::::serviceRole:Manager"
+                            ],
+                            "service_name": "kms"
+                        },
+                        {
+                            "role_crns": [
+                                "crn:v1:bluemix:public:iam::::serviceRole:Manager",
+                                "crn:v1:bluemix:public:iam::::role:Administrator"
+                            ],
+                            "service_name": "is.vpc"
+                        },
+                        {
+                            "role_crns": [
+                                "crn:v1:bluemix:public:iam::::role:Editor"
+                            ],
+                            "service_name": "is.vpc"
+                        },
+                        {
+                            "role_crns": [
+                                "crn:v1:bluemix:public:iam::::role:Editor"
+                            ],
+                            "service_name": "transit.gateway"
+                        },
+                        {
+                            "role_crns": [
+                                "crn:v1:bluemix:public:iam::::serviceRole:Manager"
+                            ],
+                            "service_name": "power-iaas"
+                        }
+                    ],
+                    "architecture": {
+                        "features": [
+                            {
+                                "description": "PowerHA Cluster",
+                                "title": "Installed and Configured"
+                            },
+                            {
+                                "description": "PowerVS Instances",
+                                "title": "User can choose the number of PowerVS Instances required for PowerHA Standard cluster"
+                            },
+                            {
+                                "description": "Power Virtual Server Workspace",
+                                "title": "PowerVS Workspace with all required components"
+                            },
+                            {
+                                "description": "Power Virtual Server with VPC landing zone",
+                                "title": "Available"
+                            }
+                        ],
+                        "diagrams": [
+                            {
+                                "diagram": {
+                                    "caption": "Power Virtual Server with PowerHA 'Standard' variation",
+                                    "url": "https://raw.githubusercontent.com/terraform-ibm-modules/terraform-ibm-powervs-powerha/main/PowerVS-PowerHA-Diagram.svg",
+                                    "type": "image/svg+xml"
+                                },
+                                "description": "PowerHA Standard Edition ready PowerVS' variation of 'Power Virtual Server for PowerHA' creates a basic PowerHA SystemMirror Standard cluster landscape builds on the foundation of the 'Power Virtual Server with VPC landing zone'. PowerHA SystemMirror is installed based on the customer provided image path and configured the cluster based on the resource options provided during the deployment. \n \n PowerHA SystemMirror standard edition is configured with resource groups, volume groups and file systems. \n \n Redundant IBM Cloud Connections provide the network bridge between the IBM Power infrastructure and the IBM VPC and public internet. \n \n The resulting PowerHA on PowerVS landscape leverages the services such as Activity Tracker, Cloud Object Storage, Key Management and the network connectivity configuration provided by 'Power Virtual Server with VPC landing zone'"
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    ]
+}
