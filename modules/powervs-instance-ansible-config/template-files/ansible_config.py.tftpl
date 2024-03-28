@@ -112,6 +112,8 @@ def get_pha_interface_list(node_list,subnet_length, pha_networks):
         node_name = node.get("pi_instance_name")
         node_ips =  node.get("pi_instance_private_ips")[:subnet_length] #4 ip here 
         primary_ip = node.get("pi_instance_primary_ip")
+        node_ips.remove(primary_ip)
+        node_ips.insert(0,primary_ip)
         count = 0
         for network in pha_networks:
             for index in range(count,len(node_ips)):
@@ -345,11 +347,16 @@ if __name__ == "__main__":
     fs_data = ${fs_list}
     shared_disks = ${shared_wwn_disks}
     node_details = ${node_details}
+    # Node details updation
+    for obj in node_details:
+        for key,value in obj.items():
+            if key == "pi_instance_private_ips" :
+                obj[key] = [ip.strip() for ip in value[0].split(",")]
     subnets = ${subnet_list}
     reserve_ip_details = ${reserve_ip_data}
     powerha_build_path = ${pha_build_path}
     ansible_dir = ${destination_ansible_yml_file}
-    # # Object Validation and creation
+    # Object Validation and creation
     reporsitory_disk = 1
     shared_disk_count = len(shared_disks)
     total_vg_disk_count = shared_disk_count-reporsitory_disk
@@ -361,9 +368,14 @@ if __name__ == "__main__":
     rg_with_vg = get_rg_with_vg(filtered_vg_list, computed_rg_list)
     pha_network_list = get_pha_network_list(subnets)
     pha_interface_list = get_pha_interface_list(node_details,len(subnets),pha_network_list)
-    pha_service_ip_list = get_service_ip_list(subnets,reserve_ip_details, pha_network_list)
-    serviceip_with_rg = get_serviceip_with_vg(pha_service_ip_list,computed_rg_list)
-     
+
+    service_ip_flag = True
+    pha_service_ip_list = []
+    serviceip_with_rg = []
+    if(service_ip_flag):
+        pha_service_ip_list = get_service_ip_list(subnets,reserve_ip_details, pha_network_list)
+        serviceip_with_rg = get_serviceip_with_vg(pha_service_ip_list,computed_rg_list)
+
     # Create YAML String
     yaml_data = create_yaml_content(node_details, shared_disks, powerha_build_path,computed_rg_list,filtered_vg_list, rg_with_vg, filtered_fs_list, pha_network_list, pha_interface_list, pha_service_ip_list, serviceip_with_rg)
     # # write data in yaml file

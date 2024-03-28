@@ -4,10 +4,13 @@ locals {
   dedicated_volume_size      = 10
 
   default_pi_replicants = { count = 1, policy = "anti-affinity" }
-  default_pi_storage_config = [
+  default_pi_storage_config = var.pi_dedicated_volume_count > 0 ? [
     { name = "${var.pi_prefix}-extended-volume", size = "80", count = "1", tier = var.pi_storage_type, mount = null },
     { name = "${var.pi_prefix}-volume", size = local.shared_volume_size, count = var.pi_dedicated_volume_count, tier = "tier3", mount = null }
+    ] : [
+    { name = "${var.pi_prefix}-extended-volume", size = "80", count = "1", tier = var.pi_storage_type, mount = null }
   ]
+
 
   powervs_instances = slice([module.powervs_instance_node_1, module.powervs_instance_node_2[0],
     length(module.powervs_instance_node_3) > 0 ? module.powervs_instance_node_3[0] : null,

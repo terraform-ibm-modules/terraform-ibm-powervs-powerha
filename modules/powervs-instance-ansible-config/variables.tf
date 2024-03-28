@@ -40,6 +40,7 @@ variable "pi_cos_data" {
     cos_secret_access_key = string
     cos_endpoint          = string
     folder_name           = string
+    ssl_file_name         = string
   })
 }
 

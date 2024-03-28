@@ -279,5 +279,5 @@ locals {
     length(ibm_pi_network.private_subnet_16) > 0 ? ibm_pi_network.private_subnet_16[0] : null
   ], 0, length(var.powervs_subnet_list))
 
-  pi_private_subnet_ids = [for subnet in local.powervs_subnets : subnet.id if subnet != null]
+  pi_private_subnet_ids = [for subnet in local.powervs_subnets : subnet.network_id if subnet != null]
 }
