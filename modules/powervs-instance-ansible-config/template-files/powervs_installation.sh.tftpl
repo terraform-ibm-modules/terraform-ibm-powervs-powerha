@@ -12,6 +12,9 @@ export PYTHONIOENCODING=utf-8
 # Extending the rootvg
 chvg -t 16 rootvg
 hdisk_name=$(lspv -u | grep -i $extended_volume | awk '{ print $1}')
+cfgmgr
+chdev -l $hdisk_name -a pv=yes
+cfgmgr
 /usr/sbin/extendvg '-f' 'rootvg' $hdisk_name
 
 # Increase filesystem sizes
