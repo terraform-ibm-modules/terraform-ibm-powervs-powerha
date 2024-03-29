@@ -50,12 +50,12 @@ variable "power_virtual_server" {
 
 variable "tshirt_size" {
   description = <<EOT
-  "Power Virtual Server instance profiles. Power Virtual instance will be created based on the following values: 
+  "Power Virtual Server instance profiles. Power Virtual instance will be created based on the following values:
     server_type: s922
-    proc_type: shared 
+    proc_type: shared
     tier: tier1 (This value is the same for all profiles)
 
-  The following specific AIX levels used for Power Virtual Machine are supported: 
+  The following specific AIX levels used for Power Virtual Machine are supported:
     aix_xs = { cores: 0.25, memory: 4 }
     aix_s  = { cores: 1, memory: 16 }
     aix_m  = { cores: 4, memory: 64 }

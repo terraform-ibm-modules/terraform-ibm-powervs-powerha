@@ -9,7 +9,7 @@
 [![Renovate enabled](https://img.shields.io/badge/renovate-enabled-brightgreen.svg)](https://renovatebot.com/)
 
 ## Summary
-This deployable architecture is designed to assist you in deploying PowerHA SystemMirror for AIX into IBM Cloud on the IBM Power Virtual Server infrastructure. This is the second step in the deployment process for creating a full environment. Before starting this step, you should first deploy 'Power Virtual Server with VPC landing zone'. Once this is completed, you are prepared to start this step. 
+This deployable architecture is designed to assist you in deploying PowerHA SystemMirror for AIX into IBM Cloud on the IBM Power Virtual Server infrastructure. This is the second step in the deployment process for creating a full environment. Before starting this step, you should first deploy 'Power Virtual Server with VPC landing zone'. Once this is completed, you are prepared to start this step.
 
 PowerHA on Power Virtual Server creates and prepares Power Virtual Server instances for PowerHA SystemMirror workloads. After deployment completes, you may (depending on the framework you chose) begin login to your newly created virtual server instances directly and validate the PowerHA SystemMirror configuration based on the provided options. You may even modify the configuration if required.
 
@@ -25,10 +25,7 @@ Three solutions are offered:
 ## Overview
 * [terraform-ibm-powervs-powerha](#terraform-ibm-powervs-powerha)
 * [Submodules](./modules)
-    * [powervs-workspace-custom](./modules/powervs-workspace-custom)
-    * [powervs-instance-custom](./modules/powervs-instance-custom)
-    * [cloud-connection-network-attach](./modules/cloud-connection-network-attach)
-    * [powervs-instance-ansible-config](./modules/powervs-instance-ansible-config)
+* [Contributing](#contributing)
 <!-- END OVERVIEW HOOK -->
 
 ## Required IAM access policies

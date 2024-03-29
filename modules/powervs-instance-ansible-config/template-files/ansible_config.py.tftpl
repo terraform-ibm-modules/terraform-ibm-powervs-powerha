@@ -56,7 +56,7 @@ def vg_corrective_actions(computed_vg_list, computed_rg_list,total_vg_count):
     vg_with_correct_rg = [item for item in computed_vg_list if item.get('rg_name') in rg_names]
     vg_with_incorrect_rg = [item for item in computed_vg_list if not item.get('rg_name') in rg_names]
     for index in range(len(vg_with_incorrect_rg)):
-        vg_with_incorrect_rg[index]["rg_name"] = rg_names[index] 
+        vg_with_incorrect_rg[index]["rg_name"] = rg_names[index]
     vg_with_correct_rg = vg_with_correct_rg + vg_with_incorrect_rg
 
     # disk related corrective actions
@@ -71,7 +71,7 @@ def vg_corrective_actions(computed_vg_list, computed_rg_list,total_vg_count):
             vg_with_correct_disk.append(vg_data)
             total_vg_count-=vg_disk_count
     return vg_with_correct_disk
-    
+
 
 def fs_corrective_actions(computed_fs_list, filtered_vg_list):
     # FS Related corrective actions
@@ -79,10 +79,10 @@ def fs_corrective_actions(computed_fs_list, filtered_vg_list):
     fs_with_correct_vg = [item for item in computed_fs_list if item.get('volume_group') in vg_names]
     fs_with_incorrect_vg = [item for item in computed_fs_list if not item.get('volume_group') in vg_names]
     for index in range(len(fs_with_incorrect_vg)):
-        fs_with_incorrect_vg[index]["volume_group"] = vg_names[index] 
+        fs_with_incorrect_vg[index]["volume_group"] = vg_names[index]
     fs_with_correct_vg = fs_with_correct_vg + fs_with_incorrect_vg
     return fs_with_correct_vg
-    
+
 
 def get_rg_with_vg(filtered_vg_list, computed_rg_list):
     rg_names = get_value_by_key("name",computed_rg_list)
@@ -102,7 +102,7 @@ def get_pha_network_list(subnet_list):
     for index in range(math.ceil(len(subnet_list)/2)):
         net_dict = {"NAME": "net_ether_"+"{0:02d}".format(index+1), "TYPE": "ether"}
         pha_netwok_list.append(net_dict)
-    return pha_netwok_list 
+    return pha_netwok_list
 
 
 def get_pha_interface_list(node_list,subnet_length, pha_networks):
@@ -110,7 +110,7 @@ def get_pha_interface_list(node_list,subnet_length, pha_networks):
     count = 0
     for node in node_list:
         node_name = node.get("pi_instance_name")
-        node_ips =  node.get("pi_instance_private_ips")[:subnet_length] #4 ip here 
+        node_ips =  node.get("pi_instance_private_ips")[:subnet_length] #4 ip here
         primary_ip = node.get("pi_instance_primary_ip")
         node_ips.remove(primary_ip)
         node_ips.insert(0,primary_ip)
@@ -123,7 +123,7 @@ def get_pha_interface_list(node_list,subnet_length, pha_networks):
                     count+=count
                     break
                 count+=1
-        
+
         pha_interaface_list = [data for data in pha_interaface_list if data.get("IP")!= primary_ip]
     return pha_interaface_list
 
@@ -147,7 +147,7 @@ def get_service_ip_list(subnets,reserve_ip_details, pha_network_list):
 
 
 def get_serviceip_with_vg(pha_service_ip_list,computed_rg_list):
-    rg_names = get_value_by_key("name",computed_rg_list) 
+    rg_names = get_value_by_key("name",computed_rg_list)
     serviceip_names = get_value_by_key("NAME",pha_service_ip_list)
     serviceip_vg_list = []
     serviceip_with_vg_obj =[]
@@ -171,8 +171,8 @@ def create_obj_to_str(obj_list):
         obj_str+="  - { "
         obj_str+=(", ").join([(key + ": '" + str(value) + "'") for key, value in data.items()])
         obj_str+="}\n"
-    obj_str += "\n"  
-    return obj_str  
+    obj_str += "\n"
+    return obj_str
 
 
 def create_rg_object(rg_data):
@@ -195,7 +195,7 @@ def create_rg_object(rg_data):
         rg_string+="  - { "
         rg_string+=(", ").join([(key + ": '" + value + "'") for key, value in data.items()])
         rg_string+="}\n"
-    rg_string += "\n"        
+    rg_string += "\n"
     return rg_string
 
 
@@ -216,12 +216,12 @@ def create_vg_object(vg_data, shared_disks, node_details):
                 count = count+value
         vg_dict.update({"NODES" : (",").join([node.get("pi_instance_name") for node in node_details])})
         vg_yml_data.append(vg_dict)
-    
+
     for data in vg_yml_data:
         vg_string+="  - { "
         vg_string+=(", ").join([(key + ": '" + value + "'") for key, value in data.items()])
         vg_string+="}\n"
-    vg_string += "\n"        
+    vg_string += "\n"
     return vg_string
 
 
@@ -240,7 +240,7 @@ def create_rg_with_vg(rg_with_vg):
         rg_vg_string+="  - { "
         rg_vg_string+=(", ").join([(key + ": '" + value + "'") for key, value in data.items()])
         rg_vg_string+="}\n"
-    rg_vg_string += "\n"        
+    rg_vg_string += "\n"
     return rg_vg_string
 
 
@@ -263,13 +263,13 @@ def create_fs_object(fs_data):
             if(key=="block_size"):
                 fs_dict.update({"BLOCK_SIZE" : value})
         fs_yml_data.append(fs_dict)
-    
+
     for data in fs_yml_data:
         fs_string+="  - { "
         fs_string+=(", ").join([(key + ": '" + str(value) + "'") for key, value in data.items()])
         fs_string+="}\n"
-    
-    fs_string += "\n"        
+
+    fs_string += "\n"
     return fs_string
 
 
@@ -281,13 +281,13 @@ def create_yaml_content(node_details, wwn_shared_disks, powerha_build_path, rg_d
 
     # Add Nodes
     yaml_string +="NODES: " + (",").join([node.get("pi_instance_name") for node in node_details]) +"\n\n"
-    
+
     # Add Node details
     yaml_string +="NODE_DETAILS:\n"
     for node in node_details:
         yaml_string +="- full_name: " + node.get("pi_instance_name") + "\n" \
                       "  ip: " + node.get("pi_instance_primary_ip") + "\n" \
-                      "  name: " + node.get("pi_instance_name") + "\n" 
+                      "  name: " + node.get("pi_instance_name") + "\n"
     yaml_string +="\n"
 
     #Repository disk
@@ -304,7 +304,7 @@ def create_yaml_content(node_details, wwn_shared_disks, powerha_build_path, rg_d
     yaml_string +="VG:\n"
     vg_yml_data = create_vg_object(vg_data, shared_disks, node_details)
     yaml_string += vg_yml_data
-    
+
     # # VG_RG data
     yaml_string +="VG_RG:\n"
     rg_vg_yml_data = create_rg_with_vg(rg_with_vg)
@@ -362,9 +362,9 @@ if __name__ == "__main__":
     total_vg_disk_count = shared_disk_count-reporsitory_disk
     computed_rg_list = resource_compute(rg_data,RG_AUTO_PREFIX,RG_DEFAULT,rg_count,"name")
     computed_vg_list = resource_compute(vg_data,VG_AUTO_PREFIX,VG_DEFAULT,vg_count,"name")
-    filtered_vg_list = vg_corrective_actions(computed_vg_list, computed_rg_list, total_vg_disk_count) 
+    filtered_vg_list = vg_corrective_actions(computed_vg_list, computed_rg_list, total_vg_disk_count)
     computed_fs_list = resource_compute(fs_data,FS_AUTO_PREFIX,FS_DEFAULT,fs_count,"name")
-    filtered_fs_list = fs_corrective_actions(computed_fs_list, filtered_vg_list) 
+    filtered_fs_list = fs_corrective_actions(computed_fs_list, filtered_vg_list)
     rg_with_vg = get_rg_with_vg(filtered_vg_list, computed_rg_list)
     pha_network_list = get_pha_network_list(subnets)
     pha_interface_list = get_pha_interface_list(node_details,len(subnets),pha_network_list)

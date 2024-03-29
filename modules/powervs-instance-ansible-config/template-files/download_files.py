@@ -1,6 +1,7 @@
-import boto3
 import os
 import sys
+
+import boto3
 
 
 def download_pha_from_cos(cos, bucket_name, folder_name):
@@ -18,7 +19,10 @@ def download_pha_from_cos(cos, bucket_name, folder_name):
             # Unzip and extract powerha tar file
             if not os.path.exists("./" + folder_name + "/pha/" + key.split("/")[1]):
                 os.makedirs("./" + folder_name + "/pha/" + key.split("/")[1])
-            os.system(f"gunzip -c {key} | tar -xvf -  -C ./{folder_name}/pha/" + key.split("/")[1])
+            os.system(
+                f"gunzip -c {key} | tar -xvf -  -C ./{folder_name}/pha/"
+                + key.split("/")[1]
+            )
 
         print(f"File downloaded, unzip and extracted successfully to: {folder_name}")
 
