@@ -5,11 +5,8 @@ locals {
   dst_script_file_path         = "${local.dst_files_dir}/install_packages.sh"
   python_cos_path              = "${local.template_dir}/download_files.py"
   destination_python_file_path = "download_files.py"
-  downloaded_file_name         = var.pi_cos_data.folder_name
   destination_ansible_yml_file = "/etc/ansible/external_var.yml"
   python_path                  = "/opt/freeware/bin/python3.9"
-  pi_vg_name                   = "VG1"
-  pi_rg_name                   = "RG1"
 }
 
 # ##############################
@@ -113,7 +110,7 @@ resource "terraform_data" "install_packages" {
 
   ####### Copy Template file to target host ############
   provisioner "file" {
-    content     = templatefile(local.src_script_tftpl_path, { "proxy_ip_and_port" = var.proxy_ip_and_port, "index" = count.index })
+    content     = templatefile(local.src_script_tftpl_path, { "proxy_ip_and_port" = var.proxy_ip_and_port, "index" = count.index, "extended_volume" = var.node_details[count.index].pi_volume_80 })
     destination = local.dst_script_file_path
   }
 

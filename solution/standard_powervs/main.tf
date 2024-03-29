@@ -3,7 +3,7 @@
 # PowerVS Workspace Creation
 #####################################################
 
-module "powervs-workspace" {
+module "powervs_workspace" {
   source = "../../modules/powervs-workspace-custom"
 
   powervs_zone                = var.powervs_zone # Zone of ibm cloud
@@ -24,13 +24,13 @@ module "powervs-workspace" {
 # PER DC: Skip
 #####################################################
 
-module "cloud-connection-network-attach" {
-  depends_on = [module.powervs-workspace]
+module "cloud_connection_network_attach" {
+  depends_on = [module.powervs_workspace]
   source     = "../../modules/cloud-connection-network-attach"
   count      = local.cloud_connection_count > 0 ? 1 : 0
 
-  pi_workspace_guid      = module.powervs-workspace.powervs_workspace_guid
-  pi_private_subnet_ids  = module.powervs-workspace.powervs_subnet_ids
+  pi_workspace_guid      = module.powervs_workspace.powervs_workspace_guid
+  pi_private_subnet_ids  = module.powervs_workspace.powervs_subnet_ids
   cloud_connection_count = local.cloud_connection_count
 }
 
@@ -40,11 +40,11 @@ module "cloud-connection-network-attach" {
 #####################################################
 
 module "powervs_instance" {
-  depends_on = [module.cloud-connection-network-attach]
+  depends_on = [module.cloud_connection_network_attach]
   source     = "../../modules/powervs-instance-custom"
 
-  pi_workspace_guid      = module.powervs-workspace.powervs_workspace_guid
-  pi_ssh_public_key_name = module.powervs-workspace.powervs_ssh_public_key.name
+  pi_workspace_guid      = module.powervs_workspace.powervs_workspace_guid
+  pi_ssh_public_key_name = module.powervs_workspace.powervs_ssh_public_key.name
 
   pi_prefix                 = var.prefix
   pi_image_id               = var.powervs_image_names
@@ -70,10 +70,7 @@ module "powervs_instance_ansible_config" {
   source     = "../../modules/powervs-instance-ansible-config"
 
   bastion_host_ip              = local.bastion_host_ip
-  ibmcloud_api_key             = var.ibmcloud_api_key
-  ssh_public_key               = var.ssh_public_key
   ssh_private_key              = var.ssh_private_key
-  pi_prefix                    = var.prefix
   pi_cos_data                  = var.cos_powerha_image_download
   shared_disk_wwns             = module.powervs_instance.pi_shared_volume_data[*].wwn
   nodes                        = module.powervs_instance.pi_instances[*].pi_instance_primary_ip

@@ -39,6 +39,7 @@ resource "ibm_pi_volume" "shared_volumes" {
   }
 }
 
+
 locals {
   shareable_volume_ids = [for vol in ibm_pi_volume.shared_volumes : vol.volume_id]
   powervs_dedicated_filesystem_config = [
@@ -134,7 +135,7 @@ module "powervs_instance_node_3" {
 
 resource "time_sleep" "wait_60_sec_3" {
   depends_on      = [module.powervs_instance_node_3]
-  count      = var.pi_instance_count > 3 ? 1 : 0
+  count           = var.pi_instance_count > 3 ? 1 : 0
   create_duration = "60s"
 }
 
@@ -163,7 +164,7 @@ module "powervs_instance_node_4" {
 
 resource "time_sleep" "wait_60_sec_4" {
   depends_on      = [module.powervs_instance_node_4]
-  count      = var.pi_instance_count > 4 ? 1 : 0
+  count           = var.pi_instance_count > 4 ? 1 : 0
   create_duration = "60s"
 }
 
@@ -192,7 +193,7 @@ module "powervs_instance_node_5" {
 
 resource "time_sleep" "wait_60_sec_5" {
   depends_on      = [module.powervs_instance_node_5]
-  count      = var.pi_instance_count > 5 ? 1 : 0
+  count           = var.pi_instance_count > 5 ? 1 : 0
   create_duration = "60s"
 }
 
@@ -221,7 +222,7 @@ module "powervs_instance_node_6" {
 
 resource "time_sleep" "wait_60_sec_6" {
   depends_on      = [module.powervs_instance_node_6]
-  count      = var.pi_instance_count > 6 ? 1 : 0
+  count           = var.pi_instance_count > 6 ? 1 : 0
   create_duration = "60s"
 }
 
@@ -251,7 +252,7 @@ module "powervs_instance_node_7" {
 
 resource "time_sleep" "wait_60_sec_7" {
   depends_on      = [module.powervs_instance_node_7]
-  count      = var.pi_instance_count > 7 ? 1 : 0
+  count           = var.pi_instance_count > 7 ? 1 : 0
   create_duration = "60s"
 }
 
@@ -282,15 +283,6 @@ resource "time_sleep" "wait_60_sec_8" {
   depends_on      = [module.powervs_instance_node_8]
   create_duration = "60s"
 }
-
-# resource "ibm_pi_volume" "shared_volumes" {
-#   count                = var.pi_shared_volume_count > 0 ? var.pi_shared_volume_count : 0
-#   pi_volume_size       = local.shared_volume_size
-#   pi_volume_name       = "${var.pi_prefix}-shared-${count.index}"
-#   pi_volume_type       = var.pi_storage_type
-#   pi_volume_shareable  = true
-#   pi_cloud_instance_id = var.pi_workspace_guid
-# }
 
 resource "ibm_pi_network_port_attach" "port_attach" {
   depends_on = [module.powervs_instance_node_8, time_sleep.wait_60_sec_8]

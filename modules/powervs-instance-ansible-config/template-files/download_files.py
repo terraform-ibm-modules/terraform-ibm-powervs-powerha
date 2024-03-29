@@ -6,19 +6,19 @@ import sys
 def download_pha_from_cos(cos, bucket_name, folder_name):
     # Download PAH file from COS
     try:
-        my_bucket = cos.list_objects(Bucket='powerha-images', Prefix=folder_name+"/")
-        for obj in my_bucket['Contents']:
-            key = obj['Key']
+        my_bucket = cos.list_objects(Bucket="powerha-images", Prefix=folder_name + "/")
+        for obj in my_bucket["Contents"]:
+            key = obj["Key"]
 
             # created directories in local
-            if not os.path.exists('./' + os.path.dirname(key)):
-                os.makedirs('./'+os.path.dirname(key))
-            cos.download_file(bucket_name, key, './'+key)
+            if not os.path.exists("./" + os.path.dirname(key)):
+                os.makedirs("./" + os.path.dirname(key))
+            cos.download_file(bucket_name, key, "./" + key)
 
             # Unzip and extract powerha tar file
-            if not os.path.exists('./'+folder_name+'/pha/'+key.split("/")[1]):
-                os.makedirs('./'+folder_name+"/pha/"+key.split("/")[1])
-            os.system(f"gunzip -c {key} | tar -xvf -  -C ./{folder_name}/pha/"+key.split("/")[1])
+            if not os.path.exists("./" + folder_name + "/pha/" + key.split("/")[1]):
+                os.makedirs("./" + folder_name + "/pha/" + key.split("/")[1])
+            os.system(f"gunzip -c {key} | tar -xvf -  -C ./{folder_name}/pha/" + key.split("/")[1])
 
         print(f"File downloaded, unzip and extracted successfully to: {folder_name}")
 
@@ -43,10 +43,12 @@ if __name__ == "__main__":
     cos_endpoint = sys.argv[4]
     cos_access_key_id = sys.argv[5]
     cos_secret_access_key = sys.argv[6]
-    cos = boto3.client('s3',
-                       endpoint_url=cos_endpoint,
-                       aws_access_key_id=cos_access_key_id,
-                       aws_secret_access_key=cos_secret_access_key)
+    cos = boto3.client(
+        "s3",
+        endpoint_url=cos_endpoint,
+        aws_access_key_id=cos_access_key_id,
+        aws_secret_access_key=cos_secret_access_key,
+    )
     if type == "pha":
         download_pha_from_cos(cos, bucket_name, path)
     elif type == "file":

@@ -1,110 +1,60 @@
-<!-- Update the title -->
-# PowerVS Power HA module
+<!-- BEGIN MODULE HOOK -->
 
-<!--
-Update status and "latest release" badges:
-  1. For the status options, see https://github.ibm.com/GoldenEye/documentation/blob/master/status.md
-  2. Update the "latest release" badge to point to the correct module's repo. Replace "module-template" in two places.
--->
-[![Incubating (Not yet consumable)](https://img.shields.io/badge/status-Incubating%20(Not%20yet%20consumable)-red)](https://terraform-ibm-modules.github.io/documentation/#/badge-status)
-[![latest release](https://img.shields.io/github/v/release/terraform-ibm-modules/terraform-ibm-powervs-powerha?logo=GitHub&sort=semver)](https://github.com/terraform-ibm-modules/terraform-ibm-powervs-powerha/releases/latest)
-[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
-[![Renovate enabled](https://img.shields.io/badge/renovate-enabled-brightgreen.svg)](https://renovatebot.com/)
+# Power Virtual Server with PowerHA
+
+[![Graduated (Supported)](https://img.shields.io/badge/status-Graduated%20(Supported)-brightgreen?style=plastic)](https://terraform-ibm-modules.github.io/documentation/#/badge-status)
 [![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
+[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
+[![latest release](https://img.shields.io/github/v/release/terraform-ibm-modules/terraform-ibm-powervs-infrastructure?logo=GitHub&sort=semver)](https://github.com/terraform-ibm-modules/terraform-ibm-powervs-powerha/releases/latest)
+[![Renovate enabled](https://img.shields.io/badge/renovate-enabled-brightgreen.svg)](https://renovatebot.com/)
 
-<!-- Add a description of module(s) in this repo -->
+## Summary
+This deployable architecture is designed to assist you in deploying PowerHA SystemMirror for AIX into IBM Cloud on the IBM Power Virtual Server infrastructure. This is the second step in the deployment process for creating a full environment. Before starting this step, you should first deploy 'Power Virtual Server with VPC landing zone'. Once this is completed, you are prepared to start this step. 
+
+PowerHA on Power Virtual Server creates and prepares Power Virtual Server instances for PowerHA SystemMirror workloads. After deployment completes, you may (depending on the framework you chose) begin login to your newly created virtual server instances directly and validate the PowerHA SystemMirror configuration based on the provided options. You may even modify the configuration if required.
+
+Three solutions are offered:
+1. [PowerHA Standard Edition ready for PowerVS](https://github.com/terraform-ibm-modules/terraform-ibm-powervs-powerha/tree/main/solutions/standard_powervs)
+    - Creates Power Virtual Server workspace, Power Virtual instance, interconnects them, and configures AIX network management services and configure PowerHA SystemMirror using Ansible Scripts.
+
+## Reference architectures
+- [PowerHA Standard Edition ready for PowerVS](https://github.com/terraform-ibm-modules/terraform-ibm-powervs-powerha/tree/main/PowerVS-PowerHA-Diagram.svg)
 
 
-<!--
-If this repo contains any reference architectures, uncomment the heading below and links to them.
-(Usually in the `/reference-architectures` directory.)
-See "Reference architecture" in Authoring Guidelines in the public documentation at
-https://terraform-ibm-modules.github.io/documentation/#/implementation-guidelines?id=reference-architecture
--->
-<!-- ## Reference architectures -->
-
-
-<!-- Below content is automatically populated via pre-commit hook -->
 <!-- BEGIN OVERVIEW HOOK -->
 ## Overview
 * [terraform-ibm-powervs-powerha](#terraform-ibm-powervs-powerha)
-* [Examples](./examples)
-    * [Basic example](./examples/basic)
-    * [Complete example](./examples/complete)
-* [Contributing](#contributing)
+* [Submodules](./modules)
+    * [powervs-workspace-custom](./modules/powervs-workspace-custom)
+    * [powervs-instance-custom](./modules/powervs-instance-custom)
+    * [cloud-connection-network-attach](./modules/cloud-connection-network-attach)
+    * [powervs-instance-ansible-config](./modules/powervs-instance-ansible-config)
 <!-- END OVERVIEW HOOK -->
 
-### Usage
+## Required IAM access policies
 
-<!--
-Add an example of the use of the module in the following code block.
-
-Use real values instead of "var.<var_name>" or other placeholder values
-unless real values don't help users know what to change.
--->
-
-```hcl
-
-```
-
-### Required IAM access policies
-
-<!-- PERMISSIONS REQUIRED TO RUN MODULE
-If this module requires permissions, uncomment the following block and update
-the sample permissions, following the format.
-Replace the sample Account and IBM Cloud service names and roles with the
-information in the console at
-Manage > Access (IAM) > Access groups > Access policies.
--->
-
-<!--
 You need the following permissions to run this module.
 
 - Account Management
-    - **Sample Account Service** service
-        - `Editor` platform access
-        - `Manager` service access
+    - **Resource Group** service
+        - `Viewer` platform access
     - IAM Services
-        - **Sample Cloud Service** service
-            - `Administrator` platform access
--->
+        - **Workspace for Power Virtual Server** service
+        - **Power Virtual Server** service
+            - `Editor` platform access
+        - **VPC Infrastructure Services** service
+            - `Editor` platform access
+        - **Transit Gateway** service
+            - `Editor` platform access
+        - **Direct Link** service
+            - `Editor` platform access
 
-<!-- NO PERMISSIONS FOR MODULE
-If no permissions are required for the module, uncomment the following
-statement instead the previous block.
--->
+<!-- END MODULE HOOK -->
 
-<!-- No permissions are needed to run this module.-->
-
-
-<!-- Below content is automatically populated via pre-commit hook -->
-<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
-### Requirements
-
-| Name | Version |
-|------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.3.0, <1.7.0 |
-
-### Modules
-
-No modules.
-
-### Resources
-
-No resources.
-
-### Inputs
-
-No inputs.
-
-### Outputs
-
-No outputs.
-<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
-
-<!-- Leave this section as is so that your module has a link to local development environment set up steps for contributors to follow -->
+<!-- BEGIN CONTRIBUTING HOOK -->
 ## Contributing
 
-You can report issues and request features for this module in GitHub issues in the module repo. See [Report an issue or request a feature](https://github.com/terraform-ibm-modules/.github/blob/main/.github/SUPPORT.md).
+You can report issues and request features for this module in GitHub issues in the module repository. See [Report an issue or request a feature](https://github.com/terraform-ibm-modules/.github/blob/main/.github/SUPPORT.md).
 
 To set up your local development environment, see [Local development setup](https://terraform-ibm-modules.github.io/documentation/#/local-dev-setup) in the project documentation.
+<!-- END CONTRIBUTING HOOK -->

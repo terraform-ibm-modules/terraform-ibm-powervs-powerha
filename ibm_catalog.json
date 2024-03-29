@@ -12,7 +12,7 @@
             ],
             "keywords": [
                 "powervs",
-                "poworha",
+                "powerha",
                 "standard powerha"
             ],
             "short_description": "Build a IBM Cloud® Power Virtual Servers (PowerVS) With PowerHA SystemMirror for AIX offering according to the best practices and requirements from the IBM Cloud.",
@@ -112,7 +112,7 @@
                                     "value": "mon01"
                                 },
                                 {
-                                    "displayname": "Osaka 21 (osa21)",
+                                    "displayname": "Osaka 21 (osa21) PER",
                                     "value": "osa21"
                                 },
                                 {
@@ -132,7 +132,7 @@
                                     "value": "syd05"
                                 },
                                 {
-                                    "displayname": "Tokyo 04 (tok04)",
+                                    "displayname": "Tokyo 04 (tok04) PER",
                                     "value": "tok04"
                                 },
                                 {
@@ -527,7 +527,7 @@
                             {
                                 "diagram": {
                                     "caption": "Power Virtual Server with PowerHA 'Standard' variation",
-                                    "url": "https://raw.githubusercontent.com/terraform-ibm-modules/terraform-ibm-powervs-powerha/main/PowerVS-PowerHA-Diagram.svg",
+                                    "url": "https://raw.githubusercontent.com/terraform-ibm-modules/terraform-ibm-powervs-powerha/main/reference-architectures/standard_powervs/PowerVS-PowerHA-Diagram.svg",
                                     "type": "image/svg+xml"
                                 },
                                 "description": "PowerHA Standard Edition ready PowerVS' variation of 'Power Virtual Server for PowerHA' creates a basic PowerHA SystemMirror Standard cluster landscape builds on the foundation of the 'Power Virtual Server with VPC landing zone'. PowerHA SystemMirror is installed based on the customer provided image path and configured the cluster based on the resource options provided during the deployment. \n \n PowerHA SystemMirror standard edition is configured with resource groups, volume groups and file systems. \n \n Redundant IBM Cloud Connections provide the network bridge between the IBM Power infrastructure and the IBM VPC and public internet. \n \n The resulting PowerHA on PowerVS landscape leverages the services such as Activity Tracker, Cloud Object Storage, Key Management and the network connectivity configuration provided by 'Power Virtual Server with VPC landing zone'"
