@@ -7,6 +7,7 @@ locals {
   destination_python_file_path = "download_files.py"
   destination_ansible_yml_file = "/etc/ansible/external_var.yml"
   python_path                  = "/opt/freeware/bin/python3.9"
+  filesystem_list              = ["/", "/usr", "/opt", "/var", "/tmp"]
 }
 
 # ##############################
@@ -16,6 +17,7 @@ locals {
 # ##########################################################
 # 0.1  Installation of SSL certificate in AIX 7.2 machines
 # ##########################################################
+
 resource "terraform_data" "download_ssl_packages" {
   count = startswith(var.aix_image_id, "7200") || startswith(var.aix_image_id, "7300-00-01") ? 1 : 0
   connection {
@@ -58,6 +60,7 @@ resource "terraform_data" "download_ssl_packages" {
 # ##########################################################
 # 0.2  Installation of SSL certificate in AIX 7.2 machines
 # ##########################################################
+
 resource "terraform_data" "install_ssl_packages" {
   depends_on = [terraform_data.download_ssl_packages]
   count      = startswith(var.aix_image_id, "7200") || startswith(var.aix_image_id, "7300-00-01") ? length(var.nodes) : 0
@@ -82,11 +85,47 @@ resource "terraform_data" "install_ssl_packages" {
 }
 
 
-# ##############################
-# 1.  Package Installation
-# ##############################
-resource "terraform_data" "install_packages" {
+# ##########################################################################
+# 1.  Extending the rootvg and Increase filesystem sizes
+# ##########################################################################
+
+resource "terraform_data" "extend_increase_filesystem" {
   depends_on = [terraform_data.install_ssl_packages]
+  count      = length(var.nodes)
+  connection {
+    type         = "ssh"
+    user         = "root"
+    bastion_host = var.bastion_host_ip
+    host         = var.nodes[count.index]
+    private_key  = var.ssh_private_key
+    agent        = false
+    timeout      = "20m"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "chvg -t 16 rootvg",
+      "hdisk_name=$(lspv -u | grep -i ${var.node_details[count.index].pi_volume_80} | awk '{ print $1}')",
+      "cfgmgr",
+      "chdev -l $hdisk_name -a pv=yes",
+      "cfgmgr",
+      "/usr/sbin/extendvg '-f' 'rootvg' $hdisk_name",
+      <<EOT
+      %{for filesystem in local.filesystem_list~}
+        chfs -a size=+4G ${filesystem}
+      %{endfor~}
+    EOT
+    ]
+  }
+}
+
+
+# ##########################################################################
+# 2.  Package Installation
+# ##########################################################################
+
+resource "terraform_data" "install_packages" {
+  depends_on = [terraform_data.extend_increase_filesystem]
   count      = length(var.nodes)
   connection {
     type         = "ssh"
@@ -110,7 +149,7 @@ resource "terraform_data" "install_packages" {
 
   ####### Copy Template file to target host ############
   provisioner "file" {
-    content     = templatefile(local.src_script_tftpl_path, { "proxy_ip_and_port" = var.proxy_ip_and_port, "index" = count.index, "extended_volume" = var.node_details[count.index].pi_volume_80 })
+    content     = templatefile(local.src_script_tftpl_path, { "proxy_ip_and_port" = var.proxy_ip_and_port })
     destination = local.dst_script_file_path
   }
 
@@ -121,9 +160,10 @@ resource "terraform_data" "install_packages" {
 }
 
 
-# #####################################
-#  2. Download powerha filesets
-# #####################################
+# ##########################################################################
+#  3. Download powerha filesets
+# ##########################################################################
+
 resource "null_resource" "download_pha" {
   depends_on = [terraform_data.install_packages]
   count      = length(var.nodes)
@@ -160,9 +200,11 @@ locals {
   pha_build_path        = "/${var.pi_cos_data.folder_name}/pha/"
 }
 
+
 # ##########################################################################
-#  3. Download ansible filesets : After galaxy we need to modify it
+#  4. Download ansible filesets : After galaxy we need to modify it
 # ##########################################################################
+
 resource "null_resource" "download_ansible" {
   depends_on = [terraform_data.install_packages]
   count      = length(var.nodes)
@@ -189,9 +231,8 @@ resource "null_resource" "download_ansible" {
 }
 
 
-
 # #########################################################################
-# 4. creating ansible configuration files locally
+# 5. creating ansible configuration files locally
 # #########################################################################
 
 resource "terraform_data" "ansible_hosts" {
@@ -213,8 +254,9 @@ resource "terraform_data" "ansible_hosts" {
   }
 }
 
+
 # #########################################################################
-# 5. Copy host and ansible_config.py files to the remote machine
+# 6. Copy host and ansible_config.py files to the remote machine
 #    Create ansible.yml file using ansible_config.py
 # #########################################################################
 
@@ -258,10 +300,10 @@ resource "terraform_data" "copy_files_to_remote" {
   }
 }
 
-# #########################################################################
-# 6. Executing Ansible Playbook to the remote machine
-# #########################################################################
 
+# #########################################################################
+# 7. Executing Ansible Playbook to the remote machine
+# #########################################################################
 
 resource "terraform_data" "ansible_playbook_execution" {
   depends_on = [

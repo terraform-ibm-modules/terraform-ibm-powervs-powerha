@@ -1,26 +1,10 @@
 #!/usr/bin/ksh93
-
-index=${index}
 proxy_host=${proxy_ip_and_port}
-extended_volume=${extended_volume}
 
 # Set proxy for PowerVS nodes
 export http_proxy=$proxy_host
 export https_proxy=$proxy_host
 export PYTHONIOENCODING=utf-8
-
-# Extending the rootvg
-chvg -t 16 rootvg
-hdisk_name=$(lspv -u | grep -i $extended_volume | awk '{ print $1}')
-cfgmgr
-chdev -l $hdisk_name -a pv=yes
-cfgmgr
-/usr/sbin/extendvg '-f' 'rootvg' $hdisk_name
-
-# Increase filesystem sizes
-for i in / /usr /opt /var /tmp; do
-  chfs -a size=+4G $i
-done
 
 # Install Curl
 if [ -f /opt/freeware/bin/dnf ]; then
