@@ -6,6 +6,13 @@ export http_proxy=$proxy_host
 export https_proxy=$proxy_host
 export PYTHONIOENCODING=utf-8
 
+chfs -a size=+2G /
+
+# Increase filesystem sizes
+for i in /usr /opt /var; do
+  chfs -a size=+1G $i
+done
+
 # Install Curl
 if [ -f /opt/freeware/bin/dnf ]; then
   echo 'y' | /opt/freeware/bin/dnf install curl-7.52*

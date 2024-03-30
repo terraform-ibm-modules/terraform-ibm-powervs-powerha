@@ -51,7 +51,6 @@ locals {
     pi_instance_name        = replace(lower(item.pi_instance_name), "_", "-")
     pi_instance_primary_ip  = item.pi_instance_primary_ip
     pi_instance_private_ips = item.pi_instance_private_ips[*]
-    pi_volume_80            = item.pi_storage_configuration[0].wwns
   }]
 
   #####################################################

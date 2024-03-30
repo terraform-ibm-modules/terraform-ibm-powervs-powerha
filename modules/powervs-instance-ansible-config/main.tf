@@ -7,7 +7,6 @@ locals {
   destination_python_file_path = "download_files.py"
   destination_ansible_yml_file = "/etc/ansible/external_var.yml"
   python_path                  = "/opt/freeware/bin/python3.9"
-  filesystem_list              = ["/", "/usr", "/opt", "/var", "/tmp"]
 }
 
 # ##############################
@@ -86,46 +85,11 @@ resource "terraform_data" "install_ssl_packages" {
 
 
 # ##########################################################################
-# 1.  Extending the rootvg and Increase filesystem sizes
-# ##########################################################################
-
-resource "terraform_data" "extend_increase_filesystem" {
-  depends_on = [terraform_data.install_ssl_packages]
-  count      = length(var.nodes)
-  connection {
-    type         = "ssh"
-    user         = "root"
-    bastion_host = var.bastion_host_ip
-    host         = var.nodes[count.index]
-    private_key  = var.ssh_private_key
-    agent        = false
-    timeout      = "20m"
-  }
-
-  provisioner "remote-exec" {
-    inline = [
-      "chvg -t 16 rootvg",
-      "hdisk_name=$(lspv -u | grep -i ${var.node_details[count.index].pi_volume_80} | awk '{ print $1}')",
-      "cfgmgr",
-      "chdev -l $hdisk_name -a pv=yes",
-      "cfgmgr",
-      "/usr/sbin/extendvg '-f' 'rootvg' $hdisk_name",
-      <<EOT
-      %{for filesystem in local.filesystem_list~}
-        chfs -a size=+4G ${filesystem}
-      %{endfor~}
-    EOT
-    ]
-  }
-}
-
-
-# ##########################################################################
 # 2.  Package Installation
 # ##########################################################################
 
 resource "terraform_data" "install_packages" {
-  depends_on = [terraform_data.extend_increase_filesystem]
+  depends_on = [terraform_data.install_ssl_packages]
   count      = length(var.nodes)
   connection {
     type         = "ssh"
