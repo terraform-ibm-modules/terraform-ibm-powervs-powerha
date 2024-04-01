@@ -7,18 +7,57 @@ locals {
   destination_python_file_path = "download_files.py"
   destination_ansible_yml_file = "/etc/ansible/external_var.yml"
   python_path                  = "/opt/freeware/bin/python3.9"
+  filesystem_list              = ["/", "/usr", "/opt", "/var", "/tmp"]
 }
+
+
+# ##########################################################################
+# 1.  Extending the rootvg and Increase filesystem sizes
+# ##########################################################################
+
+resource "terraform_data" "extend_increase_filesystem" {
+  count = length(var.nodes)
+  connection {
+    type         = "ssh"
+    user         = "root"
+    bastion_host = var.bastion_host_ip
+    host         = var.nodes[count.index]
+    private_key  = var.ssh_private_key
+    agent        = false
+    timeout      = "20m"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "chvg -t 16 rootvg",
+      <<EOT
+        hdisk_name=$(lspv -u | grep -i ${var.node_details[count.index].pi_extend_volume} | awk '{ print $1}');
+        cfgmgr;
+        chdev -l $hdisk_name -a pv=yes;
+        cfgmgr;
+        /usr/sbin/extendvg '-f' 'rootvg' $hdisk_name;
+      EOT,
+      <<EOT
+        %{for filesystem in local.filesystem_list~}
+          chfs -a size=+4G ${filesystem}
+        %{endfor~}
+      EOT
+    ]
+  }
+}
+
 
 # ##############################
 # For AIX 7.2 some additional steps
 # ##############################
 
 # ##########################################################
-# 0.1  Installation of SSL certificate in AIX 7.2 machines
+# 2  Installation of SSL certificate in AIX 7.2 machines
 # ##########################################################
 
 resource "terraform_data" "download_ssl_packages" {
-  count = startswith(var.aix_image_id, "7200") || startswith(var.aix_image_id, "7300-00-01") ? 1 : 0
+  depends_on = [terraform_data.extend_increase_filesystem]
+  count      = startswith(var.aix_image_id, "7200") || startswith(var.aix_image_id, "7300-00-01") ? 1 : 0
   connection {
     type        = "ssh"
     user        = "root"
@@ -57,7 +96,7 @@ resource "terraform_data" "download_ssl_packages" {
 }
 
 # ##########################################################
-# 0.2  Installation of SSL certificate in AIX 7.2 machines
+# 3  Installation of SSL certificate in AIX 7.2 machines
 # ##########################################################
 
 resource "terraform_data" "install_ssl_packages" {
@@ -75,7 +114,6 @@ resource "terraform_data" "install_ssl_packages" {
   ####### Unzip powerha tar file ############
   provisioner "remote-exec" {
     inline = [
-      "chfs -a size=+1G /",
       "gunzip -c ${var.pi_cos_data.ssl_file_name} | tar -xvf -",
       "cd /openssl-1.1.2.2200",
       "installp -agXYd . all"
@@ -85,7 +123,7 @@ resource "terraform_data" "install_ssl_packages" {
 
 
 # ##########################################################################
-# 2.  Package Installation
+# 4.  Package Installation
 # ##########################################################################
 
 resource "terraform_data" "install_packages" {
@@ -125,7 +163,7 @@ resource "terraform_data" "install_packages" {
 
 
 # ##########################################################################
-#  3. Download powerha filesets
+#  5. Download powerha filesets
 # ##########################################################################
 
 resource "null_resource" "download_pha" {
@@ -166,7 +204,7 @@ locals {
 
 
 # ##########################################################################
-#  4. Download ansible filesets : After galaxy we need to modify it
+#  6. Download ansible filesets : After galaxy we need to modify it
 # ##########################################################################
 
 resource "null_resource" "download_ansible" {
@@ -196,7 +234,7 @@ resource "null_resource" "download_ansible" {
 
 
 # #########################################################################
-# 5. creating ansible configuration files locally
+# 7. creating ansible configuration files locally
 # #########################################################################
 
 resource "terraform_data" "ansible_hosts" {
@@ -220,7 +258,7 @@ resource "terraform_data" "ansible_hosts" {
 
 
 # #########################################################################
-# 6. Copy host and ansible_config.py files to the remote machine
+# 8. Copy host and ansible_config.py files to the remote machine
 #    Create ansible.yml file using ansible_config.py
 # #########################################################################
 
@@ -266,7 +304,7 @@ resource "terraform_data" "copy_files_to_remote" {
 
 
 # #########################################################################
-# 7. Executing Ansible Playbook to the remote machine
+# 9. Executing Ansible Playbook to the remote machine
 # #########################################################################
 
 resource "terraform_data" "ansible_playbook_execution" {

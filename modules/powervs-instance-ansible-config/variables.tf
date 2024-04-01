@@ -46,6 +46,7 @@ variable "node_details" {
     pi_instance_name        = string
     pi_instance_primary_ip  = string
     pi_instance_private_ips = list(string)
+    pi_extend_volume        = string
   }))
 }
 
