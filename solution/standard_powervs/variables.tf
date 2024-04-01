@@ -12,6 +12,11 @@ variable "prefix" {
   }
 }
 
+variable "powervs_zone" {
+  description = "IBM Cloud data center location where IBM Power Virtual Server infrastructure will be created."
+  type        = string
+}
+
 variable "ssh_public_key" {
   description = "Public SSH Key for workspace and Power Virtual Server instance creation. The public SSH key must be an RSA key with a key size of either 2048 bits or 4096 bits (recommended). It must be a valid SSH key that does not already exist in the deployment region."
   type        = string
@@ -135,12 +140,12 @@ variable "cos_powerha_image_download" {
   "Details about cloud object storage bucket where PowerHA installation media folder and ssl file are located.
   Example forr COS Details
     {
-      "bucket_name":"<bucket-name>",
+      "bucket_name":"bucket-name",
       "cos_access_key_id":"1dxxxxxxxxxx36",
       "cos_secret_access_key":"4dxxxxxx5c",
-      "cos_endpoint":https://s3.<region>.cloud-object-storage.appdomain.cloud,
-      "folder_name":"<powerha-build-folder-name>",
-      "ssl_file_name": "<ssl-file-path>"
+      "cos_endpoint":https://s3.region.cloud-object-storage.appdomain.cloud,
+      "folder_name":"powerha-build-folder-name",
+      "ssl_file_name": "ssl-file-path"
     }
   EOT
   type = object({

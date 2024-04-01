@@ -24,7 +24,6 @@ locals {
     "enable"             = local.transit_gateway_identifier != "" ? true : false
     "transit_gateway_id" = local.transit_gateway_identifier
   }
-  powervs_zone = local.powervs_infrastructure[0].powervs_zone.value
   # cloud_connection_count = local.powervs_infrastructure[0].cloud_connection_count.value
 
   # For now we are not using this
@@ -58,7 +57,7 @@ locals {
   #####################################################
 
   pi_per_enabled_dc_list = ["dal10", "dal12", "wdc06", "wdc07", "mad02", "mad04", "eu-de-1", "eu-de-2", "sao01", "sao04", "tok04", "osa21"]
-  pi_per_enabled         = contains(local.pi_per_enabled_dc_list, local.powervs_zone)
+  pi_per_enabled         = contains(local.pi_per_enabled_dc_list, var.powervs_zone)
   cloud_connection_count = local.pi_per_enabled ? 0 : var.cloud_connection.count
 
 }

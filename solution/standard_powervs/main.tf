@@ -6,7 +6,7 @@
 module "powervs_workspace" {
   source = "../../modules/powervs-workspace-custom"
 
-  powervs_zone                = local.powervs_zone
+  powervs_zone                = var.powervs_zone
   prefix                      = var.prefix
   ssh_public_key              = var.ssh_public_key
   powervs_resource_group_name = var.powervs_resource_group_name
