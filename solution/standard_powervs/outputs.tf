@@ -4,7 +4,7 @@
 
 output "powervs_zone" {
   description = "Zone where PowerVS infrastructure is created."
-  value       = var.powervs_zone
+  value       = local.powervs_zone
 }
 
 output "powervs_resource_group_name" {

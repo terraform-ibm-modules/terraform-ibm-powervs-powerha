@@ -66,95 +66,6 @@
                             "default_value": ""
                         },
                         {
-                            "key": "powervs_zone",
-                            "type": "string",
-                            "required": true,
-                            "default_value": "",
-                            "options": [
-                                {
-                                    "displayname": "Dallas (dallas)",
-                                    "value": "us-south"
-                                },
-                                {
-                                    "displayname": "Dallas 10 (dal10) PER",
-                                    "value": "dal10"
-                                },
-                                {
-                                    "displayname": "Dallas 12 (dal12) PER",
-                                    "value": "dal12"
-                                },
-                                {
-                                    "displayname": "Frankfurt 1 (eu-de-1) PER",
-                                    "value": "eu-de-1"
-                                },
-                                {
-                                    "displayname": "Frankfurt 2 (eu-de-2) PER",
-                                    "value": "eu-de-2"
-                                },
-                                {
-                                    "displayname": "London 04 (lon04)",
-                                    "value": "lon04"
-                                },
-                                {
-                                    "displayname": "London 06 (lon06)",
-                                    "value": "lon06"
-                                },
-                                {
-                                    "displayname": "Madrid 02 (mad02) PER",
-                                    "value": "mad02"
-                                },
-                                {
-                                    "displayname": "Madrid 04 (mad04) PER",
-                                    "value": "mad04"
-                                },
-                                {
-                                    "displayname": "Montreal 01 (mon01)",
-                                    "value": "mon01"
-                                },
-                                {
-                                    "displayname": "Osaka 21 (osa21) PER",
-                                    "value": "osa21"
-                                },
-                                {
-                                    "displayname": "Sao Paulo 01 (sao01) PER",
-                                    "value": "sao01"
-                                },
-                                {
-                                    "displayname": "Sao Paulo 04 (sao04) PER",
-                                    "value": "sao04"
-                                },
-                                {
-                                    "displayname": "Sydney 04 (syd04)",
-                                    "value": "syd04"
-                                },
-                                {
-                                    "displayname": "Sydney 05 (syd05)",
-                                    "value": "syd05"
-                                },
-                                {
-                                    "displayname": "Tokyo 04 (tok04) PER",
-                                    "value": "tok04"
-                                },
-                                {
-                                    "displayname": "Toronto 01 (tor01)",
-                                    "value": "tor01"
-                                },
-                                {
-                                    "displayname": "Washington DC (us-east)",
-                                    "value": "us-east"
-                                },
-                                {
-                                    "displayname": "Washington DC 06 (wdc06) PER",
-                                    "value": "wdc06"
-                                },
-                                {
-                                    "displayname": "Washington DC 07 (wdc07) PER",
-                                    "value": "wdc07"
-                                }
-                            ],
-                            "custom_config": {}
-                        },
-                        {
                             "key": "ssh_public_key",
                             "type": "multiline_secure_value",
                             "display_name": "Multiline secure value",
@@ -202,7 +113,7 @@
                             }
                         },
                         {
-                            "key": "power_virtual_server",
+                            "key": "powervs_instance_count",
                             "type": "number",
                             "required": true,
                             "default_value": 2
@@ -237,7 +148,32 @@
                             "custom_config": {}
                         },
                         {
-                            "key": "powervs_image_names",
+                            "key": "powervs_machine_type",
+                            "type": "string",
+                            "required": true,
+                            "default_value": "",
+                            "options": [
+                                {
+                                    "displayname": "s922",
+                                    "value": "s922"
+                                },
+                                {
+                                    "displayname": "e980",
+                                    "value": "e980"
+                                },
+                                {
+                                    "displayname": "s1022",
+                                    "value": "s1022"
+                                },
+                                {
+                                    "displayname": "e1080",
+                                    "value": "e1080"
+                                }
+                            ],
+                            "custom_config": {}
+                        },
+                        {
+                            "key": "aix_os_image",
                             "type": "string",
                             "required": true,
                             "default_value": "",

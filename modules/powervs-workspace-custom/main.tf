@@ -17,5 +17,5 @@ module "powervs_workspace" {
   pi_private_subnet_3           = null
   pi_transit_gateway_connection = var.transit_gateway_connection
   pi_tags                       = var.tags
-  pi_image_names                = var.powervs_image_names
+  pi_image_names                = var.aix_os_image
 }

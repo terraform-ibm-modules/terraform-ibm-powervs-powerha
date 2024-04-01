@@ -6,14 +6,14 @@
 module "powervs_workspace" {
   source = "../../modules/powervs-workspace-custom"
 
-  powervs_zone                = var.powervs_zone # Zone of ibm cloud
-  prefix                      = var.prefix       # Prefix for the work space and ssh key
+  powervs_zone                = local.powervs_zone
+  prefix                      = var.prefix
   ssh_public_key              = var.ssh_public_key
-  powervs_resource_group_name = var.powervs_resource_group_name # Resource group name (by default : Default)
-  powervs_subnet_list         = var.powervs_subnet_list         # Based on user requirement we need to update subnet cound
+  powervs_resource_group_name = var.powervs_resource_group_name
+  powervs_subnet_list         = var.powervs_subnet_list
   cloud_connection            = var.cloud_connection
-  transit_gateway_connection  = local.transit_gateway_connection # To connect with existing vpc and workspace
-  powervs_image_names         = [var.powervs_image_names]
+  transit_gateway_connection  = local.transit_gateway_connection
+  aix_os_image                = [var.aix_os_image]
   tags                        = var.tags
 }
 
@@ -47,14 +47,14 @@ module "powervs_instance" {
   pi_ssh_public_key_name = module.powervs_workspace.powervs_ssh_public_key.name
 
   pi_prefix                 = var.prefix
-  pi_image_id               = var.powervs_image_names
+  pi_image_id               = local.pi_instance.pi_image_id
   pi_networks               = local.pi_instance.pi_networks
-  pi_server_type            = local.pi_instance.pi_server_type
+  pi_server_type            = var.powervs_machine_type
   pi_number_of_processors   = local.pi_instance.pi_number_of_processors
   pi_memory_size            = local.pi_instance.pi_memory_size
   pi_cpu_proc_type          = local.pi_instance.pi_cpu_proc_type
   pi_storage_type           = local.pi_instance.pi_tier
-  pi_instance_count         = var.power_virtual_server
+  pi_instance_count         = var.powervs_instance_count
   powervs_subnet_list       = var.powervs_subnet_list
   pi_dedicated_volume_count = var.dedicated_volume
   pi_shared_volume_count    = var.shared_volume
@@ -76,7 +76,7 @@ module "powervs_instance_ansible_config" {
   nodes                        = module.powervs_instance.pi_instances[*].pi_instance_primary_ip
   node_details                 = local.node_details
   proxy_ip_and_port            = local.proxy_ip_and_port
-  aix_image_id                 = var.powervs_image_names
+  aix_image_id                 = var.aix_os_image
   powerha_resource_group_count = var.powerha_resource_group
   powerha_resource_group_list  = var.powerha_resource_group_list
   volume_group_count           = var.volume_group

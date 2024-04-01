@@ -12,11 +12,6 @@ variable "prefix" {
   }
 }
 
-variable "powervs_zone" {
-  description = "IBM Cloud data center location where IBM Power Virtual Server infrastructure will be created."
-  type        = string
-}
-
 variable "ssh_public_key" {
   description = "Public SSH Key for workspace and Power Virtual Server instance creation. The public SSH key must be an RSA key with a key size of either 2048 bits or 4096 bits (recommended). It must be a valid SSH key that does not already exist in the deployment region."
   type        = string
@@ -39,11 +34,11 @@ variable "powervs_resource_group_name" {
   type        = string
 }
 
-variable "power_virtual_server" {
+variable "powervs_instance_count" {
   description = "Number of Power Virtual Server instances required to create in the workspace for PowerHA cluster."
   type        = number
   validation {
-    condition     = var.power_virtual_server < 9 && var.power_virtual_server > 1
+    condition     = var.powervs_instance_count < 9 && var.powervs_instance_count > 1
     error_message = "Allowed values are between 2 and 8."
   }
 }
@@ -51,7 +46,6 @@ variable "power_virtual_server" {
 variable "tshirt_size" {
   description = <<EOT
   "Power Virtual Server instance profiles. Power Virtual instance will be created based on the following values:
-    server_type: s922
     proc_type: shared
     tier: tier1 (This value is the same for all profiles)
 
@@ -65,8 +59,12 @@ variable "tshirt_size" {
   type        = string
 }
 
+variable "powervs_machine_type" {
+  description = "IBM Powervs machine type. The supported machine types are: s922, e980 , s1022, e1080."
+  type        = string
+}
 
-variable "powervs_image_names" {
+variable "aix_os_image" {
   description = "AIX operating system images for Power Virtual Server instances. Power Virtual Server instances are installed with the given AIX OS image. The supported AIX I images are: 7300-01-02, 7300-00-01, 7200-05-06."
   type        = string
 }
@@ -133,7 +131,18 @@ variable "tags" {
 #######################################
 
 variable "cos_powerha_image_download" {
-  description = "Details about cloud object storage bucket where PowerHA installation media folder and ssl file are located."
+  description = <<EOT
+  "Details about cloud object storage bucket where PowerHA installation media folder and ssl file are located.
+  Example forr COS Details
+    {
+      "bucket_name":"<bucket-name>",
+      "cos_access_key_id":"1dxxxxxxxxxx36",
+      "cos_secret_access_key":"4dxxxxxx5c",
+      "cos_endpoint":https://s3.<region>.cloud-object-storage.appdomain.cloud,
+      "folder_name":"<powerha-build-folder-name>",
+      "ssl_file_name": "<ssl-file-path>"
+    }
+  EOT
   type = object({
     bucket_name           = string
     cos_access_key_id     = string

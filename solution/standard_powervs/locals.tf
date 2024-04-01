@@ -4,11 +4,11 @@
 
 locals {
   ibm_powervs_quickstart_tshirt_sizes = {
-    "aix_xs" = { "server_type" = "s922", "proc_type" = "shared", "cores" = "0.25", "memory" = "4", "tier" = "tier1" }
-    "aix_s"  = { "server_type" = "s922", "proc_type" = "shared", "cores" = "1", "memory" = "16", "tier" = "tier1" }
-    "aix_m"  = { "server_type" = "s922", "proc_type" = "shared", "cores" = "4", "memory" = "64", "tier" = "tier1" }
-    "aix_l"  = { "server_type" = "s922", "proc_type" = "shared", "cores" = "8", "memory" = "128", "tier" = "tier1" }
-    "aix_xl" = { "server_type" = "s922", "proc_type" = "shared", "cores" = "16", "memory" = "256", "tier" = "tier1" }
+    "aix_xs" = { "proc_type" = "shared", "cores" = "0.25", "memory" = "4", "tier" = "tier1" }
+    "aix_s"  = { "proc_type" = "shared", "cores" = "1", "memory" = "16", "tier" = "tier1" }
+    "aix_m"  = { "proc_type" = "shared", "cores" = "4", "memory" = "64", "tier" = "tier1" }
+    "aix_l"  = { "proc_type" = "shared", "cores" = "8", "memory" = "128", "tier" = "tier1" }
+    "aix_xl" = { "proc_type" = "shared", "cores" = "16", "memory" = "256", "tier" = "tier1" }
   }
   qs_tshirt_choice = lookup(local.ibm_powervs_quickstart_tshirt_sizes, var.tshirt_size, null)
 
@@ -24,6 +24,7 @@ locals {
     "enable"             = local.transit_gateway_identifier != "" ? true : false
     "transit_gateway_id" = local.transit_gateway_identifier
   }
+  powervs_zone = local.powervs_infrastructure[0].powervs_zone.value
   # cloud_connection_count = local.powervs_infrastructure[0].cloud_connection_count.value
 
   # For now we are not using this
@@ -37,14 +38,12 @@ locals {
   ##################################
 
   pi_instance = {
-    pi_image_id                   = lookup(module.powervs_workspace.powervs_images, var.powervs_image_names, null)
-    pi_networks                   = module.powervs_workspace.powervs_subnet_list
-    pi_server_type                = local.qs_tshirt_choice.server_type
-    pi_number_of_processors       = local.qs_tshirt_choice.cores
-    pi_memory_size                = local.qs_tshirt_choice.memory
-    pi_tier                       = local.qs_tshirt_choice.tier
-    pi_cpu_proc_type              = local.qs_tshirt_choice.proc_type
-    pi_power_virtual_server_count = var.power_virtual_server
+    pi_image_id             = lookup(module.powervs_workspace.powervs_images, var.aix_os_image, null)
+    pi_networks             = module.powervs_workspace.powervs_subnet_list
+    pi_number_of_processors = local.qs_tshirt_choice.cores
+    pi_memory_size          = local.qs_tshirt_choice.memory
+    pi_tier                 = local.qs_tshirt_choice.tier
+    pi_cpu_proc_type        = local.qs_tshirt_choice.proc_type
   }
 
   node_details = [for item in module.powervs_instance.pi_instances : {
@@ -59,7 +58,7 @@ locals {
   #####################################################
 
   pi_per_enabled_dc_list = ["dal10", "dal12", "wdc06", "wdc07", "mad02", "mad04", "eu-de-1", "eu-de-2", "sao01", "sao04", "tok04", "osa21"]
-  pi_per_enabled         = contains(local.pi_per_enabled_dc_list, var.powervs_zone)
+  pi_per_enabled         = contains(local.pi_per_enabled_dc_list, local.powervs_zone)
   cloud_connection_count = local.pi_per_enabled ? 0 : var.cloud_connection.count
 
 }
