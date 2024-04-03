@@ -26,27 +26,23 @@ variable "pi_networks" {
 
 
 variable "pi_server_type" {
-  description = "Processor type e980/s922/e1080/s1022. Required when not creating SAP instances. Conflicts with 'pi_sap_profile_id'."
+  description = "Processor type e980/s922. Required when not creating powervs instances."
   type        = string
-  default     = null
 }
 
 variable "pi_cpu_proc_type" {
-  description = "Dedicated or shared processors. Required when not creating SAP instances. Conflicts with 'pi_sap_profile_id'."
+  description = "Dedicated or shared processors. Required when not creating powervs instances."
   type        = string
-  default     = null
 }
 
 variable "pi_number_of_processors" {
-  description = "Number of processors. Required when not creating SAP instances. Conflicts with 'pi_sap_profile_id'."
+  description = "Number of processors. Required when not creating powervs instances."
   type        = string
-  default     = null
 }
 
 variable "pi_memory_size" {
-  description = "Amount of memory. Required when not creating SAP instances. Conflicts with 'pi_sap_profile_id'."
+  description = "Amount of memory. Required when not creating powervs instances."
   type        = string
-  default     = null
 }
 
 variable "pi_storage_type" {
@@ -74,13 +70,28 @@ variable "powervs_subnet_list" {
 }
 
 variable "pi_dedicated_volume_count" {
-  description = "count of dedicated voulumes need to be attach to each powervs instance.(10 GB dedicated volume will be attach to each powervs instance)"
+  description = "count of dedicated voulumes need to be attach to each powervs instance."
   type        = number
   default     = 2
 }
 
 variable "pi_shared_volume_count" {
-  description = "count of shared voulumes need to be attach to among all powervs instances.(10 GB size for each shared volume)"
+  description = "count of shared voulumes need to be attach to among all powervs instances."
   type        = number
   default     = 2
+}
+
+variable "pi_dedicated_volume_size" {
+  description = "Size(In GB) of dedicated volumes that need to be created and attached to every Power Virtual Server instance separately."
+  type        = number
+}
+
+variable "pi_shared_volume_size" {
+  description = "Size(In GB) of shared volumes that need to be created and attached to every Power Virtual Server instance separately."
+  type        = number
+}
+
+variable "pha_shared_volume" {
+  description = "shared volume size"
+  type        = list(number)
 }

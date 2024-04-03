@@ -30,13 +30,13 @@ variable "pi_cos_data" {
   })
 }
 
-variable "shared_disk_wwns" {
-  description = "List of wwn of shared volumes"
-  type        = list(string)
+variable "repository_disk_wwn" {
+  description = "wwn of reporsitory disk"
+  type        = string
 }
 
-variable "nodes" {
-  description = "ip addresses of the nodes"
+variable "shared_disk_wwns" {
+  description = "List of wwn of shared volumes"
   type        = list(string)
 }
 
@@ -78,10 +78,10 @@ variable "volume_group_count" {
 variable "volume_group_list" {
   description = "List Of parameter for Volume Group"
   type = list(object({
-    name                  = string
-    rg_name               = string
-    physical_volume_count = number
-    type                  = string
+    name    = string
+    rg_name = string
+    size    = number
+    type    = string
   }))
 }
 

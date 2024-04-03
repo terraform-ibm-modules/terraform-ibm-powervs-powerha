@@ -91,3 +91,8 @@ output "node_details" {
   description = "IBM PowerVS instance details."
   value       = local.node_details
 }
+
+output "pha_shared_volume_data" {
+  description = "PowerHA shared volume data."
+  value       = module.powervs_instance.pha_shared_volume_data
+}

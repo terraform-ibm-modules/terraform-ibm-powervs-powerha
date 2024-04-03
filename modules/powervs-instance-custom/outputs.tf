@@ -17,3 +17,8 @@ output "pi_shared_volume_data" {
   description = "IBM PowerVS instance shared volume data."
   value       = ibm_pi_volume.shared_volumes[*]
 }
+
+output "pha_shared_volume_data" {
+  description = "PowerHA shared volume data."
+  value       = ibm_pi_volume.pha_shared_volumes[*]
+}

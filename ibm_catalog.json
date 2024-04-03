@@ -249,14 +249,6 @@
                                 {
                                     "displayname": "e980",
                                     "value": "e980"
-                                },
-                                {
-                                    "displayname": "s1022",
-                                    "value": "s1022"
-                                },
-                                {
-                                    "displayname": "e1080",
-                                    "value": "e1080"
                                 }
                             ],
                             "custom_config": {}
@@ -307,13 +299,13 @@
                             "key": "dedicated_volume",
                             "type": "number",
                             "required": true,
-                            "default_value": 2
+                            "default_value": 1
                         },
                         {
                             "key": "shared_volume",
                             "type": "number",
                             "required": true,
-                            "default_value": 3
+                            "default_value": 1
                         },
                         {
                             "key": "cos_powerha_image_download",
@@ -366,6 +358,18 @@
                             }
                         },
                         {
+                            "key": "dedicated_volume_size",
+                            "type": "number",
+                            "required": false,
+                            "default_value": 10
+                        },
+                        {
+                            "key": "shared_volume_size",
+                            "type": "number",
+                            "required": false,
+                            "default_value": 10
+                        },
+                        {
                             "key": "powerha_resource_group_list",
                             "required": false,
                             "custom_config": {
@@ -394,7 +398,7 @@
                                 {
                                     "name": "VG1",
                                     "rg_name": "RG1",
-                                    "physical_volume_count": 1,
+                                    "size": 30,
                                     "type": "original"
                                 }
                             ]
@@ -476,6 +480,9 @@
                         },
                         {
                             "key": "node_details"
+                        },
+                        {
+                            "key": "pha_shared_volume_data"
                         }
                     ],
                     "iam_permissions": [

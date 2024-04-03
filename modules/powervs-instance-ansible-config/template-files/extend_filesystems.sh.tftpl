@@ -1,0 +1,28 @@
+#!/usr/bin/ksh93
+extend_volume=${extend_volume_wwn}
+
+# Changing rootvg physical partitions
+chvg -t 16 rootvg
+
+# Script to check hdisk name
+while true; do
+  sleep 5
+  cfgmgr
+  hdisk_name=$(lspv -u | grep -i $extend_volume | awk '{ print $1 }')
+  if [[ -n $hdisk_name ]]; then
+    break
+  fi
+done
+
+# Assign PVID to extend volume
+cfgmgr
+chdev -l $hdisk_name -a pv=yes
+cfgmgr
+
+# Extend rootvg disk
+/usr/sbin/extendvg '-f' 'rootvg' $hdisk_name
+
+# Extend filesystems
+for fs in / /usr /opt /var /tmp; do
+  chfs -a size=+4G $fs
+done

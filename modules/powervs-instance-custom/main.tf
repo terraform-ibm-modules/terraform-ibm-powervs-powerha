@@ -29,7 +29,22 @@ resource "ibm_pi_volume" "shared_volumes" {
 
   pi_volume_shareable  = true
   pi_volume_name       = "${var.pi_prefix}-shared-${count.index}"
-  pi_volume_size       = local.shared_volume_size
+  pi_volume_size       = var.pi_shared_volume_size
+  pi_volume_type       = local.shared_volume_storage_type
+  pi_volume_pool       = local.highest_capacity_pool_name
+  pi_cloud_instance_id = var.pi_workspace_guid
+
+  timeouts {
+    create = "15m"
+  }
+}
+
+resource "ibm_pi_volume" "pha_shared_volumes" {
+  count = length(var.pha_shared_volume) > 0 ? length(var.pha_shared_volume) : 0
+
+  pi_volume_shareable  = true
+  pi_volume_name       = "pha-vg-shared-${count.index}"
+  pi_volume_size       = var.pha_shared_volume[count.index]
   pi_volume_type       = local.shared_volume_storage_type
   pi_volume_pool       = local.highest_capacity_pool_name
   pi_cloud_instance_id = var.pi_workspace_guid
@@ -41,7 +56,9 @@ resource "ibm_pi_volume" "shared_volumes" {
 
 
 locals {
-  shareable_volume_ids = [for vol in ibm_pi_volume.shared_volumes : vol.volume_id]
+  shareable_pi_volume_ids  = [for vol in ibm_pi_volume.shared_volumes : vol.volume_id]
+  shareable_pha_volume_ids = [for vol in ibm_pi_volume.pha_shared_volumes : vol.volume_id]
+  shareable_volume_ids     = concat(local.shareable_pi_volume_ids, local.shareable_pha_volume_ids)
   powervs_dedicated_filesystem_config = [
     for storage in local.default_pi_storage_config :
     merge(storage, { pool = local.highest_capacity_pool_name })
@@ -100,12 +117,11 @@ module "powervs_instance_node_2" {
   pi_boot_image_storage_pool = local.highest_capacity_pool_name
   pi_storage_config          = local.powervs_dedicated_filesystem_config
   pi_existing_volume_ids     = local.shareable_volume_ids
-
 }
 
 resource "time_sleep" "wait_60_sec_2" {
   depends_on      = [module.powervs_instance_node_2]
-  count           = var.pi_instance_count > 2 ? 1 : 0
+  count           = var.pi_instance_count > 1 ? 1 : 0
   create_duration = "60s"
 }
 
@@ -130,12 +146,11 @@ module "powervs_instance_node_3" {
   pi_boot_image_storage_pool = local.highest_capacity_pool_name
   pi_storage_config          = local.powervs_dedicated_filesystem_config
   pi_existing_volume_ids     = local.shareable_volume_ids
-
 }
 
 resource "time_sleep" "wait_60_sec_3" {
   depends_on      = [module.powervs_instance_node_3]
-  count           = var.pi_instance_count > 3 ? 1 : 0
+  count           = var.pi_instance_count > 2 ? 1 : 0
   create_duration = "60s"
 }
 
@@ -164,7 +179,7 @@ module "powervs_instance_node_4" {
 
 resource "time_sleep" "wait_60_sec_4" {
   depends_on      = [module.powervs_instance_node_4]
-  count           = var.pi_instance_count > 4 ? 1 : 0
+  count           = var.pi_instance_count > 3 ? 1 : 0
   create_duration = "60s"
 }
 
@@ -193,7 +208,7 @@ module "powervs_instance_node_5" {
 
 resource "time_sleep" "wait_60_sec_5" {
   depends_on      = [module.powervs_instance_node_5]
-  count           = var.pi_instance_count > 5 ? 1 : 0
+  count           = var.pi_instance_count > 4 ? 1 : 0
   create_duration = "60s"
 }
 
@@ -222,15 +237,14 @@ module "powervs_instance_node_6" {
 
 resource "time_sleep" "wait_60_sec_6" {
   depends_on      = [module.powervs_instance_node_6]
-  count           = var.pi_instance_count > 6 ? 1 : 0
+  count           = var.pi_instance_count > 5 ? 1 : 0
   create_duration = "60s"
 }
 
 
 module "powervs_instance_node_7" {
-  source  = "terraform-ibm-modules/powervs-instance/ibm"
-  version = "1.1.0"
-
+  source     = "terraform-ibm-modules/powervs-instance/ibm"
+  version    = "1.1.0"
   count      = var.pi_instance_count > 6 ? 1 : 0
   depends_on = [module.powervs_instance_node_6, time_sleep.wait_60_sec_6]
 
@@ -252,7 +266,7 @@ module "powervs_instance_node_7" {
 
 resource "time_sleep" "wait_60_sec_7" {
   depends_on      = [module.powervs_instance_node_7]
-  count           = var.pi_instance_count > 7 ? 1 : 0
+  count           = var.pi_instance_count > 6 ? 1 : 0
   create_duration = "60s"
 }
 
@@ -281,6 +295,7 @@ module "powervs_instance_node_8" {
 
 resource "time_sleep" "wait_60_sec_8" {
   depends_on      = [module.powervs_instance_node_8]
+  count           = var.pi_instance_count > 7 ? 1 : 0
   create_duration = "60s"
 }
 

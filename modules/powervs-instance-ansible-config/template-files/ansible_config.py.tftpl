@@ -23,13 +23,9 @@ def is_value_present(key, value, obj_list):
 
 def resource_compute(resource_data, resource_prefix, default_dict,total_count, key):
     AUTO_COUNT = 1
-    user_data = resource_data.copy()
     if len(resource_data)<total_count:
         for index in range(len(resource_data),total_count):
-            if(len(user_data)>1):
-                default_rg_dict = default_dict.copy()
-            else:
-                default_rg_dict = user_data[0].copy()
+            default_rg_dict = default_dict.copy()
             if is_value_present(key,resource_prefix+str(AUTO_COUNT), resource_data):
                 AUTO_COUNT+=1
                 while(is_value_present(resource_prefix+str(AUTO_COUNT), resource_data)):
@@ -50,7 +46,7 @@ def get_value_by_key(key,computed_resource_list):
     return [item.get(key) for item in computed_resource_list]
 
 
-def vg_corrective_actions(computed_vg_list, computed_rg_list,total_vg_count):
+def vg_corrective_actions(computed_vg_list, computed_rg_list):
     # RG Related corrective actions
     rg_names = get_value_by_key("name",computed_rg_list) * math.ceil((len(computed_vg_list)/len(computed_rg_list)))
     vg_with_correct_rg = [item for item in computed_vg_list if item.get('rg_name') in rg_names]
@@ -59,18 +55,7 @@ def vg_corrective_actions(computed_vg_list, computed_rg_list,total_vg_count):
         vg_with_incorrect_rg[index]["rg_name"] = rg_names[index]
     vg_with_correct_rg = vg_with_correct_rg + vg_with_incorrect_rg
 
-    # disk related corrective actions
-    vg_with_correct_disk = []
-    for vg_data in vg_with_correct_rg:
-        vg_disk_count = vg_data.get("physical_volume_count")
-        if(vg_disk_count)<=total_vg_count and total_vg_count>0:
-            total_vg_count-=vg_disk_count
-            vg_with_correct_disk.append(vg_data)
-        elif(total_vg_count)>0 and vg_disk_count>total_vg_count:
-            vg_data["physical_volume_count"] = total_vg_count
-            vg_with_correct_disk.append(vg_data)
-            total_vg_count-=vg_disk_count
-    return vg_with_correct_disk
+    return vg_with_correct_rg
 
 
 def fs_corrective_actions(computed_fs_list, filtered_vg_list):
@@ -211,9 +196,8 @@ def create_vg_object(vg_data, shared_disks, node_details):
                 vg_dict.update({"NAME" : value})
             if(key== "type"):
                 vg_dict.update({"TYPE" : value})
-            if(key=="physical_volume_count"):
-                vg_dict.update({"PHYSICAL_VOLUMES" : (",").join(shared_disks[count:count+value])})
-                count = count+value
+        vg_dict.update({"PHYSICAL_VOLUMES" : shared_disks[count]})
+        count = count+1
         vg_dict.update({"NODES" : (",").join([node.get("pi_instance_name") for node in node_details])})
         vg_yml_data.append(vg_dict)
 
@@ -273,9 +257,8 @@ def create_fs_object(fs_data):
     return fs_string
 
 
-def create_yaml_content(node_details, wwn_shared_disks, powerha_build_path, rg_data, vg_data, rg_with_vg, fs_data, pha_network_list, pha_interface_list, pha_service_ip_list, serviceip_with_rg):
-    repository_disk = wwn_shared_disks[0]
-    shared_disks = wwn_shared_disks[1:]
+def create_yaml_content(node_details, repository_disk, wwn_shared_disks, powerha_build_path, rg_data, vg_data, rg_with_vg, fs_data, pha_network_list, pha_interface_list, pha_service_ip_list, serviceip_with_rg):
+    shared_disks = wwn_shared_disks[:]
     yaml_string = ""
     yaml_string += "Using_for_Cloud_catalog: True\n\n"
 
@@ -345,6 +328,7 @@ if __name__ == "__main__":
     vg_data = ${vg_list}
     fs_count = ${fs_count}
     fs_data = ${fs_list}
+    repository_disk = ${repository_disk_wwn}
     shared_disks = ${shared_wwn_disks}
     node_details = ${node_details}
     # Node details updation
@@ -357,12 +341,9 @@ if __name__ == "__main__":
     powerha_build_path = ${pha_build_path}
     ansible_dir = ${destination_ansible_yml_file}
     # Object Validation and creation
-    reporsitory_disk = 1
-    shared_disk_count = len(shared_disks)
-    total_vg_disk_count = shared_disk_count-reporsitory_disk
     computed_rg_list = resource_compute(rg_data,RG_AUTO_PREFIX,RG_DEFAULT,rg_count,"name")
     computed_vg_list = resource_compute(vg_data,VG_AUTO_PREFIX,VG_DEFAULT,vg_count,"name")
-    filtered_vg_list = vg_corrective_actions(computed_vg_list, computed_rg_list, total_vg_disk_count)
+    filtered_vg_list = vg_corrective_actions(computed_vg_list, computed_rg_list)
     computed_fs_list = resource_compute(fs_data,FS_AUTO_PREFIX,FS_DEFAULT,fs_count,"name")
     filtered_fs_list = fs_corrective_actions(computed_fs_list, filtered_vg_list)
     rg_with_vg = get_rg_with_vg(filtered_vg_list, computed_rg_list)
@@ -377,7 +358,7 @@ if __name__ == "__main__":
         serviceip_with_rg = get_serviceip_with_vg(pha_service_ip_list,computed_rg_list)
 
     # Create YAML String
-    yaml_data = create_yaml_content(node_details, shared_disks, powerha_build_path,computed_rg_list,filtered_vg_list, rg_with_vg, filtered_fs_list, pha_network_list, pha_interface_list, pha_service_ip_list, serviceip_with_rg)
+    yaml_data = create_yaml_content(node_details, repository_disk, shared_disks, powerha_build_path,computed_rg_list,filtered_vg_list, rg_with_vg, filtered_fs_list, pha_network_list, pha_interface_list, pha_service_ip_list, serviceip_with_rg)
     # # write data in yaml file
     with open(ansible_dir,"w+") as fp:
         fp.write(yaml_data)

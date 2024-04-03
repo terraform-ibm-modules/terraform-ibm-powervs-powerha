@@ -31,6 +31,11 @@ locals {
   # ntp_host_or_ip         = local.powervs_infrastructure[0].ntp_host_or_ip.value
   # nfs_host_or_ip_path    = local.powervs_infrastructure[0].nfs_host_or_ip_path.value
 
+  ##################################
+  # PHA Shared Volume Locals
+  ##################################
+
+  pha_vg_shared_disks = slice(concat(var.volume_group_list[*].size, (var.volume_group - length(var.volume_group_list) > 0) ? [for index in range(var.volume_group - length(var.volume_group_list)) : 30] : []), 0, var.volume_group)
 
   ##################################
   # PowerVS Instance Locals

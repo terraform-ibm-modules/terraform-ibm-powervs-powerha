@@ -50,7 +50,7 @@ variable "powervs_instance_count" {
 
 variable "tshirt_size" {
   description = <<EOT
-  "Power Virtual Server instance profiles. Power Virtual instance will be created based on the following values:
+  Power Virtual Server instance profiles. Power Virtual instance will be created based on the following values:
     proc_type: shared
     tier: tier1 (This value is the same for all profiles)
 
@@ -59,13 +59,13 @@ variable "tshirt_size" {
     aix_s  = { cores: 1, memory: 16 }
     aix_m  = { cores: 4, memory: 64 }
     aix_l  = { cores: 8, memory: 128 }
-    aix_xl = { cores: 16, memory: 256 }"
+    aix_xl = { cores: 16, memory: 256 }
   EOT
   type        = string
 }
 
 variable "powervs_machine_type" {
-  description = "IBM Powervs machine type. The supported machine types are: s922, e980 , s1022, e1080."
+  description = "IBM Powervs machine type. The supported machine types are: s922, e980."
   type        = string
 }
 
@@ -88,7 +88,7 @@ variable "powervs_subnet_list" {
 }
 
 variable "dedicated_volume" {
-  description = "Count of dedicated volumes that need to be created and attached to every Power Virtual Server instance separately. By default 10 GB volume will be created and attached to the Power Virtual Server instance."
+  description = "Count of dedicated volumes that need to be created and attached to every Power Virtual Server instance separately."
   type        = number
   validation {
     condition     = var.dedicated_volume >= 0
@@ -96,15 +96,32 @@ variable "dedicated_volume" {
   }
 }
 
-variable "shared_volume" {
-  description = "Count of shared volumes which need to created and attached to all powervs instances.(10 GB size for each shared volume)."
+variable "dedicated_volume_size" {
+  description = "Size(In GB) of dedicated volumes that need to be created and attached to every Power Virtual Server instance separately."
   type        = number
   validation {
-    condition     = var.shared_volume >= 2
-    error_message = "Shared volume count can not be less than 2."
+    condition     = var.dedicated_volume_size >= 10 && var.dedicated_volume_size <= 1000
+    error_message = "Allowed values are between 10 and 1000."
   }
 }
 
+variable "shared_volume" {
+  description = "Count of shared volumes that need to created and attached to all powervs instances."
+  type        = number
+  validation {
+    condition     = var.shared_volume >= 1
+    error_message = "Shared volume count can not be less than 1."
+  }
+}
+
+variable "shared_volume_size" {
+  description = "Size(In GB) of shared volumes that need to be created and attached to every Power Virtual Server instance separately."
+  type        = number
+  validation {
+    condition     = var.shared_volume_size >= 10 && var.shared_volume_size <= 1000
+    error_message = "Allowed values are between 10 and 1000."
+  }
+}
 
 #####################################################
 # Optional Parameters
@@ -137,13 +154,13 @@ variable "tags" {
 
 variable "cos_powerha_image_download" {
   description = <<EOT
-  "Details about cloud object storage bucket where PowerHA installation media folder and ssl file are located.
+  Details about cloud object storage bucket where PowerHA installation media folder and ssl file are located.
   Example forr COS Details
     {
       "bucket_name":"bucket-name",
       "cos_access_key_id":"1dxxxxxxxxxx36",
       "cos_secret_access_key":"4dxxxxxx5c",
-      "cos_endpoint":https://s3.region.cloud-object-storage.appdomain.cloud,
+      "cos_endpoint":"https://s3.region.cloud-object-storage.appdomain.cloud",
       "folder_name":"powerha-build-folder-name",
       "ssl_file_name": "ssl-file-path"
     }
@@ -179,11 +196,11 @@ variable "powerha_resource_group_list" {
   validation {
     condition     = (length(var.powerha_resource_group_list) == length(distinct([for item in var.powerha_resource_group_list : lower(item.name)]))) && alltrue([for data in var.powerha_resource_group_list : contains(["OHN", "OFAN", "OAAN", "OUDP"], data.startup)]) && alltrue([for data in var.powerha_resource_group_list : contains(["FNPN", "FUDNP", "BO"], data.fallover)]) && alltrue([for data in var.powerha_resource_group_list : contains(["NFB", "FBHPN"], data.fallback)])
     error_message = <<EOT
-    "Duplicate PowerHA resource group name or incorrect startup, fallover, fallback values.
+    Duplicate PowerHA resource group name or incorrect startup, fallover, fallback values.
     Spported values:
       startup: [OHN, OFAN, OAAN, OUDP]
       fallover: [FNPN, FUDNP, BO]
-      fallback: [NFB, FBHPN]"
+      fallback: [NFB, FBHPN]
     EOT
   }
 }
@@ -200,16 +217,16 @@ variable "volume_group" {
 variable "volume_group_list" {
   description = "List of parameters for volume group - Individual PowerHA volume group configuration. Based on the volume_group count, you can provide all the volume group configuration like name, resource group name and type. Default configuration will be taken if details are not provided."
   type = list(object({
-    name                  = string
-    rg_name               = string
-    physical_volume_count = number
-    type                  = string
+    name    = string
+    rg_name = string
+    size    = number
+    type    = string
   }))
   validation {
-    condition     = (length(var.volume_group_list) == length(distinct([for item in var.volume_group_list : lower(item.name)]))) && alltrue([for data in var.volume_group_list : contains(["original", "big", "scalable", "legacy"], data.type)]) && alltrue([for data in var.volume_group_list : data.physical_volume_count > 0])
+    condition     = (length(var.volume_group_list) == length(distinct([for item in var.volume_group_list : lower(item.name)]))) && alltrue([for data in var.volume_group_list : contains(["original", "big", "scalable", "legacy"], data.type)]) && alltrue([for data in var.volume_group_list : data.size >= 30 && data.size <= 1000])
     error_message = <<EOT
-    "Duplicate volume group name or physical volume count is less than 0 or incorrect type.
-    Spported type: [original, big, scalable, legacy]"
+    Duplicate volume group name and size is less than 30 and more than 1000 is not allowed.
+    Spported type: [original, big, scalable, legacy]
     EOT
   }
 }
@@ -237,11 +254,11 @@ variable "file_system_list" {
   validation {
     condition     = (length(var.file_system_list) == length(distinct([for item in var.file_system_list : lower(item.name)]))) && alltrue([for data in var.file_system_list : contains(["enhanced", "standard", "compressed", "large"], data.type)]) && alltrue([for data in var.file_system_list : data.units > 16]) && alltrue([for data in var.file_system_list : contains(["megabytes", "gigabytes"], data.size_per_unit)]) && alltrue([for data in var.file_system_list : contains([512, 1024, 2048, 4096], data.block_size)])
     error_message = <<EOT
-    "Duplicate file system name or units is less than 16 or incorrect type, size_per_unit, block_size values.
+    Duplicate file system name or units is less than 16 or incorrect type, size_per_unit, block_size values.
     Spported values:
       type: [enhanced, standard, compressed, large]
       size_per_unit: [megabytes, gigabytes]
-      block_size: [512, 1024, 2048, 4096]"
+      block_size: [512, 1024, 2048, 4096]
     EOT
   }
 }

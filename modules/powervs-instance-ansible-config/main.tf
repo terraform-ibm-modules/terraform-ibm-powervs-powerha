@@ -4,10 +4,12 @@ locals {
   src_script_tftpl_path        = "${local.template_dir}/powervs_installation.sh.tftpl"
   dst_script_file_path         = "${local.dst_files_dir}/install_packages.sh"
   python_cos_path              = "${local.template_dir}/download_files.py"
+  src_extend_filesystem        = "${local.template_dir}/extend_filesystems.sh.tftpl"
+  dst_extend_filesystem        = "${local.dst_files_dir}/extend_filesystems.sh"
   destination_python_file_path = "download_files.py"
   destination_ansible_yml_file = "/etc/ansible/external_var.yml"
   python_path                  = "/opt/freeware/bin/python3.9"
-  filesystem_list              = ["/", "/usr", "/opt", "/var", "/tmp"]
+  nodes_ip                     = var.node_details[*].pi_instance_primary_ip
 }
 
 
@@ -16,43 +18,37 @@ locals {
 # ##########################################################################
 
 resource "terraform_data" "extend_increase_filesystem" {
-  count = length(var.nodes)
+  count = length(local.nodes_ip)
   connection {
     type         = "ssh"
     user         = "root"
     bastion_host = var.bastion_host_ip
-    host         = var.nodes[count.index]
+    host         = local.nodes_ip[count.index]
     private_key  = var.ssh_private_key
     agent        = false
     timeout      = "20m"
   }
 
+  ####### Create Terraform scripts directory ############
   provisioner "remote-exec" {
-    inline = [
-      "chvg -t 16 rootvg",
-      <<EOT
-        hdisk_name=$(lspv -u | grep -i ${var.node_details[count.index].pi_extend_volume} | awk '{ print $1}');
-        cfgmgr;
-        chdev -l $hdisk_name -a pv=yes;
-        cfgmgr;
-        /usr/sbin/extendvg '-f' 'rootvg' $hdisk_name;
-      EOT,
-      <<EOT
-        %{for filesystem in local.filesystem_list~}
-          chfs -a size=+4G ${filesystem}
-        %{endfor~}
-      EOT
-    ]
+    inline = ["mkdir -p ${local.dst_files_dir}", "chmod 777 ${local.dst_files_dir}"]
+  }
+
+  ####### Copy Template file to target host ############
+  provisioner "file" {
+    content     = templatefile(local.src_extend_filesystem, { "extend_volume_wwn" = var.node_details[count.index].pi_extend_volume })
+    destination = local.dst_extend_filesystem
+  }
+
+  ####### Execute script: Extend Filesystems ############
+  provisioner "remote-exec" {
+    inline = ["chmod +x ${local.dst_extend_filesystem}", local.dst_extend_filesystem]
   }
 }
 
 
-# ##############################
-# For AIX 7.2 some additional steps
-# ##############################
-
 # ##########################################################
-# 2  Installation of SSL certificate in AIX 7.2 machines
+# 2  Installation of SSL certificate in AIX 7.2 and AIX 7.3 TL0
 # ##########################################################
 
 resource "terraform_data" "download_ssl_packages" {
@@ -86,7 +82,7 @@ resource "terraform_data" "download_ssl_packages" {
       "chmod +x ${local.destination_python_file_path}",
       "/usr/bin/python3 ${local.destination_python_file_path} 'file' ${var.pi_cos_data.bucket_name} ${var.pi_cos_data.ssl_file_name} ${var.pi_cos_data.cos_endpoint} ${var.pi_cos_data.cos_access_key_id} ${var.pi_cos_data.cos_secret_access_key}",
       <<EOT
-      %{for ip in var.nodes~}
+      %{for ip in local.nodes_ip~}
         ssh-keyscan -H ${ip} >> /root/.ssh/known_hosts;
         scp -i /root/.ssh/private_key.pem /root/${var.pi_cos_data.ssl_file_name} root@${ip}:/;
       %{endfor~}
@@ -95,22 +91,24 @@ resource "terraform_data" "download_ssl_packages" {
   }
 }
 
+
 # ##########################################################
-# 3  Installation of SSL certificate in AIX 7.2 machines
+# 3  Installation of SSL certificate in AIX 7.2 and AIX 7.3 TL0
 # ##########################################################
 
 resource "terraform_data" "install_ssl_packages" {
-  depends_on = [terraform_data.download_ssl_packages]
-  count      = startswith(var.aix_image_id, "7200") || startswith(var.aix_image_id, "7300-00-01") ? length(var.nodes) : 0
+  depends_on = [terraform_data.extend_increase_filesystem, terraform_data.download_ssl_packages]
+  count      = startswith(var.aix_image_id, "7200") || startswith(var.aix_image_id, "7300-00-01") ? length(local.nodes_ip) : 0
   connection {
     type         = "ssh"
     user         = "root"
     bastion_host = var.bastion_host_ip
-    host         = var.nodes[count.index]
+    host         = local.nodes_ip[count.index]
     private_key  = var.ssh_private_key
     agent        = false
     timeout      = "20m"
   }
+
   ####### Unzip powerha tar file ############
   provisioner "remote-exec" {
     inline = [
@@ -127,21 +125,20 @@ resource "terraform_data" "install_ssl_packages" {
 # ##########################################################################
 
 resource "terraform_data" "install_packages" {
-  depends_on = [terraform_data.install_ssl_packages]
-  count      = length(var.nodes)
+  depends_on = [
+    terraform_data.extend_increase_filesystem,
+    terraform_data.download_ssl_packages,
+    terraform_data.install_ssl_packages
+  ]
+  count = length(local.nodes_ip)
   connection {
     type         = "ssh"
     user         = "root"
     bastion_host = var.bastion_host_ip
-    host         = var.nodes[count.index]
+    host         = local.nodes_ip[count.index]
     private_key  = var.ssh_private_key
     agent        = false
     timeout      = "20m"
-  }
-
-  ####### Create Terraform scripts directory ############
-  provisioner "remote-exec" {
-    inline = ["mkdir -p ${local.dst_files_dir}", "chmod 777 ${local.dst_files_dir}"]
   }
 
   provisioner "file" {
@@ -166,14 +163,14 @@ resource "terraform_data" "install_packages" {
 #  5. Download powerha filesets
 # ##########################################################################
 
-resource "null_resource" "download_pha" {
+resource "terraform_data" "download_pha" {
   depends_on = [terraform_data.install_packages]
-  count      = length(var.nodes)
+  count      = length(local.nodes_ip)
   connection {
     type         = "ssh"
     user         = "root"
     bastion_host = var.bastion_host_ip
-    host         = var.nodes[count.index]
+    host         = local.nodes_ip[count.index]
     private_key  = var.ssh_private_key
     agent        = false
     timeout      = "20m"
@@ -207,14 +204,14 @@ locals {
 #  6. Download ansible filesets : After galaxy we need to modify it
 # ##########################################################################
 
-resource "null_resource" "download_ansible" {
+resource "terraform_data" "download_ansible" {
   depends_on = [terraform_data.install_packages]
-  count      = length(var.nodes)
+  count      = length(local.nodes_ip)
   connection {
     type         = "ssh"
     user         = "root"
     bastion_host = var.bastion_host_ip
-    host         = var.nodes[count.index]
+    host         = local.nodes_ip[count.index]
     private_key  = var.ssh_private_key
     agent        = false
     timeout      = "20m"
@@ -239,14 +236,15 @@ resource "null_resource" "download_ansible" {
 
 resource "terraform_data" "ansible_hosts" {
   depends_on = [
-    null_resource.download_ansible,
-    null_resource.download_pha
+    terraform_data.download_ansible,
+    terraform_data.download_pha
   ]
+
   provisioner "local-exec" {
     command = <<-EOT
       cat <<EOF > ${local.template_dir}/host
       [powerha_remote_servers]
-      ${join("\n", var.nodes)}
+      ${join("\n", local.nodes_ip)}
       [powerha_remote_servers:vars]
       ansible_user='root'
       ansible_python_interpreter= '${local.python_path}'
@@ -264,19 +262,18 @@ resource "terraform_data" "ansible_hosts" {
 
 resource "terraform_data" "copy_files_to_remote" {
   depends_on = [
-    null_resource.download_ansible,
-    null_resource.download_pha,
+    terraform_data.download_ansible,
+    terraform_data.download_pha,
     terraform_data.ansible_hosts
   ]
-
   connection {
     type         = "ssh"
     user         = "root"
     bastion_host = var.bastion_host_ip
-    host         = var.nodes[0]
+    host         = local.nodes_ip[0]
     private_key  = var.ssh_private_key
     agent        = false
-    timeout      = "10m"
+    timeout      = "20m"
   }
 
   provisioner "file" {
@@ -286,10 +283,11 @@ resource "terraform_data" "copy_files_to_remote" {
 
   provisioner "file" {
     content = templatefile("${local.template_dir}/ansible_config.py.tftpl", { "rg_count" = var.powerha_resource_group_count, "rg_list" = jsonencode(var.powerha_resource_group_list),
-      "vg_count"         = var.volume_group_count, "vg_list" = jsonencode(var.volume_group_list),
-      "fs_count"         = var.file_system_count, "fs_list" = jsonencode(var.file_system_list),
-      "shared_wwn_disks" = jsonencode(var.shared_disk_wwns), "node_details" = jsonencode(var.node_details),
-      "subnet_list"      = jsonencode(var.subnet_list), "reserve_ip_data" = jsonencode(var.reserve_ip_data),
+      "vg_count"            = var.volume_group_count, "vg_list" = jsonencode(var.volume_group_list),
+      "fs_count"            = var.file_system_count, "fs_list" = jsonencode(var.file_system_list),
+      "repository_disk_wwn" = jsonencode(var.repository_disk_wwn),
+      "shared_wwn_disks"    = jsonencode(var.shared_disk_wwns), "node_details" = jsonencode(var.node_details),
+      "subnet_list"         = jsonencode(var.subnet_list), "reserve_ip_data" = jsonencode(var.reserve_ip_data),
     "pha_build_path" = jsonencode(local.pha_build_path), "destination_ansible_yml_file" = jsonencode(local.destination_ansible_yml_file) })
     destination = "ansible_config.py"
   }
@@ -309,22 +307,20 @@ resource "terraform_data" "copy_files_to_remote" {
 
 resource "terraform_data" "ansible_playbook_execution" {
   depends_on = [
-    null_resource.download_ansible,
-    null_resource.download_pha,
+    terraform_data.download_ansible,
+    terraform_data.download_pha,
     terraform_data.ansible_hosts,
     terraform_data.copy_files_to_remote
   ]
-
   connection {
     type         = "ssh"
     user         = "root"
     bastion_host = var.bastion_host_ip
-    host         = var.nodes[0]
+    host         = local.nodes_ip[0]
     private_key  = var.ssh_private_key
     agent        = false
-    timeout      = "10m"
+    timeout      = "20m"
   }
-
 
   provisioner "remote-exec" {
     inline = [
@@ -396,5 +392,4 @@ resource "terraform_data" "ansible_playbook_execution" {
       "/opt/freeware/bin/ansible-playbook -i /etc/ansible/hosts demo_add_vg_to_rg.yml"
     ]
   }
-
 }

@@ -58,6 +58,9 @@ module "powervs_instance" {
   powervs_subnet_list       = var.powervs_subnet_list
   pi_dedicated_volume_count = var.dedicated_volume
   pi_shared_volume_count    = var.shared_volume
+  pi_dedicated_volume_size  = var.dedicated_volume_size
+  pi_shared_volume_size     = var.shared_volume_size
+  pha_shared_volume         = local.pha_vg_shared_disks
 }
 
 
@@ -72,8 +75,8 @@ module "powervs_instance_ansible_config" {
   bastion_host_ip              = local.bastion_host_ip
   ssh_private_key              = var.ssh_private_key
   pi_cos_data                  = var.cos_powerha_image_download
-  shared_disk_wwns             = module.powervs_instance.pi_shared_volume_data[*].wwn
-  nodes                        = module.powervs_instance.pi_instances[*].pi_instance_primary_ip
+  repository_disk_wwn          = module.powervs_instance.pi_shared_volume_data[0].wwn
+  shared_disk_wwns             = module.powervs_instance.pha_shared_volume_data[*].wwn
   node_details                 = local.node_details
   proxy_ip_and_port            = local.proxy_ip_and_port
   aix_image_id                 = var.aix_os_image
