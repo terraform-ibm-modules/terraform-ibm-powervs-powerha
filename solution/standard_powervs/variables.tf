@@ -65,7 +65,12 @@ variable "tshirt_size" {
 }
 
 variable "powervs_machine_type" {
-  description = "IBM Powervs machine type. The supported machine types are: s922, e980."
+  description = <<EOT
+  IBM Powervs machine type. The supported machine types are: s922, e980, s1022, e1080.
+  More Details:
+    [Availability of the machine type](https://cloud.ibm.com/docs/power-iaas?topic=power-iaas-creating-power-virtual-server#creating-service)
+    [IBM Cloud PowerVS documentation](https://cloud.ibm.com/docs/power-iaas?topic=power-iaas-getting-started)
+  EOT
   type        = string
 }
 
@@ -91,7 +96,7 @@ variable "dedicated_volume" {
   description = "Count of dedicated volumes that need to be created and attached to every Power Virtual Server instance separately."
   type        = number
   validation {
-    condition     = var.dedicated_volume >= 0
+    condition     = var.dedicated_volume >= 0 && var.dedicated_volume <= 127
     error_message = "Dedicated volume count can be 0 or positive number."
   }
 }
@@ -100,7 +105,7 @@ variable "dedicated_volume_size" {
   description = "Size(In GB) of dedicated volumes that need to be created and attached to every Power Virtual Server instance separately."
   type        = number
   validation {
-    condition     = var.dedicated_volume_size >= 10 && var.dedicated_volume_size <= 1000
+    condition     = var.dedicated_volume_size >= 10 && var.dedicated_volume_size <= 10000
     error_message = "Allowed values are between 10 and 1000."
   }
 }
@@ -109,7 +114,7 @@ variable "shared_volume" {
   description = "Count of shared volumes that need to created and attached to all powervs instances."
   type        = number
   validation {
-    condition     = var.shared_volume >= 1
+    condition     = var.shared_volume >= 1 && var.shared_volume <= 127
     error_message = "Shared volume count can not be less than 1."
   }
 }
@@ -118,7 +123,7 @@ variable "shared_volume_size" {
   description = "Size(In GB) of shared volumes that need to be created and attached to every Power Virtual Server instance separately."
   type        = number
   validation {
-    condition     = var.shared_volume_size >= 10 && var.shared_volume_size <= 1000
+    condition     = var.shared_volume_size >= 10 && var.shared_volume_size <= 10000
     error_message = "Allowed values are between 10 and 1000."
   }
 }
@@ -154,16 +159,21 @@ variable "tags" {
 
 variable "cos_powerha_image_download" {
   description = <<EOT
-  Details about cloud object storage bucket where PowerHA installation media folder and ssl file are located.
-  Example forr COS Details
+  Details about cloud object storage bucket where PowerHA installation media folder and ssl file are located. For more details click [here](https://cloud.ibm.com/docs/cloud-object-storage?topic=cloud-object-storage-service-credentials).
+  Example for COS Details
     {
       "bucket_name":"bucket-name",
       "cos_access_key_id":"1dxxxxxxxxxx36",
       "cos_secret_access_key":"4dxxxxxx5c",
       "cos_endpoint":"https://s3.region.cloud-object-storage.appdomain.cloud",
-      "folder_name":"powerha-build-folder-name",
+      "folder_name":"powerha-build-parent-folder-name",
       "ssl_file_name": "ssl-file-path"
     }
+
+    You can keep the PowerHA images in the following format in the IBM Cloud COS Bucket.
+    Example: 728 is a parent folder
+      728/Gold/<filename>.tar.gz
+      728/SPx/<filename>.tar.gz
   EOT
   type = object({
     bucket_name           = string
