@@ -29,8 +29,8 @@ resource "ibm_pi_volume" "shared_volumes" {
 
   pi_volume_shareable  = true
   pi_volume_name       = "${var.pi_prefix}-shared-${count.index}"
-  pi_volume_size       = var.pi_shared_volume_size
-  pi_volume_type       = local.shared_volume_storage_type
+  pi_volume_size       = var.pi_shared_volume_attributes.size
+  pi_volume_type       = var.pi_shared_volume_attributes.tier
   pi_volume_pool       = local.highest_capacity_pool_name
   pi_cloud_instance_id = var.pi_workspace_guid
 
@@ -45,7 +45,7 @@ resource "ibm_pi_volume" "pha_shared_volumes" {
   pi_volume_shareable  = true
   pi_volume_name       = "pha-vg-shared-${count.index}"
   pi_volume_size       = var.pha_shared_volume[count.index]
-  pi_volume_type       = local.shared_volume_storage_type
+  pi_volume_type       = var.pi_shared_volume_attributes.tier
   pi_volume_pool       = local.highest_capacity_pool_name
   pi_cloud_instance_id = var.pi_workspace_guid
 

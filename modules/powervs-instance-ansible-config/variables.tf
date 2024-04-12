@@ -104,7 +104,15 @@ variable "file_system_list" {
 }
 
 variable "subnet_list" {
-  description = "Name of the IBM Cloud PowerVS subnet, CIDR and reserved IP count used for PowerHA service label to create."
+  description = "Name of the IBM Cloud PowerVS subnet and CIDR."
+  type = list(object({
+    name = string
+    cidr = string
+  }))
+}
+
+variable "reserved_subnet_list" {
+  description = "IBM Cloud Power Virtual Server subnet configuration details like name, CIDR, and reserved IP count used for PowerHA service label to be created."
   type = list(object({
     name              = string
     cidr              = string

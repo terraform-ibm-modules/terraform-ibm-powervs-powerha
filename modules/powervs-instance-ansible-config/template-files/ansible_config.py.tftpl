@@ -1,6 +1,7 @@
 import math
 import sys
 import json
+from ipaddress import ip_network, ip_address
 
 RG_DEFAULT = {
     "name"   : "",
@@ -90,12 +91,26 @@ def get_pha_network_list(subnet_list):
     return pha_netwok_list
 
 
-def get_pha_interface_list(node_list,subnet_length, pha_networks):
+def get_pha_node_ips(node_details, reserved_subnet_list):
+    ip_addresses = []
+    node_ips =  node_details.get("pi_instance_private_ips")
+    for ip in node_ips:
+        reserved_flag = False
+        for reserve_subnet in reserved_subnet_list:
+            if(ip_address(str(ip)) in ip_network(reserve_subnet.get('cidr'))):
+                reserved_flag = True
+                break
+        if not reserved_flag:
+            ip_addresses.append(ip)
+
+    return ip_addresses
+
+def get_pha_interface_list(node_list,subnet_length, pha_networks, reserved_subnet_list):
     pha_interaface_list = []
     count = 0
     for node in node_list:
         node_name = node.get("pi_instance_name")
-        node_ips =  node.get("pi_instance_private_ips")[:subnet_length] #4 ip here
+        node_ips =  get_pha_node_ips(node, reserved_subnet_list)
         primary_ip = node.get("pi_instance_primary_ip")
         node_ips.remove(primary_ip)
         node_ips.insert(0,primary_ip)
@@ -112,22 +127,10 @@ def get_pha_interface_list(node_list,subnet_length, pha_networks):
         pha_interaface_list = [data for data in pha_interaface_list if data.get("IP")!= primary_ip]
     return pha_interaface_list
 
-
-def get_service_ip_list(subnets,reserve_ip_details, pha_network_list):
+def get_service_ip_list(reserve_ip_details):
     pha_service_ip_list = []
-    count = 0
-    subnet_count = 0
-    for network in pha_network_list:
-        for index in range(subnet_count,len(subnets)):
-            start = count
-            end = count+subnets[index].get("reserved_ip_count")
-            for item in reserve_ip_details[start:end]:
-                pha_service_ip_list.append({ "NAME": 'service_ip'+str(count), "IP": item.get("ip"), "NETWORK": network.get("NAME")})
-                count=count+1
-            if (index+1)%2==0:
-                subnet_count+=1
-                break
-            subnet_count+=1
+    for index in range(len(reserve_ip_details)):
+        pha_service_ip_list.append({ "NAME": 'service_ip'+str(index), "IP": reserve_ip_details[index].get("ip"), "NETWORK": "reserved_network"})
     return pha_service_ip_list
 
 
@@ -316,7 +319,6 @@ def create_yaml_content(node_details, repository_disk, wwn_shared_disks, powerha
         service_with_rg_yml_data = create_obj_to_str(serviceip_with_rg)
         yaml_string += service_with_rg_yml_data
 
-
     return yaml_string
 
 
@@ -337,6 +339,7 @@ if __name__ == "__main__":
             if key == "pi_instance_private_ips" :
                 obj[key] = [ip.strip() for ip in value[0].split(",")]
     subnets = ${subnet_list}
+    reserved_subnets = ${reserved_subnet_list}
     reserve_ip_details = ${reserve_ip_data}
     powerha_build_path = ${pha_build_path}
     ansible_dir = ${destination_ansible_yml_file}
@@ -348,13 +351,13 @@ if __name__ == "__main__":
     filtered_fs_list = fs_corrective_actions(computed_fs_list, filtered_vg_list)
     rg_with_vg = get_rg_with_vg(filtered_vg_list, computed_rg_list)
     pha_network_list = get_pha_network_list(subnets)
-    pha_interface_list = get_pha_interface_list(node_details,len(subnets),pha_network_list)
+    pha_interface_list = get_pha_interface_list(node_details,len(subnets),pha_network_list,reserved_subnets)
 
     service_ip_flag = True
     pha_service_ip_list = []
     serviceip_with_rg = []
     if(service_ip_flag):
-        pha_service_ip_list = get_service_ip_list(subnets,reserve_ip_details, pha_network_list)
+        pha_service_ip_list = get_service_ip_list(reserve_ip_details)
         serviceip_with_rg = get_serviceip_with_vg(pha_service_ip_list,computed_rg_list)
 
     # Create YAML String

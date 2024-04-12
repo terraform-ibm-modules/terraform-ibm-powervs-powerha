@@ -283,11 +283,12 @@ resource "terraform_data" "copy_files_to_remote" {
 
   provisioner "file" {
     content = templatefile("${local.template_dir}/ansible_config.py.tftpl", { "rg_count" = var.powerha_resource_group_count, "rg_list" = jsonencode(var.powerha_resource_group_list),
-      "vg_count"            = var.volume_group_count, "vg_list" = jsonencode(var.volume_group_list),
-      "fs_count"            = var.file_system_count, "fs_list" = jsonencode(var.file_system_list),
-      "repository_disk_wwn" = jsonencode(var.repository_disk_wwn),
-      "shared_wwn_disks"    = jsonencode(var.shared_disk_wwns), "node_details" = jsonencode(var.node_details),
-      "subnet_list"         = jsonencode(var.subnet_list), "reserve_ip_data" = jsonencode(var.reserve_ip_data),
+      "vg_count"             = var.volume_group_count, "vg_list" = jsonencode(var.volume_group_list),
+      "fs_count"             = var.file_system_count, "fs_list" = jsonencode(var.file_system_list),
+      "repository_disk_wwn"  = jsonencode(var.repository_disk_wwn),
+      "shared_wwn_disks"     = jsonencode(var.shared_disk_wwns), "node_details" = jsonencode(var.node_details),
+      "subnet_list"          = jsonencode(var.subnet_list), "reserve_ip_data" = jsonencode(var.reserve_ip_data),
+      "reserved_subnet_list" = jsonencode(var.reserved_subnet_list),
     "pha_build_path" = jsonencode(local.pha_build_path), "destination_ansible_yml_file" = jsonencode(local.destination_ansible_yml_file) })
     destination = "ansible_config.py"
   }

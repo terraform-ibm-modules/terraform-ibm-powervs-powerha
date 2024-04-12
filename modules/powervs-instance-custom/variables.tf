@@ -60,8 +60,8 @@ variable "pi_instance_count" {
   type        = number
 }
 
-variable "powervs_subnet_list" {
-  description = "Count of subnet that is required for the workspace"
+variable "powervs_reserve_subnet_list" {
+  description = "reserve subnet list that is required for port attachment."
   type = list(object({
     name              = string
     cidr              = string
@@ -81,14 +81,20 @@ variable "pi_shared_volume_count" {
   default     = 2
 }
 
-variable "pi_dedicated_volume_size" {
+variable "pi_dedicated_volume_attributes" {
   description = "Size(In GB) of dedicated volumes that need to be created and attached to every Power Virtual Server instance separately."
-  type        = number
+  type = object({
+    size = number
+    tier = string
+  })
 }
 
-variable "pi_shared_volume_size" {
+variable "pi_shared_volume_attributes" {
   description = "Size(In GB) of shared volumes that need to be created and attached to every Power Virtual Server instance separately."
-  type        = number
+  type = object({
+    size = number
+    tier = string
+  })
 }
 
 variable "pha_shared_volume" {

@@ -10,7 +10,7 @@ module "powervs_workspace" {
   prefix                      = var.prefix
   ssh_public_key              = var.ssh_public_key
   powervs_resource_group_name = var.powervs_resource_group_name
-  powervs_subnet_list         = var.powervs_subnet_list
+  powervs_subnet_list         = local.subnet_list
   cloud_connection            = var.cloud_connection
   transit_gateway_connection  = local.transit_gateway_connection
   aix_os_image                = [var.aix_os_image]
@@ -46,21 +46,21 @@ module "powervs_instance" {
   pi_workspace_guid      = module.powervs_workspace.powervs_workspace_guid
   pi_ssh_public_key_name = module.powervs_workspace.powervs_ssh_public_key.name
 
-  pi_prefix                 = var.prefix
-  pi_image_id               = local.pi_instance.pi_image_id
-  pi_networks               = local.pi_instance.pi_networks
-  pi_server_type            = var.powervs_machine_type
-  pi_number_of_processors   = local.pi_instance.pi_number_of_processors
-  pi_memory_size            = local.pi_instance.pi_memory_size
-  pi_cpu_proc_type          = local.pi_instance.pi_cpu_proc_type
-  pi_storage_type           = local.pi_instance.pi_tier
-  pi_instance_count         = var.powervs_instance_count
-  powervs_subnet_list       = var.powervs_subnet_list
-  pi_dedicated_volume_count = var.dedicated_volume
-  pi_shared_volume_count    = var.shared_volume
-  pi_dedicated_volume_size  = var.dedicated_volume_size
-  pi_shared_volume_size     = var.shared_volume_size
-  pha_shared_volume         = local.pha_vg_shared_disks
+  pi_prefix                      = var.prefix
+  pi_image_id                    = local.pi_instance.pi_image_id
+  pi_networks                    = local.pi_instance.pi_networks
+  pi_server_type                 = var.powervs_machine_type
+  pi_number_of_processors        = local.pi_instance.pi_number_of_processors
+  pi_memory_size                 = local.pi_instance.pi_memory_size
+  pi_cpu_proc_type               = local.pi_instance.pi_cpu_proc_type
+  pi_storage_type                = local.pi_instance.pi_tier
+  pi_instance_count              = var.powervs_instance_count
+  powervs_reserve_subnet_list    = var.powervs_reserve_subnet_list
+  pi_dedicated_volume_count      = var.dedicated_volume
+  pi_shared_volume_count         = var.shared_volume
+  pi_dedicated_volume_attributes = var.dedicated_volume_attributes
+  pi_shared_volume_attributes    = var.shared_volume_attributes
+  pha_shared_volume              = local.pha_vg_shared_disks
 }
 
 
@@ -87,5 +87,6 @@ module "powervs_instance_ansible_config" {
   file_system_count            = var.file_system
   file_system_list             = var.file_system_list
   subnet_list                  = var.powervs_subnet_list
+  reserved_subnet_list         = var.powervs_reserve_subnet_list
   reserve_ip_data              = module.powervs_instance.reserve_ips
 }

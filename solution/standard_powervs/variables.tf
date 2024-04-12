@@ -82,13 +82,25 @@ variable "aix_os_image" {
 variable "powervs_subnet_list" {
   description = "IBM Cloud Power Virtual Server subnet configuration details like name, CIDR, and reserved IP count used for PowerHA service label to be created."
   type = list(object({
+    name = string
+    cidr = string
+  }))
+  validation {
+    condition     = (length(var.powervs_subnet_list) == length(distinct([for item in var.powervs_subnet_list : lower(item.name)]))) && (length(var.powervs_subnet_list) == length(distinct([for item in var.powervs_subnet_list : join(".", slice(split(".", item.cidr), 0, 3))]))) && length(var.powervs_subnet_list) >= 1 && length(var.powervs_subnet_list) <= 14
+    error_message = "More than 14 subnets and Duplicate subnet name and cidr are not allowed."
+  }
+}
+
+variable "powervs_reserve_subnet_list" {
+  description = "IBM Cloud Power Virtual Server subnet configuration details like name, CIDR, and reserved IP count used for PowerHA service label to be created."
+  type = list(object({
     name              = string
     cidr              = string
     reserved_ip_count = number
   }))
   validation {
-    condition     = (length(var.powervs_subnet_list) == length(distinct([for item in var.powervs_subnet_list : lower(item.name)]))) && (length(var.powervs_subnet_list) == length(distinct([for item in var.powervs_subnet_list : join(".", slice(split(".", item.cidr), 0, 3))]))) && length(var.powervs_subnet_list) < 17
-    error_message = "More than 16 subnets and Duplicate subnet name and cidr are not allowed."
+    condition     = (length(var.powervs_reserve_subnet_list) == length(distinct([for item in var.powervs_reserve_subnet_list : lower(item.name)]))) && (length(var.powervs_reserve_subnet_list) == length(distinct([for item in var.powervs_reserve_subnet_list : join(".", slice(split(".", item.cidr), 0, 3))]))) && length(var.powervs_reserve_subnet_list) >= 1 && length(var.powervs_reserve_subnet_list) <= 2 && alltrue([for data in var.powervs_reserve_subnet_list : true if data.reserved_ip_count >= 1])
+    error_message = "More than 2 subnets and Duplicate subnet name and cidr are not allowed."
   }
 }
 
@@ -101,11 +113,14 @@ variable "dedicated_volume" {
   }
 }
 
-variable "dedicated_volume_size" {
+variable "dedicated_volume_attributes" {
   description = "Size(In GB) of dedicated volumes that need to be created and attached to every Power Virtual Server instance separately."
-  type        = number
+  type = object({
+    size = number
+    tier = string
+  })
   validation {
-    condition     = var.dedicated_volume_size >= 10 && var.dedicated_volume_size <= 10000
+    condition     = var.dedicated_volume_attributes.size >= 10 && var.dedicated_volume_attributes.size <= 10000 && contains(["tier0", "tier1", "tier3", "fixed IOPS"], var.dedicated_volume_attributes.tier)
     error_message = "Allowed values are between 10 and 1000."
   }
 }
@@ -119,14 +134,18 @@ variable "shared_volume" {
   }
 }
 
-variable "shared_volume_size" {
+variable "shared_volume_attributes" {
   description = "Size(In GB) of shared volumes that need to be created and attached to every Power Virtual Server instance separately."
-  type        = number
+  type = object({
+    size = number
+    tier = string
+  })
   validation {
-    condition     = var.shared_volume_size >= 10 && var.shared_volume_size <= 10000
+    condition     = var.shared_volume_attributes.size >= 10 && var.shared_volume_attributes.size <= 10000 && contains(["tier0", "tier1", "tier3", "fixed IOPS"], var.shared_volume_attributes.tier)
     error_message = "Allowed values are between 10 and 1000."
   }
 }
+
 
 #####################################################
 # Optional Parameters

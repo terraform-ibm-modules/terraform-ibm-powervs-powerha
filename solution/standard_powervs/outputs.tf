@@ -49,7 +49,12 @@ output "powervs_ssh_public_key" {
 
 output "powervs_subnet_list" {
   description = "Network_ID of private networks in created PowerVS Workspace."
-  value       = module.powervs_workspace.powervs_subnet_list
+  value       = var.powervs_subnet_list
+}
+
+output "powervs_reserve_subnet_list" {
+  description = "Network_ID of private networks in created PowerVS Workspace."
+  value       = var.powervs_reserve_subnet_list
 }
 
 output "powervs_subnet_ids" {

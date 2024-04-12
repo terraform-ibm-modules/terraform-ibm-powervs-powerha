@@ -293,13 +293,27 @@
                             "default_value": [
                                 {
                                     "cidr": "10.61.0.0/24",
-                                    "name": "mgmt_net",
-                                    "reserved_ip_count": 2
+                                    "name": "mgmt_net"
                                 },
                                 {
                                     "cidr": "10.62.0.0/24",
-                                    "name": "bkp_net",
-                                    "reserved_ip_count": 0
+                                    "name": "bkp_net"
+                                }
+                            ]
+                        },
+                        {
+                            "key": "powervs_reserve_subnet_list",
+                            "required": true,
+                            "custom_config": {
+                                "grouping": "deployment",
+                                "original_grouping": "deployment",
+                                "type": "json_editor"
+                            },
+                            "default_value": [
+                                {
+                                    "cidr": "10.63.0.0/24",
+                                    "name": "mgmt_net",
+                                    "reserved_ip_count": 2
                                 }
                             ]
                         },
@@ -366,16 +380,30 @@
                             }
                         },
                         {
-                            "key": "dedicated_volume_size",
-                            "type": "number",
+                            "key": "dedicated_volume_attributes",
                             "required": false,
-                            "default_value": 10
+                            "custom_config": {
+                                "grouping": "deployment",
+                                "original_grouping": "deployment",
+                                "type": "json_editor"
+                            },
+                            "default_value": {
+                                "size": 30,
+                                "tier": "tier3"
+                            }
                         },
                         {
-                            "key": "shared_volume_size",
-                            "type": "number",
+                            "key": "shared_volume_attributes",
                             "required": false,
-                            "default_value": 10
+                            "custom_config": {
+                                "grouping": "deployment",
+                                "original_grouping": "deployment",
+                                "type": "json_editor"
+                            },
+                            "default_value": {
+                                "size": 30,
+                                "tier": "tier3"
+                            }
                         },
                         {
                             "key": "powerha_resource_group_list",
@@ -464,6 +492,9 @@
                         },
                         {
                             "key": "powervs_subnet_list"
+                        },
+                        {
+                            "key": "powervs_reserve_subnet_list"
                         },
                         {
                             "key": "powervs_subnet_ids"

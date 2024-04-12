@@ -32,6 +32,12 @@ locals {
   # nfs_host_or_ip_path    = local.powervs_infrastructure[0].nfs_host_or_ip_path.value
 
   ##################################
+  # Networks
+  ##################################
+
+  subnet_list = concat([for net in var.powervs_subnet_list : merge(net, { reserved_ip_count : 0 })], var.powervs_reserve_subnet_list)
+
+  ##################################
   # PHA Shared Volume Locals
   ##################################
 
