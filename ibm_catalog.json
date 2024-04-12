@@ -293,11 +293,7 @@
                             "default_value": [
                                 {
                                     "cidr": "10.61.0.0/24",
-                                    "name": "mgmt_net"
-                                },
-                                {
-                                    "cidr": "10.62.0.0/24",
-                                    "name": "bkp_net"
+                                    "name": "network_1"
                                 }
                             ]
                         },
@@ -311,8 +307,8 @@
                             },
                             "default_value": [
                                 {
-                                    "cidr": "10.63.0.0/24",
-                                    "name": "mgmt_net",
+                                    "cidr": "10.62.0.0/24",
+                                    "name": "network_2",
                                     "reserved_ip_count": 2
                                 }
                             ]
