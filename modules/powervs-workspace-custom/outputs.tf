@@ -39,7 +39,7 @@ output "powervs_subnet_list" {
 
 output "powervs_subnet_ids" {
   description = "Private Subnet IDs"
-  value       = local.pi_private_subnet_ids
+  value       = [for item in local.powervs_subnets : item.network_id]
 }
 
 output "powervs_images" {

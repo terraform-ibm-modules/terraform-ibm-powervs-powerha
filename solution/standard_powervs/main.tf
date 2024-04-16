@@ -49,11 +49,11 @@ module "powervs_instance" {
   pi_prefix                      = var.prefix
   pi_image_id                    = local.pi_instance.pi_image_id
   pi_networks                    = local.pi_instance.pi_networks
-  pi_server_type                 = var.powervs_machine_type
   pi_number_of_processors        = local.pi_instance.pi_number_of_processors
   pi_memory_size                 = local.pi_instance.pi_memory_size
   pi_cpu_proc_type               = local.pi_instance.pi_cpu_proc_type
   pi_storage_type                = local.pi_instance.pi_tier
+  pi_server_type                 = var.powervs_machine_type
   pi_instance_count              = var.powervs_instance_count
   powervs_reserve_subnet_list    = var.powervs_reserve_subnet_list
   pi_dedicated_volume_count      = var.dedicated_volume

@@ -179,7 +179,7 @@ variable "tags" {
 variable "cos_powerha_image_download" {
   description = <<EOT
   Details about cloud object storage bucket where PowerHA installation media folder and ssl file are located. For more details click [here](https://cloud.ibm.com/docs/cloud-object-storage?topic=cloud-object-storage-service-credentials).
-  Example for COS Details
+  Example:
     {
       "bucket_name":"bucket-name",
       "cos_access_key_id":"1dxxxxxxxxxx36",
@@ -189,10 +189,10 @@ variable "cos_powerha_image_download" {
       "ssl_file_name": "ssl-file-path"
     }
 
-    You can keep the PowerHA images in the following format in the IBM Cloud COS Bucket.
-    Example: 728 is a parent folder
-      728/Gold/<filename>.tar.gz
-      728/SPx/<filename>.tar.gz
+  You can keep the PowerHA images in the following format in the IBM Cloud COS Bucket.
+  Example: 728 is a parent folder
+    728/Gold/<filename>.tar.gz
+    728/SPx/<filename>.tar.gz
   EOT
   type = object({
     bucket_name           = string

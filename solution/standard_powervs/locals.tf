@@ -49,7 +49,7 @@ locals {
 
   pi_instance = {
     pi_image_id             = lookup(module.powervs_workspace.powervs_images, var.aix_os_image, null)
-    pi_networks             = module.powervs_workspace.powervs_subnet_list
+    pi_networks             = slice(module.powervs_workspace.powervs_subnet_list, 0, length(var.powervs_subnet_list))
     pi_number_of_processors = local.qs_tshirt_choice.cores
     pi_memory_size          = local.qs_tshirt_choice.memory
     pi_tier                 = local.qs_tshirt_choice.tier
