@@ -3,18 +3,12 @@
 # PowerVS Workspace Creation
 #####################################################
 
-module "powervs_workspace" {
-  source = "../../modules/powervs-workspace-custom"
+module "powervs_workspace_update" {
+  source = "../../modules/powervs-workspace-update"
 
-  powervs_zone                = var.powervs_zone
-  prefix                      = var.prefix
-  ssh_public_key              = var.ssh_public_key
-  powervs_resource_group_name = var.powervs_resource_group_name
-  powervs_subnet_list         = local.subnet_list
-  cloud_connection            = var.cloud_connection
-  transit_gateway_connection  = local.transit_gateway_connection
-  aix_os_image                = [var.aix_os_image]
-  tags                        = var.tags
+  powervs_workspace_guid = local.powervs_workspace_guid
+  powervs_subnet_list    = local.subnet_list
+  aix_os_image           = local.powervs_image_id == null ? var.aix_os_image : null
 }
 
 
@@ -25,12 +19,12 @@ module "powervs_workspace" {
 #####################################################
 
 module "cloud_connection_network_attach" {
-  depends_on = [module.powervs_workspace]
+  depends_on = [module.powervs_workspace_update]
   source     = "../../modules/cloud-connection-network-attach"
   count      = local.cloud_connection_count > 0 ? 1 : 0
 
-  pi_workspace_guid      = module.powervs_workspace.powervs_workspace_guid
-  pi_private_subnet_ids  = module.powervs_workspace.powervs_subnet_ids
+  pi_workspace_guid      = local.powervs_workspace_guid
+  pi_private_subnet_ids  = module.powervs_workspace_update.powervs_subnet_ids
   cloud_connection_count = local.cloud_connection_count
 }
 
@@ -43,8 +37,8 @@ module "powervs_instance" {
   depends_on = [module.cloud_connection_network_attach]
   source     = "../../modules/powervs-instance-custom"
 
-  pi_workspace_guid      = module.powervs_workspace.powervs_workspace_guid
-  pi_ssh_public_key_name = module.powervs_workspace.powervs_ssh_public_key.name
+  pi_workspace_guid      = local.powervs_workspace_guid
+  pi_ssh_public_key_name = local.powervs_sshkey_name
 
   pi_prefix                      = var.prefix
   pi_image_id                    = local.pi_instance.pi_image_id

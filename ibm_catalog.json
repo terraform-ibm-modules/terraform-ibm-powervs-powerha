@@ -155,18 +155,6 @@
                             "custom_config": {}
                         },
                         {
-                            "key": "ssh_public_key",
-                            "type": "multiline_secure_value",
-                            "display_name": "Multiline secure value",
-                            "required": true,
-                            "default_value": "",
-                            "custom_config": {
-                                "grouping": "deployment",
-                                "original_grouping": "deployment",
-                                "type": "multiline_secure_value"
-                            }
-                        },
-                        {
                             "key": "ssh_private_key",
                             "type": "multiline_secure_value",
                             "display_name": "Multiline secure value",
@@ -186,19 +174,6 @@
                                 "grouping": "deployment",
                                 "original_grouping": "deployment",
                                 "type": "multiline_secure_value"
-                            }
-                        },
-                        {
-                            "key": "powervs_resource_group_name",
-                            "required": true,
-                            "default_value": "",
-                            "custom_config": {
-                                "config_constraints": {
-                                    "identifier": "rg_name"
-                                },
-                                "grouping": "deployment",
-                                "original_grouping": "deployment",
-                                "type": "resource_group"
                             }
                         },
                         {
@@ -361,21 +336,6 @@
                             "default_value": 1
                         },
                         {
-                            "key": "cloud_connection",
-                            "required": false,
-                            "custom_config": {
-                                "grouping": "deployment",
-                                "original_grouping": "deployment",
-                                "type": "json_editor"
-                            },
-                            "default_value": {
-                                "count": 1,
-                                "speed": 50,
-                                "global_routing": true,
-                                "metered": true
-                            }
-                        },
-                        {
                             "key": "dedicated_volume_attributes",
                             "required": false,
                             "custom_config": {
@@ -453,17 +413,11 @@
                                     "volume_group": "VG1"
                                 }
                             ]
-                        },
-                        {
-                            "key": "tags"
                         }
                     ],
                     "outputs": [
                         {
                             "key": "powervs_zone"
-                        },
-                        {
-                            "key": "powervs_resource_group_name"
                         },
                         {
                             "key": "proxy_ip_and_port"
@@ -490,10 +444,7 @@
                             "key": "powervs_subnet_list"
                         },
                         {
-                            "key": "powervs_reserve_subnet_list"
-                        },
-                        {
-                            "key": "powervs_subnet_ids"
+                            "key": "subnet_reserve_ips"
                         },
                         {
                             "key": "powervs_images"
@@ -502,19 +453,7 @@
                             "key": "cloud_connection"
                         },
                         {
-                            "key": "pi_instances"
-                        },
-                        {
-                            "key": "reserve_ips"
-                        },
-                        {
-                            "key": "pi_port_data"
-                        },
-                        {
-                            "key": "pi_shared_volume_data"
-                        },
-                        {
-                            "key": "node_details"
+                            "key": "powervs_instances"
                         },
                         {
                             "key": "pha_shared_volume_data"

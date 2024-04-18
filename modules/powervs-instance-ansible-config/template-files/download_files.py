@@ -7,7 +7,7 @@ import boto3
 def download_pha_from_cos(cos, bucket_name, folder_name):
     # Download PAH file from COS
     try:
-        my_bucket = cos.list_objects(Bucket="powerha-images", Prefix=folder_name + "/")
+        my_bucket = cos.list_objects(Bucket=bucket_name, Prefix=folder_name + "/")
         for obj in my_bucket["Contents"]:
             key = obj["Key"]
 

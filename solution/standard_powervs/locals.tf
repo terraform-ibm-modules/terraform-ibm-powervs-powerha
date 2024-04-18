@@ -24,9 +24,17 @@ locals {
     "enable"             = local.transit_gateway_identifier != "" ? true : false
     "transit_gateway_id" = local.transit_gateway_identifier
   }
-  # cloud_connection_count = local.powervs_infrastructure[0].cloud_connection_count.value
+  powervs_workspace_guid = local.powervs_infrastructure[0].powervs_workspace_guid.value
+  powervs_workspace_id   = local.powervs_infrastructure[0].powervs_workspace_id.value
+  powervs_workspace_name = local.powervs_infrastructure[0].powervs_workspace_name.value
+  powervs_sshkey_name    = local.powervs_infrastructure[0].powervs_ssh_public_key.value.name
+  cloud_connection_count = local.powervs_infrastructure[0].cloud_connection_count.value
+  powervs_image_id       = lookup(local.powervs_infrastructure[0].powervs_images.value, var.aix_os_image, null)
+
+
 
   # For now we are not using this
+  # powervs_networks       = [local.powervs_infrastructure[0].powervs_management_subnet.value, local.powervs_infrastructure[0].powervs_backup_subnet.value]
   # dns_host_or_ip         = local.powervs_infrastructure[0].dns_host_or_ip.value
   # ntp_host_or_ip         = local.powervs_infrastructure[0].ntp_host_or_ip.value
   # nfs_host_or_ip_path    = local.powervs_infrastructure[0].nfs_host_or_ip_path.value
@@ -48,8 +56,8 @@ locals {
   ##################################
 
   pi_instance = {
-    pi_image_id             = lookup(module.powervs_workspace.powervs_images, var.aix_os_image, null)
-    pi_networks             = slice(module.powervs_workspace.powervs_subnet_list, 0, length(var.powervs_subnet_list))
+    pi_image_id             = local.powervs_image_id == null ? module.powervs_workspace_update.powervs_images : local.powervs_image_id
+    pi_networks             = slice(module.powervs_workspace_update.powervs_subnet_list, 0, length(var.powervs_subnet_list))
     pi_number_of_processors = local.qs_tshirt_choice.cores
     pi_memory_size          = local.qs_tshirt_choice.memory
     pi_tier                 = local.qs_tshirt_choice.tier
@@ -62,14 +70,6 @@ locals {
     pi_instance_private_ips = item.pi_instance_private_ips[*]
     pi_extend_volume        = item.pi_storage_configuration[0].wwns
   }]
-
-  #####################################################
-  # IBM Cloud PowerVS Configuration
-  #####################################################
-
-  pi_per_enabled_dc_list = ["dal10", "dal12", "wdc06", "wdc07", "mad02", "mad04", "eu-de-1", "eu-de-2", "sao01", "sao04", "sao05", "tok04", "osa21", "lon06"]
-  pi_per_enabled         = contains(local.pi_per_enabled_dc_list, var.powervs_zone)
-  cloud_connection_count = local.pi_per_enabled ? 0 : var.cloud_connection.count
 
 }
 
