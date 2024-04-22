@@ -4,7 +4,7 @@ variable "prerequisite_workspace_id" {
 }
 
 variable "prefix" {
-  description = "A unique identifier for resources. The identifier must begin with a lowercase letter and end with a lowercase letter or a number. This prefix will be prepended to any resources provisioned by this template. Prefixes must be 8 characters or fewer than 8 characters."
+  description = "A unique identifier for resources. The identifier must begin with a lowercase letter and end with a lowercase letter or a number. This prefix will be prepended to any resources provisioned by this template. Prefix must be 8 characters or fewer than 8 characters."
   type        = string
   validation {
     condition     = can(regex("^[a-zA-Z][a-zA-Z0-9-_]{0,7}$", var.prefix))
@@ -13,7 +13,7 @@ variable "prefix" {
 }
 
 variable "powervs_zone" {
-  description = "IBM Cloud data center location where IBM Power Virtual Server infrastructure will be created."
+  description = "IBM Cloud data center location corresponding to the location used in 'Power Virtual Server with VPC landing zone' pre-requisite deployment."
   type        = string
 }
 
@@ -57,7 +57,7 @@ variable "tshirt_size" {
 variable "powervs_machine_type" {
   description = <<EOT
   IBM Powervs machine type. The supported machine types are: s922, e980, s1022, e1080.
-  More Details:
+  For more details:
     [Availability of the machine type](https://cloud.ibm.com/docs/power-iaas?topic=power-iaas-creating-power-virtual-server#creating-service)
     [IBM Cloud PowerVS documentation](https://cloud.ibm.com/docs/power-iaas?topic=power-iaas-getting-started)
   EOT
@@ -65,12 +65,12 @@ variable "powervs_machine_type" {
 }
 
 variable "aix_os_image" {
-  description = "AIX operating system images for Power Virtual Server instances. Power Virtual Server instances are installed with the given AIX OS image. The supported AIX I images are: 7300-01-02, 7300-00-01, 7200-05-06."
+  description = "AIX operating system images for Power Virtual Server instances. Power Virtual Server instances are installed with the given AIX OS image. The supported AIX OS images are: 7300-02-01, 7300-00-01, 7200-05-06."
   type        = string
 }
 
 variable "powervs_subnet_list" {
-  description = "IBM Cloud Power Virtual Server subnet configuration details like name, CIDR, and reserved IP count used for PowerHA service label to be created."
+  description = "IBM Cloud Power Virtual Server subnet configuration details like name and CIDR."
   type = list(object({
     name = string
     cidr = string
@@ -104,7 +104,7 @@ variable "dedicated_volume" {
 }
 
 variable "shared_volume" {
-  description = "Count of shared volumes that need to created and attached to all powervs instances."
+  description = "Count of shared volumes that need to created and attached to every Power Virtual Server instances."
   type        = number
   validation {
     condition     = var.shared_volume >= 1 && var.shared_volume <= 127
@@ -141,7 +141,7 @@ variable "cos_powerha_image_download" {
 }
 
 variable "powerha_resource_group" {
-  description = "The number of Resource Groups which need to be created in PowerHA."
+  description = "Number of Resource Groups which need to be created in PowerHA."
   type        = number
   validation {
     condition     = var.powerha_resource_group >= 1 && var.powerha_resource_group <= 256
@@ -150,7 +150,7 @@ variable "powerha_resource_group" {
 }
 
 variable "volume_group" {
-  description = "The number of Volume Groups which need to be created in PowerHA."
+  description = "Number of Volume Groups which need to be created in PowerHA."
   type        = number
   validation {
     condition     = var.volume_group >= 1 && var.volume_group <= 512
@@ -159,7 +159,7 @@ variable "volume_group" {
 }
 
 variable "file_system" {
-  description = "The number of File systems which need to be created in PowerHA."
+  description = "Number of File systems which need to be created in PowerHA."
   type        = number
   validation {
     condition     = var.file_system >= 1 && var.file_system <= 512
@@ -207,7 +207,7 @@ variable "powerha_resource_group_list" {
     condition     = (length(var.powerha_resource_group_list) == length(distinct([for item in var.powerha_resource_group_list : lower(item.name)]))) && alltrue([for data in var.powerha_resource_group_list : contains(["OHN", "OFAN", "OAAN", "OUDP"], data.startup)]) && alltrue([for data in var.powerha_resource_group_list : contains(["FNPN", "FUDNP", "BO"], data.fallover)]) && alltrue([for data in var.powerha_resource_group_list : contains(["NFB", "FBHPN"], data.fallback)])
     error_message = <<EOT
     Duplicate PowerHA resource group name or incorrect startup, fallover, fallback values.
-    Spported values:
+    Supported values:
       startup: [OHN, OFAN, OAAN, OUDP]
       fallover: [FNPN, FUDNP, BO]
       fallback: [NFB, FBHPN]
@@ -227,7 +227,7 @@ variable "volume_group_list" {
     condition     = (length(var.volume_group_list) == length(distinct([for item in var.volume_group_list : lower(item.name)]))) && alltrue([for data in var.volume_group_list : contains(["original", "big", "scalable", "legacy"], data.type)]) && alltrue([for data in var.volume_group_list : data.size >= 30 && data.size <= 1000])
     error_message = <<EOT
     Duplicate volume group name and size is less than 30 and more than 1000 is not allowed.
-    Spported type: [original, big, scalable, legacy]
+    Supported type: [original, big, scalable, legacy]
     EOT
   }
 }
@@ -246,7 +246,7 @@ variable "file_system_list" {
     condition     = (length(var.file_system_list) == length(distinct([for item in var.file_system_list : lower(item.name)]))) && alltrue([for data in var.file_system_list : contains(["enhanced", "standard", "compressed", "large"], data.type)]) && alltrue([for data in var.file_system_list : data.units > 16]) && alltrue([for data in var.file_system_list : contains(["megabytes", "gigabytes"], data.size_per_unit)]) && alltrue([for data in var.file_system_list : contains([512, 1024, 2048, 4096], data.block_size)])
     error_message = <<EOT
     Duplicate file system name or units is less than 16 or incorrect type, size_per_unit, block_size values.
-    Spported values:
+    Supported values:
       type: [enhanced, standard, compressed, large]
       size_per_unit: [megabytes, gigabytes]
       block_size: [512, 1024, 2048, 4096]

@@ -1,5 +1,5 @@
 ########################################################################
-# PowerVS Infrastructure outputs
+# PowerHA Standard Edition outputs
 ########################################################################
 
 output "powervs_zone" {
@@ -8,12 +8,12 @@ output "powervs_zone" {
 }
 
 output "proxy_ip_and_port" {
-  description = "IBM VPC Proxy server ip and port details."
+  description = "IBM VPC Proxy server IP and port details."
   value       = local.proxy_ip_and_port
 }
 
 output "bastion_host_ip" {
-  description = "IBM VPC VSI host ip address."
+  description = "IBM VPC VSI host IP address."
   value       = local.bastion_host_ip
 }
 
@@ -38,22 +38,22 @@ output "powervs_workspace_guid" {
 }
 
 output "powervs_ssh_public_key" {
-  description = "SSH public key name"
+  description = "SSH public key name."
   value       = local.powervs_sshkey_name
 }
 
 output "powervs_subnet_list" {
-  description = "Network_ID of private networks in created PowerVS Workspace."
+  description = "Network ID and name of private networks in PowerVS Workspace."
   value       = module.powervs_workspace_update.powervs_subnet_list
 }
 
 output "subnet_reserve_ips" {
   description = "Reserve IP address of the network interface of IBM PowerVS instance."
-  value       = module.powervs_instance.pi_port_data[*]
+  value       = module.powervs_instance.port_data[*]
 }
 
 output "powervs_images" {
-  description = "Object containing imported PowerVS image names and image ids."
+  description = "Object containing imported PowerVS image name and image id."
   value       = module.powervs_workspace_update.powervs_images
 }
 
@@ -64,10 +64,10 @@ output "cloud_connection" {
 
 output "powervs_instances" {
   description = "IBM PowerVS instance Data."
-  value       = module.powervs_instance.pi_instances
+  value       = module.powervs_instance.instances
 }
 
 output "pha_shared_volume_data" {
-  description = "PowerHA shared volume data."
+  description = "PowerHA shared volumes data for volume groups."
   value       = module.powervs_instance.pha_shared_volume_data
 }

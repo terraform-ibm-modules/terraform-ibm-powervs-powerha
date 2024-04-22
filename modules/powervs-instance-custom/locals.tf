@@ -1,7 +1,11 @@
 locals {
-  default_pi_storage_config = var.pi_dedicated_volume_count > 0 ? [
+  #####################################################
+  # Storage Configuration Object Creation
+  #####################################################
+
+  default_pi_storage_config = var.dedicated_volume_count > 0 ? [
     { name = "${var.pi_prefix}-extended-volume", size = "80", count = "1", tier = var.pi_storage_type, mount = null },
-    { name = "${var.pi_prefix}-volume", size = var.pi_dedicated_volume_attributes.size, count = var.pi_dedicated_volume_count, tier = var.pi_dedicated_volume_attributes.tier, mount = null }
+    { name = "${var.pi_prefix}-volume", size = var.dedicated_volume_attributes.size, count = var.dedicated_volume_count, tier = var.dedicated_volume_attributes.tier, mount = null }
     ] : [
     { name = "${var.pi_prefix}-extended-volume", size = "80", count = "1", tier = var.pi_storage_type, mount = null }
   ]
@@ -22,6 +26,10 @@ locals {
   ]
 
 
+  #####################################################
+  # Reserve IP Object Creation
+  #####################################################
+
   reserve_ips = [for i, pairs in setproduct(flatten([
     for item in var.powervs_reserve_subnet_list : [
       for i in range(item.reserved_ip_count) : {
@@ -35,17 +43,4 @@ locals {
     }
   ]
 
-
-  # Option 2 to select IP address to reserve
-  # ip_range = [for i in range(5,(length(local.powervs_all_instances)*2)*length(var.powervs_reserve_subnet_list),2): [i,i+2]]
-
-  # reserve_ips = flatten([for idx, item in local.powervs_all_instances :
-  #   [for item1 in var.powervs_reserve_subnet_list : [
-  #       for i in range(local.ip_range[idx][0], local.ip_range[idx][1]) : {
-  #         name = item1.name
-  #         ip   = cidrhost(item1.cidr, i)
-  #         pvm_instance_id = item.pvm_instance_id
-  #       }
-  #     ]]
-  # ])
 }

@@ -80,11 +80,11 @@ resource "terraform_data" "download_ssl_packages" {
       "pip3 install boto3",
       "chmod 700 /root/.ssh/private_key.pem",
       "chmod +x ${local.destination_python_file_path}",
-      "/usr/bin/python3 ${local.destination_python_file_path} 'file' ${var.pi_cos_data.bucket_name} ${var.pi_cos_data.ssl_file_name} ${var.pi_cos_data.cos_endpoint} ${var.pi_cos_data.cos_access_key_id} ${var.pi_cos_data.cos_secret_access_key}",
+      "/usr/bin/python3 ${local.destination_python_file_path} 'file' ${var.pha_cos_data.bucket_name} ${var.pha_cos_data.ssl_file_name} ${var.pha_cos_data.cos_endpoint} ${var.pha_cos_data.cos_access_key_id} ${var.pha_cos_data.cos_secret_access_key}",
       <<EOT
       %{for ip in local.nodes_ip~}
         ssh-keyscan -H ${ip} >> /root/.ssh/known_hosts;
-        scp -i /root/.ssh/private_key.pem /root/${var.pi_cos_data.ssl_file_name} root@${ip}:/;
+        scp -i /root/.ssh/private_key.pem /root/${var.pha_cos_data.ssl_file_name} root@${ip}:/;
       %{endfor~}
     EOT
     ]
@@ -112,7 +112,7 @@ resource "terraform_data" "install_ssl_packages" {
   ####### Unzip powerha tar file ############
   provisioner "remote-exec" {
     inline = [
-      "gunzip -c ${var.pi_cos_data.ssl_file_name} | tar -xvf -",
+      "gunzip -c ${var.pha_cos_data.ssl_file_name} | tar -xvf -",
       "cd /openssl-1.1.2.2200",
       "installp -agXYd . all"
     ]
@@ -187,7 +187,7 @@ resource "terraform_data" "download_pha" {
       "export http_proxy='${var.proxy_ip_and_port}' ",
       "export https_proxy='${var.proxy_ip_and_port}' ",
       "chmod +x ${local.destination_python_file_path}",
-      "${local.python_path} ${local.destination_python_file_path} 'pha' ${var.pi_cos_data.bucket_name} ${var.pi_cos_data.folder_name} ${var.pi_cos_data.cos_endpoint} ${var.pi_cos_data.cos_access_key_id} ${var.pi_cos_data.cos_secret_access_key}"
+      "${local.python_path} ${local.destination_python_file_path} 'pha' ${var.pha_cos_data.bucket_name} ${var.pha_cos_data.folder_name} ${var.pha_cos_data.cos_endpoint} ${var.pha_cos_data.cos_access_key_id} ${var.pha_cos_data.cos_secret_access_key}"
     ]
   }
 }
@@ -196,7 +196,7 @@ resource "terraform_data" "download_pha" {
 locals {
   src_ansible_tar_file  = "${path.module}/ansible/ansible_powerha_tarball.tar.gz"
   dest_ansible_tar_file = "ansible_powerha_tarball.tar.gz"
-  pha_build_path        = "/${var.pi_cos_data.folder_name}/pha/"
+  pha_build_path        = "/${var.pha_cos_data.folder_name}/pha/"
 }
 
 

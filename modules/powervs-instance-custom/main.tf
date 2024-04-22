@@ -5,34 +5,36 @@
 resource "ibm_pi_placement_group" "placement_group" {
   pi_placement_group_name   = "${var.pi_prefix}-pg"
   pi_placement_group_policy = "anti-affinity"
-  pi_cloud_instance_id      = var.pi_workspace_guid
+  pi_cloud_instance_id      = var.powervs_workspace_guid
 }
+
 
 #####################################################
 # Get highest capacity storage pool name
 #####################################################
 
 data "ibm_pi_storage_pools_capacity" "pools" {
-  pi_cloud_instance_id = var.pi_workspace_guid
+  pi_cloud_instance_id = var.powervs_workspace_guid
 }
 
 locals {
-  highest_capacity_pool_name = data.ibm_pi_storage_pools_capacity.pools.maximum_storage_allocation.storage_pool
+  highest_capacity_pool_name = data.ibm_pi_storage_pools_capacity.pools.max_storage_allocation.storage_pool
 }
+
 
 #####################################################
 # Create shareable volumes
 #####################################################
 
 resource "ibm_pi_volume" "shared_volumes" {
-  count = var.pi_shared_volume_count > 0 ? var.pi_shared_volume_count : 0
+  count = var.shared_volume_count > 0 ? var.shared_volume_count : 0
 
   pi_volume_shareable  = true
   pi_volume_name       = "${var.pi_prefix}-shared-${count.index}"
-  pi_volume_size       = var.pi_shared_volume_attributes.size
-  pi_volume_type       = var.pi_shared_volume_attributes.tier
+  pi_volume_size       = var.shared_volume_attributes.size
+  pi_volume_type       = var.shared_volume_attributes.tier
   pi_volume_pool       = local.highest_capacity_pool_name
-  pi_cloud_instance_id = var.pi_workspace_guid
+  pi_cloud_instance_id = var.powervs_workspace_guid
 
   timeouts {
     create = "15m"
@@ -45,9 +47,9 @@ resource "ibm_pi_volume" "pha_shared_volumes" {
   pi_volume_shareable  = true
   pi_volume_name       = "pha-vg-shared-${count.index}"
   pi_volume_size       = var.pha_shared_volume[count.index]
-  pi_volume_type       = var.pi_shared_volume_attributes.tier
+  pi_volume_type       = var.shared_volume_attributes.tier
   pi_volume_pool       = local.highest_capacity_pool_name
-  pi_cloud_instance_id = var.pi_workspace_guid
+  pi_cloud_instance_id = var.powervs_workspace_guid
 
   timeouts {
     create = "15m"
@@ -67,7 +69,7 @@ locals {
 
 
 #####################################################
-# Create Upto 8 Cluster nodes
+# Create up to 8 Cluster nodes
 #####################################################
 
 module "powervs_instance_node_1" {
@@ -76,10 +78,10 @@ module "powervs_instance_node_1" {
   depends_on = [ibm_pi_placement_group.placement_group, ibm_pi_volume.shared_volumes]
 
   pi_instance_name           = "${var.pi_prefix}-pvs-1"
-  pi_workspace_guid          = var.pi_workspace_guid
-  pi_ssh_public_key_name     = var.pi_ssh_public_key_name
+  pi_workspace_guid          = var.powervs_workspace_guid
+  pi_ssh_public_key_name     = var.ssh_public_key_name
   pi_image_id                = var.pi_image_id
-  pi_networks                = var.pi_networks # Need to check
+  pi_networks                = var.pi_networks
   pi_server_type             = var.pi_server_type
   pi_cpu_proc_type           = var.pi_cpu_proc_type
   pi_number_of_processors    = var.pi_number_of_processors
@@ -104,10 +106,10 @@ module "powervs_instance_node_2" {
   depends_on = [module.powervs_instance_node_1, time_sleep.wait_60_sec_1]
 
   pi_instance_name           = "${var.pi_prefix}-pvs-2"
-  pi_workspace_guid          = var.pi_workspace_guid
-  pi_ssh_public_key_name     = var.pi_ssh_public_key_name
+  pi_workspace_guid          = var.powervs_workspace_guid
+  pi_ssh_public_key_name     = var.ssh_public_key_name
   pi_image_id                = var.pi_image_id
-  pi_networks                = var.pi_networks # Need to check
+  pi_networks                = var.pi_networks
   pi_server_type             = var.pi_server_type
   pi_cpu_proc_type           = var.pi_cpu_proc_type
   pi_number_of_processors    = var.pi_number_of_processors
@@ -133,10 +135,10 @@ module "powervs_instance_node_3" {
   depends_on = [module.powervs_instance_node_2, time_sleep.wait_60_sec_2]
 
   pi_instance_name           = "${var.pi_prefix}-pvs-3"
-  pi_workspace_guid          = var.pi_workspace_guid
-  pi_ssh_public_key_name     = var.pi_ssh_public_key_name
+  pi_workspace_guid          = var.powervs_workspace_guid
+  pi_ssh_public_key_name     = var.ssh_public_key_name
   pi_image_id                = var.pi_image_id
-  pi_networks                = var.pi_networks # Need to check
+  pi_networks                = var.pi_networks
   pi_server_type             = var.pi_server_type
   pi_cpu_proc_type           = var.pi_cpu_proc_type
   pi_number_of_processors    = var.pi_number_of_processors
@@ -162,10 +164,10 @@ module "powervs_instance_node_4" {
   depends_on = [module.powervs_instance_node_3, time_sleep.wait_60_sec_3]
 
   pi_instance_name           = "${var.pi_prefix}-pvs-4"
-  pi_workspace_guid          = var.pi_workspace_guid
-  pi_ssh_public_key_name     = var.pi_ssh_public_key_name
+  pi_workspace_guid          = var.powervs_workspace_guid
+  pi_ssh_public_key_name     = var.ssh_public_key_name
   pi_image_id                = var.pi_image_id
-  pi_networks                = var.pi_networks # Need to check
+  pi_networks                = var.pi_networks
   pi_server_type             = var.pi_server_type
   pi_cpu_proc_type           = var.pi_cpu_proc_type
   pi_number_of_processors    = var.pi_number_of_processors
@@ -191,10 +193,10 @@ module "powervs_instance_node_5" {
   depends_on = [module.powervs_instance_node_4, time_sleep.wait_60_sec_4]
 
   pi_instance_name           = "${var.pi_prefix}-pvs-5"
-  pi_workspace_guid          = var.pi_workspace_guid
-  pi_ssh_public_key_name     = var.pi_ssh_public_key_name
+  pi_workspace_guid          = var.powervs_workspace_guid
+  pi_ssh_public_key_name     = var.ssh_public_key_name
   pi_image_id                = var.pi_image_id
-  pi_networks                = var.pi_networks # Need to check
+  pi_networks                = var.pi_networks
   pi_server_type             = var.pi_server_type
   pi_cpu_proc_type           = var.pi_cpu_proc_type
   pi_number_of_processors    = var.pi_number_of_processors
@@ -220,10 +222,10 @@ module "powervs_instance_node_6" {
   depends_on = [module.powervs_instance_node_5, time_sleep.wait_60_sec_5]
 
   pi_instance_name           = "${var.pi_prefix}-pvs-6"
-  pi_workspace_guid          = var.pi_workspace_guid
-  pi_ssh_public_key_name     = var.pi_ssh_public_key_name
+  pi_workspace_guid          = var.powervs_workspace_guid
+  pi_ssh_public_key_name     = var.ssh_public_key_name
   pi_image_id                = var.pi_image_id
-  pi_networks                = var.pi_networks # Need to check
+  pi_networks                = var.pi_networks
   pi_server_type             = var.pi_server_type
   pi_cpu_proc_type           = var.pi_cpu_proc_type
   pi_number_of_processors    = var.pi_number_of_processors
@@ -249,10 +251,10 @@ module "powervs_instance_node_7" {
   depends_on = [module.powervs_instance_node_6, time_sleep.wait_60_sec_6]
 
   pi_instance_name           = "${var.pi_prefix}-pvs-7"
-  pi_workspace_guid          = var.pi_workspace_guid
-  pi_ssh_public_key_name     = var.pi_ssh_public_key_name
+  pi_workspace_guid          = var.powervs_workspace_guid
+  pi_ssh_public_key_name     = var.ssh_public_key_name
   pi_image_id                = var.pi_image_id
-  pi_networks                = var.pi_networks # Need to check
+  pi_networks                = var.pi_networks
   pi_server_type             = var.pi_server_type
   pi_cpu_proc_type           = var.pi_cpu_proc_type
   pi_number_of_processors    = var.pi_number_of_processors
@@ -278,10 +280,10 @@ module "powervs_instance_node_8" {
   depends_on = [module.powervs_instance_node_7, time_sleep.wait_60_sec_7]
 
   pi_instance_name           = "${var.pi_prefix}-pvs-8"
-  pi_workspace_guid          = var.pi_workspace_guid
-  pi_ssh_public_key_name     = var.pi_ssh_public_key_name
+  pi_workspace_guid          = var.powervs_workspace_guid
+  pi_ssh_public_key_name     = var.ssh_public_key_name
   pi_image_id                = var.pi_image_id
-  pi_networks                = var.pi_networks # Need to check
+  pi_networks                = var.pi_networks
   pi_server_type             = var.pi_server_type
   pi_cpu_proc_type           = var.pi_cpu_proc_type
   pi_number_of_processors    = var.pi_number_of_processors
@@ -299,11 +301,12 @@ resource "time_sleep" "wait_60_sec_8" {
   create_duration = "60s"
 }
 
+
 resource "ibm_pi_network_port_attach" "port_attach" {
   depends_on = [module.powervs_instance_node_8, time_sleep.wait_60_sec_8]
   count      = length(local.reserve_ips) > 0 ? length(local.reserve_ips) : 0
 
-  pi_cloud_instance_id      = var.pi_workspace_guid
+  pi_cloud_instance_id      = var.powervs_workspace_guid
   pi_instance_id            = local.reserve_ips[count.index].pvm_instance_id
   pi_network_name           = local.reserve_ips[count.index].name
   pi_network_port_ipaddress = local.reserve_ips[count.index].ip

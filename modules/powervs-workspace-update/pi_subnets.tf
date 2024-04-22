@@ -243,7 +243,7 @@ resource "ibm_pi_network" "private_subnet_16" {
 
 
 #####################################################
-# Created Network List
+# Private Subnet List
 #####################################################
 
 locals {
