@@ -14,10 +14,10 @@ variable "ssh_private_key" {
   sensitive   = true
 }
 
-
 #######################################
 # Ansible config setup
 #######################################
+
 variable "pha_cos_data" {
   description = "Details about cloud object storage bucket where PowerHA installation media folder and ssl file are located. For more details click [here](https://cloud.ibm.com/docs/cloud-object-storage?topic=cloud-object-storage-service-credentials)."
   type = object({
@@ -80,8 +80,9 @@ variable "volume_group_list" {
   type = list(object({
     name    = string
     rg_name = string
-    size    = number
     type    = string
+    size    = number
+    tier    = string
   }))
 }
 

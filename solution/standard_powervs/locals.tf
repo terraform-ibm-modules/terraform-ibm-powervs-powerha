@@ -1,10 +1,11 @@
 locals {
   ibm_powervs_tshirt_sizes = {
-    "aix_xs" = { "proc_type" = "shared", "cores" = "0.25", "memory" = "4", "tier" = "tier1" }
-    "aix_s"  = { "proc_type" = "shared", "cores" = "1", "memory" = "16", "tier" = "tier1" }
-    "aix_m"  = { "proc_type" = "shared", "cores" = "4", "memory" = "64", "tier" = "tier1" }
-    "aix_l"  = { "proc_type" = "shared", "cores" = "8", "memory" = "128", "tier" = "tier1" }
-    "aix_xl" = { "proc_type" = "shared", "cores" = "16", "memory" = "256", "tier" = "tier1" }
+    "aix_xs" = { "proc_type" = "shared", "cores" = 0.25, "memory" = 4, "tier" = "tier1" }
+    "aix_s"  = { "proc_type" = "shared", "cores" = 1, "memory" = 16, "tier" = "tier1" }
+    "aix_m"  = { "proc_type" = "shared", "cores" = 4, "memory" = 64, "tier" = "tier1" }
+    "aix_l"  = { "proc_type" = "shared", "cores" = 8, "memory" = 128, "tier" = "tier1" }
+    "aix_xl" = { "proc_type" = "shared", "cores" = 16, "memory" = 256, "tier" = "tier1" }
+    "custom" = { "proc_type" = var.custom_profile.proc_type, "cores" = var.custom_profile.cores, "memory" = var.custom_profile.memory, "tier" = var.custom_profile.tier }
   }
   tshirt_choice = lookup(local.ibm_powervs_tshirt_sizes, var.tshirt_size, null)
 
@@ -44,7 +45,11 @@ locals {
   # PowerHA Shared Volume Locals
   ##################################
 
-  pha_vg_shared_disks = slice(concat(var.volume_group_list[*].size, (var.volume_group - length(var.volume_group_list) > 0) ? [for index in range(var.volume_group - length(var.volume_group_list)) : 30] : []), 0, var.volume_group)
+  pha_vg_shared_disks = [for idx in range(var.volume_group) :
+    idx < length(var.volume_group_list) ?
+    { size = var.volume_group_list[idx].size, tier = var.volume_group_list[idx].tier } :
+    { size = 30, tier = "tier3" }
+  ]
 
   ##################################
   # PowerVS Instance Locals

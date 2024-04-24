@@ -25,38 +25,66 @@ variable "pi_networks" {
 }
 
 variable "pi_server_type" {
-  description = "IBM Powervs machine type. The supported machine types are: s922, e980, s1022, e1080."
+  description = "IBM Powervs machine type. The supported machine types are s922, e980, s1022, e1080."
   type        = string
+  validation {
+    condition     = contains(["s922", "e980", "s1022", "e1080"], var.pi_server_type)
+    error_message = "The supported machine types are: s922, e980, s1022, e1080."
+  }
 }
 
 variable "pi_cpu_proc_type" {
-  description = "Dedicated or shared processors."
+  description = "Processor types, The supported processor types are dedicated, shared or capped."
   type        = string
+  validation {
+    condition     = contains(["dedicated", "shared", "capped"], var.pi_cpu_proc_type)
+    error_message = "The supported processor types are: dedicated, shared, capped."
+  }
 }
 
 variable "pi_number_of_processors" {
   description = "Number of processors."
-  type        = string
+  type        = number
+  validation {
+    condition     = var.pi_number_of_processors >= 0.25
+    error_message = "Number of processors must be greater than 0.25."
+  }
 }
 
 variable "pi_memory_size" {
   description = "Amount of memory."
-  type        = string
+  type        = number
+  validation {
+    condition     = var.pi_memory_size >= 2
+    error_message = "Memory size must be greater than 2 GB."
+  }
 }
 
 variable "pi_storage_type" {
-  description = "Storage Type."
+  description = "Storage Type, The supported storage types are tier0, tier1, tier3, fixed IOPS."
   type        = string
+  validation {
+    condition     = contains(["tier0", "tier1", "tier3", "fixed IOPS"], var.pi_storage_type)
+    error_message = "The supported storage types are: tier0, tier1, tier3, fixed IOPS."
+  }
 }
 
 variable "pi_prefix" {
   description = "A unique identifier for resources. The identifier must begin with a lowercase letter and end with a lowercase letter or a number. This prefix will be prepended to any resources provisioned by this template. Prefixes must be 8 characters or fewer than 8 characters."
   type        = string
+  validation {
+    condition     = can(regex("^[a-zA-Z][a-zA-Z0-9-_]{0,7}$", var.pi_prefix))
+    error_message = "The prefix must begin with an alphabetic character followed by an alphanumeric character, an underscore, and a hyphen. Prefixes must be a maximum of 8  characters."
+  }
 }
 
 variable "pi_instance_count" {
   description = "Number of Power Virtual Server instances required to create in the workspace for PowerHA cluster."
   type        = number
+  validation {
+    condition     = var.pi_instance_count < 9 && var.pi_instance_count > 1
+    error_message = "Allowed values are between 2 and 8."
+  }
 }
 
 variable "powervs_reserve_subnet_list" {
@@ -95,6 +123,9 @@ variable "shared_volume_attributes" {
 }
 
 variable "pha_shared_volume" {
-  description = "List which contains size of shared volumes for powerHA volume groups."
-  type        = list(number)
+  description = "List which contains size and tier of shared volumes for powerHA volume groups."
+  type = list(object({
+    size = number
+    tier = string
+  }))
 }

@@ -45,9 +45,9 @@ resource "ibm_pi_volume" "pha_shared_volumes" {
   count = length(var.pha_shared_volume) > 0 ? length(var.pha_shared_volume) : 0
 
   pi_volume_shareable  = true
-  pi_volume_name       = "pha-vg-shared-${count.index}"
-  pi_volume_size       = var.pha_shared_volume[count.index]
-  pi_volume_type       = var.shared_volume_attributes.tier
+  pi_volume_name       = "${var.pi_prefix}-pha-shared-${count.index}"
+  pi_volume_size       = var.pha_shared_volume[count.index].size
+  pi_volume_type       = var.pha_shared_volume[count.index].tier
   pi_volume_pool       = local.highest_capacity_pool_name
   pi_cloud_instance_id = var.powervs_workspace_guid
 

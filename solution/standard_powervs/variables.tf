@@ -43,13 +43,6 @@ variable "tshirt_size" {
   Power Virtual Server instance profiles. Power Virtual instance will be created based on the following values:
     proc_type: shared
     tier: tier1 (This value is the same for all profiles)
-
-  The following specific AIX levels used for Power Virtual Machine are supported:
-    aix_xs = { cores: 0.25, memory: 4 }
-    aix_s  = { cores: 1, memory: 16 }
-    aix_m  = { cores: 4, memory: 64 }
-    aix_l  = { cores: 8, memory: 128 }
-    aix_xl = { cores: 16, memory: 256 }
   EOT
   type        = string
 }
@@ -171,6 +164,26 @@ variable "file_system" {
 # Optional Parameters
 #####################################################
 
+variable "custom_profile" {
+  description = "Overrides t-shirt profile: Custom PowerVS instance. Specify combination of cores, memory, proc_type and storage tier."
+  type = object({
+    cores     = number
+    memory    = number
+    proc_type = string
+    tier      = string
+  })
+  validation {
+    condition     = var.custom_profile.cores >= 0.25 && var.custom_profile.memory >= 2 && contains(["dedicated", "shared", "capped"], var.custom_profile.proc_type) && contains(["tier0", "tier1", "tier3", "fixed IOPS"], var.custom_profile.tier)
+    error_message = <<EOT
+    Invalid custom config. Please provide valid cores, memory, proc_type and storage tier.
+    Cores must be greater than 0.25 and memory must be greater than 2 GB.
+    Supported values:
+      proc_type: [dedicated, shared, capped]
+      tier: [tier0, tier1, tier3, fixed IOPS]
+    EOT
+  }
+}
+
 variable "dedicated_volume_attributes" {
   description = "Size(In GB) of dedicated volumes that need to be created and attached to every Power Virtual Server instance separately."
   type = object({
@@ -220,14 +233,17 @@ variable "volume_group_list" {
   type = list(object({
     name    = string
     rg_name = string
-    size    = number
     type    = string
+    size    = number
+    tier    = string
   }))
   validation {
-    condition     = (length(var.volume_group_list) == length(distinct([for item in var.volume_group_list : lower(item.name)]))) && alltrue([for data in var.volume_group_list : contains(["original", "big", "scalable", "legacy"], data.type)]) && alltrue([for data in var.volume_group_list : data.size >= 30 && data.size <= 1000])
+    condition     = (length(var.volume_group_list) == length(distinct([for item in var.volume_group_list : lower(item.name)]))) && alltrue([for data in var.volume_group_list : contains(["original", "big", "scalable", "legacy"], data.type)]) && alltrue([for data in var.volume_group_list : data.size >= 30 && data.size <= 1000]) && alltrue([for data in var.volume_group_list : contains(["tier0", "tier1", "tier3", "fixed IOPS"], data.tier)])
     error_message = <<EOT
     Duplicate volume group name and size is less than 30 and more than 1000 is not allowed.
-    Supported type: [original, big, scalable, legacy]
+    Supported values:
+      type: [original, big, scalable, legacy]
+      tier: [tier0, tier1, tier3, fixed IOPS]
     EOT
   }
 }

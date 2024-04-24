@@ -189,23 +189,27 @@
                             "default_value": "",
                             "options": [
                                 {
-                                    "displayname": "aix_xs",
+                                    "displayname": "Custom (Configure in optional parameters)",
+                                    "value": "custom"
+                                },
+                                {
+                                    "displayname": "AIX-XS (cores: 0.25, memory: 4)",
                                     "value": "aix_xs"
                                 },
                                 {
-                                    "displayname": "aix_s",
+                                    "displayname": "AIX-S (cores: 1, memory: 16)",
                                     "value": "aix_s"
                                 },
                                 {
-                                    "displayname": "aix_m",
+                                    "displayname": "AIX-M (cores: 4, memory: 64)",
                                     "value": "aix_m"
                                 },
                                 {
-                                    "displayname": "aix_l",
+                                    "displayname": "AIX-L (cores: 8, memory: 128)",
                                     "value": "aix_l"
                                 },
                                 {
-                                    "displayname": "aix_xl",
+                                    "displayname": "AIX-XL (cores: 16, memory: 256)",
                                     "value": "aix_xl"
                                 }
                             ],
@@ -336,6 +340,21 @@
                             "default_value": 1
                         },
                         {
+                            "key": "custom_profile",
+                            "required": false,
+                            "custom_config": {
+                                "grouping": "deployment",
+                                "original_grouping": "deployment",
+                                "type": "json_editor"
+                            },
+                            "default_value": {
+                                "cores": 0.25,
+                                "memory": 4,
+                                "proc_type": "shared",
+                                "tier": "tier1"
+                            }
+                        },
+                        {
                             "key": "dedicated_volume_attributes",
                             "required": false,
                             "custom_config": {
@@ -390,8 +409,9 @@
                                 {
                                     "name": "VG1",
                                     "rg_name": "RG1",
+                                    "type": "scalable",
                                     "size": 30,
-                                    "type": "scalable"
+                                    "tier": "tier3"
                                 }
                             ]
                         },
