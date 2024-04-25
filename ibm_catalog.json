@@ -36,7 +36,8 @@
                     "dependencies": [
                         {
                             "flavors": [
-                                "powervs-quickstart"
+                                "powervs-workspace",
+                                "powervs-import-workspace"
                             ],
                             "id": "2dd486c7-b317-4aaa-907b-42671485ad96-global",
                             "name": "deploy-arch-ibm-pvs-inf",
@@ -255,8 +256,8 @@
                                     "value": "7300-00-01"
                                 },
                                 {
-                                    "displayname": "AIX 7200-05-06",
-                                    "value": "7200-05-06"
+                                    "displayname": "AIX 7200-05-07",
+                                    "value": "7200-05-07"
                                 }
                             ],
                             "custom_config": {}
@@ -287,7 +288,7 @@
                             "default_value": [
                                 {
                                     "cidr": "10.62.0.0/24",
-                                    "name": "network_2",
+                                    "name": "reserve_network_1",
                                     "reserved_ip_count": 2
                                 }
                             ]
@@ -296,7 +297,7 @@
                             "key": "dedicated_volume",
                             "type": "number",
                             "required": true,
-                            "default_value": 1
+                            "default_value": 0
                         },
                         {
                             "key": "shared_volume",

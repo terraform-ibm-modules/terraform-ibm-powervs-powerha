@@ -192,7 +192,7 @@ variable "dedicated_volume_attributes" {
   })
   validation {
     condition     = var.dedicated_volume_attributes.size >= 10 && var.dedicated_volume_attributes.size <= 10000 && contains(["tier0", "tier1", "tier3", "fixed IOPS"], var.dedicated_volume_attributes.tier)
-    error_message = "Allowed values are between 10 and 1000."
+    error_message = "Dedicated Volume Size should be between 10 and 10000 and tier should be tier0, tier1, tier3, fixed IOPS."
   }
 }
 
@@ -204,7 +204,7 @@ variable "shared_volume_attributes" {
   })
   validation {
     condition     = var.shared_volume_attributes.size >= 10 && var.shared_volume_attributes.size <= 10000 && contains(["tier0", "tier1", "tier3", "fixed IOPS"], var.shared_volume_attributes.tier)
-    error_message = "Allowed values are between 10 and 1000."
+    error_message = "Shared Volume Size should be between 10 and 10000 and tier should be tier0, tier1, tier3, fixed IOPS."
   }
 }
 
@@ -229,7 +229,7 @@ variable "powerha_resource_group_list" {
 }
 
 variable "volume_group_list" {
-  description = "List of parameters for volume group - Individual PowerHA volume group configuration. Based on the volume_group count, you can provide all the volume group configuration like name, resource group name and type. Default configuration will be taken if details are not provided."
+  description = "List of parameters for volume group - Individual PowerHA volume group configuration. Based on the volume_group count, you can provide all the volume group configuration like name, resource group name, type, size, tier. Default configuration will be taken if details are not provided."
   type = list(object({
     name    = string
     rg_name = string
