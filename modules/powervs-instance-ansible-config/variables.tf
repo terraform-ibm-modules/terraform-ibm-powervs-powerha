@@ -50,11 +50,6 @@ variable "node_details" {
   }))
 }
 
-variable "aix_image_id" {
-  description = "ID of AIX image."
-  type        = string
-}
-
 variable "powerha_resource_group_count" {
   description = "Number of Resource Groups which need to be created in PowerHA."
   type        = number

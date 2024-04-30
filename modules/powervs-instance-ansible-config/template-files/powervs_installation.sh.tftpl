@@ -6,7 +6,6 @@ export http_proxy=$proxy_host
 export https_proxy=$proxy_host
 export PYTHONIOENCODING=utf-8
 
-
 # Install Curl
 if [ -f /opt/freeware/bin/dnf ]; then
   echo 'y' | /opt/freeware/bin/dnf install curl-7.52*
@@ -21,16 +20,8 @@ elif [ -f /opt/freeware/bin/yum ]; then
   echo 'y' | /opt/freeware/bin/yum install ansible-2.9.25-2*
 fi
 
-# Install Ansible and update python version in all nodes
-if [ -f /opt/freeware/bin/dnf ]; then
-  echo 'y' | /opt/freeware/bin/dnf install python3.9-pip
-elif [ -f /opt/freeware/bin/yum ]; then
-  echo 'y' | /opt/freeware/bin/yum install python3.9-pip
-fi
-
 # Install boto3
-# /usr/bin/pip3 install boto3
-/opt/freeware/bin/pip3.9 install boto3
+/usr/bin/pip3 install boto3
 
 # Check and fix language issue
 cd /usr/sys/inst.images/installp/ppc

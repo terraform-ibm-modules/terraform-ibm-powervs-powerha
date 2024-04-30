@@ -68,7 +68,6 @@ module "powervs_instance_ansible_config" {
   ssh_private_key              = var.ssh_private_key
   bastion_host_ip              = local.bastion_host_ip
   proxy_ip_and_port            = local.proxy_ip_and_port
-  aix_image_id                 = var.aix_os_image
   node_details                 = local.node_details
   subnet_list                  = var.powervs_subnet_list
   reserved_subnet_list         = var.powervs_reserve_subnet_list

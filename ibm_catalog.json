@@ -250,14 +250,6 @@
                                 {
                                     "displayname": "AIX 7300-02-01",
                                     "value": "7300-02-01"
-                                },
-                                {
-                                    "displayname": "AIX 7300-00-01",
-                                    "value": "7300-00-01"
-                                },
-                                {
-                                    "displayname": "AIX 7200-05-07",
-                                    "value": "7200-05-07"
                                 }
                             ],
                             "custom_config": {}
