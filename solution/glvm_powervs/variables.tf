@@ -12,13 +12,18 @@ variable "prefix" {
   }
 }
 
-variable "powervs_zone" {
-  description = "IBM Cloud data center location corresponding to the location used in 'Power Virtual Server with VPC landing zone' pre-requisite deployment."
+variable "site2_powervs_zone" {
+  description = "IBM Cloud data center location for site2, where IBM PowerVS infrastructure will be created for site2."
+  type        = string
+}
+
+variable "ssh_public_key" {
+  description = "Public SSH Key for workspace and Power Virtual Server instance creation. The public SSH key must be an RSA key with a key size of either 2048 bits or 4096 bits (recommended). It must be a valid SSH key that does not already exist in the deployment region."
   type        = string
 }
 
 variable "ssh_private_key" {
-  description = "Private SSH key (RSA format) used to login to IBM Power Virtual Server instances. The private SSH key should match with the public SSH key referenced by the 'ssh_public_key' parameter. The input data must be in heredoc strings format (https://www.terraform.io/language/expressions/strings#heredoc-strings). The private SSH key is not uploaded or stored anywhere. For more information about SSH keys, see [SSH keys](https://cloud.ibm.com/docs/vpc?topic=vpc-ssh-keys)."
+  description = "Private SSH key (RSA format) used to login to IB;M Power Virtual Server instances. The private SSH key should match with the public SSH key referenced by the 'ssh_public_key' parameter. The input data must be in heredoc strings format (https://www.terraform.io/language/expressions/strings#heredoc-strings). The private SSH key is not uploaded or stored anywhere. For more information about SSH keys, see [SSH keys](https://cloud.ibm.com/docs/vpc?topic=vpc-ssh-keys)."
   type        = string
   sensitive   = true
 }
@@ -29,18 +34,41 @@ variable "ibmcloud_api_key" {
   sensitive   = true
 }
 
-variable "powervs_instance_count" {
-  description = "Number of Power Virtual Server instances required to create in the workspace for PowerHA cluster."
+variable "powervs_resource_group_name" {
+  description = "Existing IBM Cloud resource group name."
+  type        = string
+}
+
+variable "site1_powervs_instance_count" {
+  description = "Number of Power Virtual Server instances required to create in the site1 workspace for PowerHA cluster."
   type        = number
   validation {
-    condition     = var.powervs_instance_count <= 8 && var.powervs_instance_count >= 2
-    error_message = "Allowed values are between 2 and 8."
+    condition     = var.site1_powervs_instance_count <= 8 && var.site1_powervs_instance_count >= 1
+    error_message = "Allowed values are between 1 and 8."
   }
 }
 
-variable "tshirt_size" {
+variable "site2_powervs_instance_count" {
+  description = "Number of Power Virtual Server instances required to create in the site2 workspace for PowerHA cluster."
+  type        = number
+  validation {
+    condition     = var.site2_powervs_instance_count <= 8 && var.site2_powervs_instance_count >= 1
+    error_message = "Allowed values are between 1 and 8."
+  }
+}
+
+variable "site1_tshirt_size" {
   description = <<EOT
-  Power Virtual Server instance profiles. Power Virtual instance will be created based on the following values:
+  Power Virtual Server instance profiles for site1. Power Virtual instance will be created based on the following values:
+    proc_type: shared
+    tier: tier1 (This value is the same for all profiles)
+  EOT
+  type        = string
+}
+
+variable "site2_tshirt_size" {
+  description = <<EOT
+  Power Virtual Server instance profiles for site2. Power Virtual instance will be created based on the following values:
     proc_type: shared
     tier: tier1 (This value is the same for all profiles)
   EOT
@@ -58,23 +86,23 @@ variable "powervs_machine_type" {
 }
 
 variable "aix_os_image" {
-  description = "AIX operating system images for Power Virtual Server instances. Power Virtual Server instances are installed with the given AIX OS image."
+  description = "AIX operating system images for Power Virtual Server instances. Power Virtual Server instances are installed with the given AIX OS image. The supported AIX OS images are: 7300-02-01, 7300-00-01, 7200-05-06."
   type        = string
 }
 
-variable "powervs_subnet_list" {
+variable "site1_subnet_list" {
   description = "IBM Cloud Power Virtual Server subnet configuration details like name and CIDR."
   type = list(object({
     name = string
     cidr = string
   }))
   validation {
-    condition     = (length(var.powervs_subnet_list) == length(distinct([for item in var.powervs_subnet_list : lower(item.name)]))) && (length(var.powervs_subnet_list) == length(distinct([for item in var.powervs_subnet_list : join(".", slice(split(".", item.cidr), 0, 3))]))) && length(var.powervs_subnet_list) >= 1 && length(var.powervs_subnet_list) <= 14
+    condition     = (length(var.site1_subnet_list) == length(distinct([for item in var.site1_subnet_list : lower(item.name)]))) && (length(var.site1_subnet_list) == length(distinct([for item in var.site1_subnet_list : join(".", slice(split(".", item.cidr), 0, 3))]))) && length(var.site1_subnet_list) >= 1 && length(var.site1_subnet_list) <= 14
     error_message = "More than 14 subnets and Duplicate subnet name and cidr are not allowed."
   }
 }
 
-variable "powervs_reserve_subnet_list" {
+variable "site1_reserve_subnet_list" {
   description = "IBM Cloud Power Virtual Server subnet configuration details like name, CIDR, and reserved IP count used for PowerHA service label to be created."
   type = list(object({
     name              = string
@@ -82,7 +110,32 @@ variable "powervs_reserve_subnet_list" {
     reserved_ip_count = number
   }))
   validation {
-    condition     = (length(var.powervs_reserve_subnet_list) == length(distinct([for item in var.powervs_reserve_subnet_list : lower(item.name)]))) && (length(var.powervs_reserve_subnet_list) == length(distinct([for item in var.powervs_reserve_subnet_list : join(".", slice(split(".", item.cidr), 0, 3))]))) && length(var.powervs_reserve_subnet_list) >= 1 && length(var.powervs_reserve_subnet_list) <= 2 && alltrue([for data in var.powervs_reserve_subnet_list : true if data.reserved_ip_count >= 1])
+    condition     = (length(var.site1_reserve_subnet_list) == length(distinct([for item in var.site1_reserve_subnet_list : lower(item.name)]))) && (length(var.site1_reserve_subnet_list) == length(distinct([for item in var.site1_reserve_subnet_list : join(".", slice(split(".", item.cidr), 0, 3))]))) && length(var.site1_reserve_subnet_list) >= 1 && length(var.site1_reserve_subnet_list) <= 2 && alltrue([for data in var.site1_reserve_subnet_list : true if data.reserved_ip_count >= 1])
+    error_message = "More than 2 subnets and Duplicate subnet name and cidr are not allowed. reserved_ip_count should be more than 0."
+  }
+}
+
+variable "site2_subnet_list" {
+  description = "IBM Cloud Power Virtual Server subnet configuration details like name and CIDR."
+  type = list(object({
+    name = string
+    cidr = string
+  }))
+  validation {
+    condition     = (length(var.site2_subnet_list) == length(distinct([for item in var.site2_subnet_list : lower(item.name)]))) && (length(var.site2_subnet_list) == length(distinct([for item in var.site2_subnet_list : join(".", slice(split(".", item.cidr), 0, 3))]))) && length(var.site2_subnet_list) >= 1 && length(var.site2_subnet_list) <= 14
+    error_message = "More than 14 subnets and Duplicate subnet name and cidr are not allowed."
+  }
+}
+
+variable "site2_reserve_subnet_list" {
+  description = "IBM Cloud Power Virtual Server subnet configuration details like name, CIDR, and reserved IP count used for PowerHA service label to be created."
+  type = list(object({
+    name              = string
+    cidr              = string
+    reserved_ip_count = number
+  }))
+  validation {
+    condition     = (length(var.site2_reserve_subnet_list) == length(distinct([for item in var.site2_reserve_subnet_list : lower(item.name)]))) && (length(var.site2_reserve_subnet_list) == length(distinct([for item in var.site2_reserve_subnet_list : join(".", slice(split(".", item.cidr), 0, 3))]))) && length(var.site2_reserve_subnet_list) >= 1 && length(var.site2_reserve_subnet_list) <= 2 && alltrue([for data in var.site2_reserve_subnet_list : true if data.reserved_ip_count >= 1])
     error_message = "More than 2 subnets and Duplicate subnet name and cidr are not allowed, reserved_ip_count should be more than 0."
   }
 }
@@ -142,30 +195,36 @@ variable "powerha_resource_group" {
   }
 }
 
-variable "volume_group" {
+variable "powerha_glvm_volume_group" {
   description = "Number of Volume Groups which need to be created in PowerHA."
   type        = number
   validation {
-    condition     = var.volume_group >= 1 && var.volume_group <= 512
+    condition     = var.powerha_glvm_volume_group >= 1 && var.powerha_glvm_volume_group <= 512
     error_message = "PowerHA volume group count should be between 1 to 512."
   }
 }
 
-variable "file_system" {
-  description = "Number of File systems which need to be created in PowerHA."
-  type        = number
-  validation {
-    condition     = var.file_system >= 1 && var.file_system <= 512
-    error_message = "PowerHA file system count should be between 1 to 512."
-  }
-}
 
 #####################################################
 # Optional Parameters
 #####################################################
 
-variable "custom_profile" {
-  description = "Overrides t-shirt profile: Custom PowerVS instance. Specify combination of cores, memory, proc_type and storage tier."
+variable "site2_cloud_connection" {
+  description = "Cloud connection configuration: speed (50, 100, 200, 500, 1000, 2000, 5000, 10000 Mb/s), count (1 or 2 connections), global_routing (true or false), metered (true or false). Not applicable for DCs where PER is enabled. All the Power Virtual Server subnets which are created as part of the powervs_subnet_list are attached to this cloud connection."
+  type = object({
+    count          = number
+    speed          = number
+    global_routing = bool
+    metered        = bool
+  })
+  validation {
+    condition     = var.site2_cloud_connection.count <= 2 && var.site2_cloud_connection.count >= 1
+    error_message = "Cloud connection allowed maximum 2."
+  }
+}
+
+variable "site1_custom_profile" {
+  description = "Overrides t-shirt profile for site1: Custom PowerVS instance. Specify combination of cores, memory, proc_type and storage tier."
   type = object({
     cores     = number
     memory    = number
@@ -173,7 +232,27 @@ variable "custom_profile" {
     tier      = string
   })
   validation {
-    condition     = var.custom_profile.cores >= 0.25 && var.custom_profile.memory >= 2 && contains(["dedicated", "shared", "capped"], var.custom_profile.proc_type) && contains(["tier0", "tier1", "tier3", "fixed IOPS"], var.custom_profile.tier)
+    condition     = var.site1_custom_profile.cores >= 0.25 && var.site1_custom_profile.memory >= 2 && contains(["dedicated", "shared", "capped"], var.site1_custom_profile.proc_type) && contains(["tier0", "tier1", "tier3", "fixed IOPS"], var.site1_custom_profile.tier)
+    error_message = <<EOT
+    Invalid custom config. Please provide valid cores, memory, proc_type and storage tier.
+    Cores must be greater than 0.25 and memory must be greater than 2 GB.
+    Supported values:
+      proc_type: [dedicated, shared, capped]
+      tier: [tier0, tier1, tier3, fixed IOPS]
+    EOT
+  }
+}
+
+variable "site2_custom_profile" {
+  description = "Overrides t-shirt profile for site2: Custom PowerVS instance. Specify combination of cores, memory, proc_type and storage tier."
+  type = object({
+    cores     = number
+    memory    = number
+    proc_type = string
+    tier      = string
+  })
+  validation {
+    condition     = var.site2_custom_profile.cores >= 0.25 && var.site2_custom_profile.memory >= 2 && contains(["dedicated", "shared", "capped"], var.site2_custom_profile.proc_type) && contains(["tier0", "tier1", "tier3", "fixed IOPS"], var.site2_custom_profile.tier)
     error_message = <<EOT
     Invalid custom config. Please provide valid cores, memory, proc_type and storage tier.
     Cores must be greater than 0.25 and memory must be greater than 2 GB.
@@ -211,10 +290,11 @@ variable "shared_volume_attributes" {
 variable "powerha_resource_group_list" {
   description = "List of parameters for Resource group - Individual PowerHA Resource group configuration. Based on the powerha_resource_group count, you can provide all the resource group configuration like name, start up, fallover and fallback polices. Default configuration will be taken if details are not provided."
   type = list(object({
-    name     = string
-    startup  = string
-    fallover = string
-    fallback = string
+    name        = string
+    startup     = string
+    fallover    = string
+    fallback    = string
+    site_policy = string
   }))
   validation {
     condition     = (length(var.powerha_resource_group_list) == length(distinct([for item in var.powerha_resource_group_list : lower(item.name)]))) && alltrue([for data in var.powerha_resource_group_list : contains(["OHN", "OFAN", "OAAN", "OUDP"], data.startup)]) && alltrue([for data in var.powerha_resource_group_list : contains(["FNPN", "FUDNP", "BO"], data.fallover)]) && alltrue([for data in var.powerha_resource_group_list : contains(["NFB", "FBHPN"], data.fallback)])
@@ -228,7 +308,7 @@ variable "powerha_resource_group_list" {
   }
 }
 
-variable "volume_group_list" {
+variable "powerha_glvm_volume_group_list" {
   description = "List of parameters for volume group - Individual PowerHA volume group configuration. Based on the volume_group count, you can provide all the volume group configuration like name, resource group name, type, size, tier. Default configuration will be taken if details are not provided."
   type = list(object({
     name    = string
@@ -238,7 +318,7 @@ variable "volume_group_list" {
     tier    = string
   }))
   validation {
-    condition     = (length(var.volume_group_list) == length(distinct([for item in var.volume_group_list : lower(item.name)]))) && alltrue([for data in var.volume_group_list : contains(["original", "big", "scalable", "legacy"], data.type)]) && alltrue([for data in var.volume_group_list : data.size >= 30 && data.size <= 1000]) && alltrue([for data in var.volume_group_list : contains(["tier0", "tier1", "tier3", "fixed IOPS"], data.tier)])
+    condition     = (length(var.powerha_glvm_volume_group_list) == length(distinct([for item in var.powerha_glvm_volume_group_list : lower(item.name)]))) && alltrue([for data in var.powerha_glvm_volume_group_list : contains(["original", "big", "scalable", "legacy"], data.type)]) && alltrue([for data in var.powerha_glvm_volume_group_list : data.size >= 30 && data.size <= 1000]) && alltrue([for data in var.powerha_glvm_volume_group_list : contains(["tier0", "tier1", "tier3", "fixed IOPS"], data.tier)])
     error_message = <<EOT
     Duplicate volume group name and size is less than 30 and more than 1000 is not allowed.
     Supported values:
@@ -248,24 +328,7 @@ variable "volume_group_list" {
   }
 }
 
-variable "file_system_list" {
-  description = "List of parameters for file system - Individual PowerHA file system configuration. Based on the file_system count, you can provide all the file system configuration like name, size_per_unit, block_size, type of file system, Units and volume group name. Default configuration will be taken if details are not provided."
-  type = list(object({
-    name          = string
-    type          = string
-    volume_group  = string
-    units         = number
-    size_per_unit = string
-    block_size    = number
-  }))
-  validation {
-    condition     = (length(var.file_system_list) == length(distinct([for item in var.file_system_list : lower(item.name)]))) && alltrue([for data in var.file_system_list : contains(["enhanced", "standard", "compressed", "large"], data.type)]) && alltrue([for data in var.file_system_list : data.units > 16]) && alltrue([for data in var.file_system_list : contains(["megabytes", "gigabytes"], data.size_per_unit)]) && alltrue([for data in var.file_system_list : contains([512, 1024, 2048, 4096], data.block_size)])
-    error_message = <<EOT
-    Duplicate file system name or units is less than 16 or incorrect type, size_per_unit, block_size values.
-    Supported values:
-      type: [enhanced, standard, compressed, large]
-      size_per_unit: [megabytes, gigabytes]
-      block_size: [512, 1024, 2048, 4096]
-    EOT
-  }
+variable "tags" {
+  description = "List of tag names for the IBM Cloud PowerVS workspace for identification separately from other resources."
+  type        = list(string)
 }
