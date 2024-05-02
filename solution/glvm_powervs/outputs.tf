@@ -69,17 +69,17 @@ output "site1_powervs_subnet_list" {
 
 output "site2_powervs_subnet_list" {
   description = "Network ID and name of private networks in PowerVS Workspace."
-  value       = module.site2_powervs_workspace_update.powervs_subnet_list
+  value       = module.site2_powervs_workspace_create.powervs_subnet_list
 }
 
 output "site1_subnet_reserve_ips" {
   description = "Reserve IP address of the network interface of IBM PowerVS instance."
-  value       = module.powervs_instance.port_data[*]
+  value       = module.site1_powervs_instance.port_data[*]
 }
 
 output "site2_subnet_reserve_ips" {
   description = "Reserve IP address of the network interface of IBM PowerVS instance."
-  value       = module.powervs_instance.port_data[*]
+  value       = module.site2_powervs_instance.port_data[*]
 }
 
 output "powervs_images" {
@@ -99,12 +99,12 @@ output "site2_cloud_connection" {
 
 output "site1_powervs_instances" {
   description = "IBM PowerVS instance Data."
-  value       = module.site1_powervs_instance.instance
+  value       = module.site1_powervs_instance.instances
 }
 
 output "site2_powervs_instances" {
   description = "IBM PowerVS instance Data."
-  value       = module.site2_powervs_instance.instance
+  value       = module.site2_powervs_instance.instances
 }
 
 output "site1_pha_shared_volume_data" {
