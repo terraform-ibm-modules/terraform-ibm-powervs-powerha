@@ -33,7 +33,7 @@ variable "powervs_instance_count" {
   description = "Number of Power Virtual Server instances required to create in the workspace for PowerHA cluster."
   type        = number
   validation {
-    condition     = var.powervs_instance_count < 9 && var.powervs_instance_count > 1
+    condition     = var.powervs_instance_count <= 8 && var.powervs_instance_count >= 2
     error_message = "Allowed values are between 2 and 8."
   }
 }
@@ -58,7 +58,7 @@ variable "powervs_machine_type" {
 }
 
 variable "aix_os_image" {
-  description = "AIX operating system images for Power Virtual Server instances. Power Virtual Server instances are installed with the given AIX OS image. The supported AIX OS images are: 7300-02-01, 7300-00-01, 7200-05-06."
+  description = "AIX operating system images for Power Virtual Server instances. Power Virtual Server instances are installed with the given AIX OS image."
   type        = string
 }
 
@@ -83,7 +83,7 @@ variable "powervs_reserve_subnet_list" {
   }))
   validation {
     condition     = (length(var.powervs_reserve_subnet_list) == length(distinct([for item in var.powervs_reserve_subnet_list : lower(item.name)]))) && (length(var.powervs_reserve_subnet_list) == length(distinct([for item in var.powervs_reserve_subnet_list : join(".", slice(split(".", item.cidr), 0, 3))]))) && length(var.powervs_reserve_subnet_list) >= 1 && length(var.powervs_reserve_subnet_list) <= 2 && alltrue([for data in var.powervs_reserve_subnet_list : true if data.reserved_ip_count >= 1])
-    error_message = "More than 2 subnets and Duplicate subnet name and cidr are not allowed."
+    error_message = "More than 2 subnets and Duplicate subnet name and cidr are not allowed, reserved_ip_count should be more than 0."
   }
 }
 

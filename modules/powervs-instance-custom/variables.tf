@@ -82,8 +82,8 @@ variable "pi_instance_count" {
   description = "Number of Power Virtual Server instances required to create in the workspace for PowerHA cluster."
   type        = number
   validation {
-    condition     = var.pi_instance_count < 9 && var.pi_instance_count > 1
-    error_message = "Allowed values are between 2 and 8."
+    condition     = var.pi_instance_count <= 8 && var.pi_instance_count >= 1
+    error_message = "Allowed values are between 1 and 8."
   }
 }
 
