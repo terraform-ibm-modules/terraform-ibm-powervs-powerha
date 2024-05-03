@@ -86,7 +86,7 @@ variable "powervs_machine_type" {
 }
 
 variable "aix_os_image" {
-  description = "AIX operating system images for Power Virtual Server instances. Power Virtual Server instances are installed with the given AIX OS image. The supported AIX OS images are: 7300-02-01, 7300-00-01, 7200-05-06."
+  description = "AIX operating system images for Power Virtual Server instances. Power Virtual Server instances are installed with the given AIX OS image."
   type        = string
 }
 

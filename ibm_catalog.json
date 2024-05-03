@@ -246,7 +246,7 @@
                             "key": "aix_os_image",
                             "type": "string",
                             "required": true,
-                            "default_value": "",
+                            "default_value": "7300-02-01",
                             "options": [
                                 {
                                     "displayname": "AIX 7300-02-01",
@@ -559,7 +559,7 @@
                     "label": "PowerHA GLVM Edition ready for PowerVS",
                     "name": "powerha-glvm-powervs",
                     "install_type": "glvm",
-                    "index": 1,
+                    "index": 2,
                     "working_directory": "solution/glvm_powervs",
                     "compliance": {},
                     "dependencies": [
@@ -838,7 +838,7 @@
                             "key": "aix_os_image",
                             "type": "string",
                             "required": true,
-                            "default_value": "",
+                            "default_value": "7300-02-01",
                             "options": [
                                 {
                                     "displayname": "AIX 7300-02-01",
