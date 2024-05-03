@@ -13,12 +13,12 @@ This deployable architecture is designed to assist you in deploying PowerHA Syst
 
 PowerHA on Power Virtual Server creates and prepares Power Virtual Server instances for PowerHA SystemMirror workloads. After deployment completes, you may (depending on the framework you chose) begin login to your newly created virtual server instances directly and validate the PowerHA SystemMirror configuration based on the provided options. You may even modify the configuration if required.
 
-Three solutions are offered:
+Solutions offered:
 1. [PowerHA Standard Edition ready for PowerVS](https://github.com/terraform-ibm-modules/terraform-ibm-powervs-powerha/tree/main/solutions/standard_powervs)
     - Creates Power Virtual Server workspace, Power Virtual instance, interconnects them, and configures AIX network management services and configure PowerHA SystemMirror using Ansible Scripts.
 
 ## Reference architectures
-- [PowerHA Standard Edition ready for PowerVS](https://github.com/terraform-ibm-modules/terraform-ibm-powervs-powerha/tree/main/PowerVS-PowerHA-Diagram.svg)
+- [PowerHA Standard Edition ready for PowerVS](https://github.com/terraform-ibm-modules/terraform-ibm-powervs-powerha/tree/main/reference-architectures/PowerVS-PowerHA-Diagram.svg)
 
 
 <!-- BEGIN OVERVIEW HOOK -->
@@ -26,6 +26,7 @@ Three solutions are offered:
 * [terraform-ibm-powervs-powerha](#terraform-ibm-powervs-powerha)
 * [Submodules](./modules)
 * [Examples](./examples)
+    * [End to End Power Virtual Server infrastructure for PowerHA deployments](./examples/standard)
 * [Contributing](#contributing)
 <!-- END OVERVIEW HOOK -->
 

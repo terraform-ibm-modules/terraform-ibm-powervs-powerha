@@ -31,7 +31,7 @@
                     "name": "powerha-standard-powervs",
                     "install_type": "standard",
                     "index": 1,
-                    "working_directory": "solution/standard_powervs",
+                    "working_directory": "solutions/standard_powervs",
                     "compliance": {},
                     "dependencies": [
                         {
@@ -125,7 +125,7 @@
                                     "value": "sao04"
                                 },
                                 {
-                                    "displayname": "Sydney 04 (syd04)",
+                                    "displayname": "Sydney 04 (syd04) PER",
                                     "value": "syd04"
                                 },
                                 {

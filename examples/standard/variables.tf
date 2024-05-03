@@ -13,8 +13,8 @@ variable "landing_zone_configuration" {
   type        = string
 
   validation {
-    condition     = contains(["3VPC_RHEL", "3VPC_SLES", "1VPC_RHEL"], var.landing_zone_configuration)
-    error_message = "Provided value must be one of ['3VPC_RHEL', '3VPC_SLES', '1VPC_RHEL'] only"
+    condition     = contains(["3VPC_RHEL", "3VPC_SLES"], var.landing_zone_configuration)
+    error_message = "Provided value must be one of ['3VPC_RHEL', '3VPC_SLES'] only"
   }
 }
 
