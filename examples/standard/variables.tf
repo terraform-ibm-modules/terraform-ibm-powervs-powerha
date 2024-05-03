@@ -137,8 +137,8 @@ variable "cos_powerha_image_download" {
   })
   default = {
     "bucket_name" : "powerha-images",
-    "cos_access_key_id" : "21d4d77f64434315ac16801c439e6136",
-    "cos_secret_access_key" : "4f4d1c599b4e149241da080092d68fe2e489e221ffcf225c",
+    "cos_access_key_id" : "",
+    "cos_secret_access_key" : "",
     "cos_endpoint" : "https://s3.us-east.cloud-object-storage.appdomain.cloud",
     "folder_name" : "728",
     "ssl_file_name" : "openssl-1.1.2.2200.tar.Z"

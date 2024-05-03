@@ -41,8 +41,8 @@ func setupOptions(t *testing.T, prefix string, dir string) *testhelper.TestOptio
 		TerraformDir:       dir,
 		Prefix:             prefix,
 		ResourceGroup:      resourceGroup,
-		Region:             "eu-de-1", // specify default region to skip best choice query
-		DefaultRegion:      "eu-de-1",
+		Region:             "us-south", // specify default region to skip best choice query
+		DefaultRegion:      "dal10",
 		BestRegionYAMLPath: "./common-go-assets/cloudinfo-region-power-prefs.yaml", // specific to powervs zones
 		// temporary workaround for BSS backend issue
 		ImplicitDestroy: []string{
@@ -72,7 +72,7 @@ func setupOptions(t *testing.T, prefix string, dir string) *testhelper.TestOptio
 	return options
 }
 
-func TestRunCompleteExample(t *testing.T) {
+func TestRunBranchExample(t *testing.T) {
 	t.Parallel()
 
 	options := setupOptions(t, "p", standardPhaExampleDir)
@@ -84,7 +84,7 @@ func TestRunCompleteExample(t *testing.T) {
 	assert.NotNil(t, output, "Expected some output")
 }
 
-func TestRunUpgradeExample(t *testing.T) {
+func TestRunMainExample(t *testing.T) {
 	t.Parallel()
 
 	options := setupOptions(t, "p", standardPhaExampleDir)
