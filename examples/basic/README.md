@@ -1,4 +1,4 @@
-# End to End Power Virtual Server infrastructure for PowerHA deployments
+# Basic Example
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ### Requirements
