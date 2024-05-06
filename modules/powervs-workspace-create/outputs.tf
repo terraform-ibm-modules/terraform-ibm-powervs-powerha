@@ -10,7 +10,7 @@ output "powervs_resource_group_name" {
 
 output "powervs_workspace_name" {
   description = "PowerVS infrastructure workspace name."
-  value       = "${var.prefix}-${var.powervs_zone}-power-workspace"
+  value       = module.powervs_workspace.pi_workspace_name
 }
 
 output "powervs_workspace_id" {

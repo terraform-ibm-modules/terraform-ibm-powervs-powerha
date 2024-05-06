@@ -77,10 +77,10 @@ output "site1_subnet_reserve_ips" {
   value       = module.site1_powervs_instance.port_data[*]
 }
 
-# output "site2_subnet_reserve_ips" {
-#   description = "Reserve IP address of the network interface of IBM PowerVS instance."
-#   value       = module.site2_powervs_instance.port_data[*]
-# }
+output "site2_subnet_reserve_ips" {
+  description = "Reserve IP address of the network interface of IBM PowerVS instance."
+  value       = module.site2_powervs_instance.port_data[*]
+}
 
 output "powervs_images" {
   description = "Object containing imported PowerVS image name and image id."
@@ -102,17 +102,17 @@ output "site1_powervs_instances" {
   value       = module.site1_powervs_instance.instances
 }
 
-# output "site2_powervs_instances" {
-#   description = "IBM PowerVS instance Data."
-#   value       = module.site2_powervs_instance.instances
-# }
+output "site2_powervs_instances" {
+  description = "IBM PowerVS instance Data."
+  value       = module.site2_powervs_instance.instances
+}
 
 output "site1_pha_shared_volume_data" {
   description = "PowerHA shared volumes data for volume groups."
   value       = module.site1_powervs_instance.pha_shared_volume_data
 }
 
-# output "site2_pha_shared_volume_data" {
-#   description = "PowerHA shared volumes data for volume groups."
-#   value       = module.site2_powervs_instance.pha_shared_volume_data
-# }
+output "site2_pha_shared_volume_data" {
+  description = "PowerHA shared volumes data for volume groups."
+  value       = module.site2_powervs_instance.pha_shared_volume_data
+}

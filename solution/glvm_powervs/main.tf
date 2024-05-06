@@ -33,8 +33,7 @@ module "site1_cloud_connection_network_attach" {
 #######################################################
 
 module "site2_powervs_workspace_create" {
-  depends_on = [module.site1_cloud_connection_network_attach]
-  source     = "../../modules/powervs-workspace-create"
+  source = "../../modules/powervs-workspace-create"
 
   prefix                      = var.prefix
   powervs_zone                = var.site2_powervs_zone
@@ -70,7 +69,7 @@ module "site2_cloud_connection_network_attach" {
 #####################################################
 
 module "site1_powervs_instance" {
-  depends_on = [module.site2_cloud_connection_network_attach]
+  depends_on = [module.site1_powervs_workspace_update, module.site1_cloud_connection_network_attach]
   source     = "../../modules/powervs-instance-custom"
 
   powervs_workspace_guid = local.site1_powervs_workspace_guid
@@ -98,29 +97,29 @@ module "site1_powervs_instance" {
 # Site2 PowerVS Instance Creation
 #####################################################
 
-# module "site2_powervs_instance" {
-#   depends_on = [module.site1_powervs_instance]
-#   source     = "../../modules/powervs-instance-custom"
+module "site2_powervs_instance" {
+  depends_on = [module.site2_powervs_workspace_create, module.site2_cloud_connection_network_attach]
+  source     = "../../modules/powervs-instance-custom"
 
-#   powervs_workspace_guid = module.site2_powervs_workspace_create.powervs_workspace_guid
-#   ssh_public_key_name    = module.site2_powervs_workspace_create.powervs_ssh_public_key.name
+  powervs_workspace_guid = module.site2_powervs_workspace_create.powervs_workspace_guid
+  ssh_public_key_name    = module.site2_powervs_workspace_create.powervs_ssh_public_key
 
-#   pi_prefix                   = var.prefix
-#   pi_image_id                 = local.site2_pi_instance.aix_image_id
-#   pi_networks                 = local.site2_pi_instance.powervs_networks
-#   pi_number_of_processors     = local.site2_pi_instance.number_of_processors
-#   pi_memory_size              = local.site2_pi_instance.memory_size
-#   pi_cpu_proc_type            = local.site2_pi_instance.cpu_proc_type
-#   pi_storage_type             = local.site2_pi_instance.tier
-#   pi_server_type              = var.powervs_machine_type
-#   pi_instance_count           = var.site2_powervs_instance_count
-#   powervs_reserve_subnet_list = var.site2_reserve_subnet_list
-#   dedicated_volume_count      = var.dedicated_volume
-#   shared_volume_count         = var.shared_volume
-#   dedicated_volume_attributes = var.dedicated_volume_attributes
-#   shared_volume_attributes    = var.shared_volume_attributes
-#   pha_shared_volume           = local.pha_vg_shared_disks
-# }
+  pi_prefix                   = var.prefix
+  pi_image_id                 = local.site2_pi_instance.aix_image_id
+  pi_networks                 = local.site2_pi_instance.powervs_networks
+  pi_number_of_processors     = local.site2_pi_instance.number_of_processors
+  pi_memory_size              = local.site2_pi_instance.memory_size
+  pi_cpu_proc_type            = local.site2_pi_instance.cpu_proc_type
+  pi_storage_type             = local.site2_pi_instance.tier
+  pi_server_type              = var.powervs_machine_type
+  pi_instance_count           = var.site2_powervs_instance_count
+  powervs_reserve_subnet_list = var.site2_reserve_subnet_list
+  dedicated_volume_count      = var.dedicated_volume
+  shared_volume_count         = var.shared_volume
+  dedicated_volume_attributes = var.dedicated_volume_attributes
+  shared_volume_attributes    = var.shared_volume_attributes
+  pha_shared_volume           = local.pha_vg_shared_disks
+}
 
 
 # #####################################################
