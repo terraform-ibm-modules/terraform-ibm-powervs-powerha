@@ -1034,7 +1034,8 @@
                                     "name": "RG1",
                                     "startup": "OHN",
                                     "fallover": "FNPN",
-                                    "fallback": "NFB"
+                                    "fallback": "NFB",
+                                    "site_policy": "both"
                                 }
                             ]
                         },

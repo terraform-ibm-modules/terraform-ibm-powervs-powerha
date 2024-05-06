@@ -84,12 +84,12 @@ locals {
     cpu_proc_type        = local.site2_tshirt_choice.proc_type
   }
 
-  # node_details = [for item in module.powervs_instance.instances : {
-  #   pi_instance_name        = replace(lower(item.pi_instance_name), "_", "-")
-  #   pi_instance_primary_ip  = item.pi_instance_primary_ip
-  #   pi_instance_private_ips = item.pi_instance_private_ips[*]
-  #   pi_extend_volume        = item.pi_storage_configuration[0].wwns
-  # }]
+  node_details = [for item in concat(module.site1_powervs_instance.instances, module.site2_powervs_instance.instances) : {
+    pi_instance_name        = replace(lower(item.pi_instance_name), "_", "-")
+    pi_instance_primary_ip  = item.pi_instance_primary_ip
+    pi_instance_private_ips = item.pi_instance_private_ips[*]
+    pi_extend_volume        = item.pi_storage_configuration[0].wwns
+  }]
 
 }
 
