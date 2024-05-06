@@ -26,7 +26,7 @@ Solutions offered:
 * [terraform-ibm-powervs-powerha](#terraform-ibm-powervs-powerha)
 * [Submodules](./modules)
 * [Examples](./examples)
-    * [End to End Power Virtual Server infrastructure for PowerHA deployments](./examples/standard)
+    * [End to End Power Virtual Server infrastructure for PowerHA deployments](./examples/basic)
 * [Contributing](#contributing)
 <!-- END OVERVIEW HOOK -->
 

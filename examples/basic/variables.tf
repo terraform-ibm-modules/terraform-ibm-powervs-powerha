@@ -109,52 +109,6 @@ variable "shared_volume" {
   default     = 1
 }
 
-variable "cos_powerha_image_download" {
-  description = <<EOT
-  Details about cloud object storage bucket where PowerHA installation media folder and ssl file are located. For more details click [here](https://cloud.ibm.com/docs/cloud-object-storage?topic=cloud-object-storage-service-credentials).
-  Example:
-    {
-      "bucket_name":"bucket-name",
-      "cos_access_key_id":"xxxxxxxxxx",
-      "cos_secret_access_key":"xxxxxx",
-      "cos_endpoint":"https://s3.region.cloud-object-storage.appdomain.cloud",
-      "folder_name":"powerha-build-parent-folder-name",
-      "ssl_file_name": "ssl-file-path"
-    }
-
-  You can keep the PowerHA images in the following format in the IBM Cloud COS Bucket.
-  Example: 728 is a parent folder
-    728/Gold/<filename>.tar.gz
-    728/SPx/<filename>.tar.gz
-  EOT
-  type = object({
-    bucket_name           = string
-    cos_access_key_id     = string
-    cos_secret_access_key = string
-    cos_endpoint          = string
-    folder_name           = string
-    ssl_file_name         = string
-  })
-}
-
-variable "powerha_resource_group" {
-  description = "Number of Resource Groups which need to be created in PowerHA."
-  type        = number
-  default     = 1
-}
-
-variable "volume_group" {
-  description = "Number of Volume Groups which need to be created in PowerHA."
-  type        = number
-  default     = 2
-}
-
-variable "file_system" {
-  description = "Number of File systems which need to be created in PowerHA."
-  type        = number
-  default     = 2
-}
-
 #####################################################
 # Optional Parameters
 #####################################################
@@ -215,51 +169,4 @@ variable "shared_volume_attributes" {
     size : 30,
     tier : "tier3"
   }
-}
-
-variable "powerha_resource_group_list" {
-  description = "List of parameters for Resource group - Individual PowerHA Resource group configuration. Based on the powerha_resource_group count, you can provide all the resource group configuration like name, start up, fallover and fallback polices. Default configuration will be taken if details are not provided."
-  type = list(object({
-    name     = string
-    startup  = string
-    fallover = string
-    fallback = string
-  }))
-  default = [{
-    name : "RG1",
-    startup : "OHN",
-    fallover : "FNPN",
-    fallback : "NFB"
-  }]
-}
-
-variable "volume_group_list" {
-  description = "List of parameters for volume group - Individual PowerHA volume group configuration. Based on the volume_group count, you can provide all the volume group configuration like name, resource group name, type, size, tier. Default configuration will be taken if details are not provided."
-  type = list(object({
-    name    = string
-    rg_name = string
-    type    = string
-    size    = number
-    tier    = string
-  }))
-  default = [
-    { "name" : "VG1", "rg_name" : "RG1", "size" : 40, "type" : "original", "tier" : "tier0" },
-    { "name" : "VG2", "rg_name" : "RG2", "size" : 50, "type" : "original", "tier" : "tier1" }
-  ]
-}
-
-variable "file_system_list" {
-  description = "List of parameters for file system - Individual PowerHA file system configuration. Based on the file_system count, you can provide all the file system configuration like name, size_per_unit, block_size, type of file system, Units and volume group name. Default configuration will be taken if details are not provided."
-  type = list(object({
-    name          = string
-    type          = string
-    volume_group  = string
-    units         = number
-    size_per_unit = string
-    block_size    = number
-  }))
-  default = [
-    { "name" : "fs2", "type" : "enhanced", "volume_group" : "VG1", "units" : "100", "size_per_unit" : "megabytes", "block_size" : "1024" },
-    { "name" : "FS1", "type" : "enhanced", "volume_group" : "VG1", "units" : "100", "size_per_unit" : "megabytes", "block_size" : "1024" }
-  ]
 }

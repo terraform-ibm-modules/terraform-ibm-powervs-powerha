@@ -12,8 +12,6 @@ locals {
   #####################################################
   # Schematic Workspace Data Locals
   #####################################################
-  bastion_host_ip        = module.fullstack.access_host_or_ip
-  proxy_ip_and_port      = module.fullstack.proxy_host_or_ip_port
   powervs_workspace_guid = module.fullstack.powervs_workspace_guid
   powervs_workspace_id   = module.fullstack.powervs_workspace_id
   powervs_workspace_name = module.fullstack.powervs_workspace_name
@@ -30,11 +28,7 @@ locals {
   # PowerHA Shared Volume Locals
   ##################################
 
-  pha_vg_shared_disks = [for idx in range(var.volume_group) :
-    idx < length(var.volume_group_list) ?
-    { size = var.volume_group_list[idx].size, tier = var.volume_group_list[idx].tier } :
-    { size = 30, tier = "tier3" }
-  ]
+  pha_vg_shared_disks = []
 
   ##################################
   # PowerVS Instance Locals
@@ -47,12 +41,5 @@ locals {
     tier                 = local.tshirt_choice.tier
     cpu_proc_type        = local.tshirt_choice.proc_type
   }
-
-  node_details = [for item in module.powervs_instance.instances : {
-    pi_instance_name        = replace(lower(item.pi_instance_name), "_", "-")
-    pi_instance_primary_ip  = item.pi_instance_primary_ip
-    pi_instance_private_ips = item.pi_instance_private_ips[*]
-    pi_extend_volume        = item.pi_storage_configuration[0].wwns
-  }]
 
 }

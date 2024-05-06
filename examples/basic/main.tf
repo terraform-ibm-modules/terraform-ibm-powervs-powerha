@@ -91,30 +91,3 @@ module "powervs_instance" {
   shared_volume_attributes    = var.shared_volume_attributes
   pha_shared_volume           = local.pha_vg_shared_disks
 }
-
-
-#####################################################
-# Test PowerVS Instance Ansible Configuration
-# #####################################################
-
-module "powervs_instance_ansible_config" {
-  depends_on = [module.powervs_instance, local.node_details]
-  source     = "../../modules/powervs-instance-ansible-config"
-
-  ssh_private_key              = var.ssh_private_key
-  bastion_host_ip              = local.bastion_host_ip
-  proxy_ip_and_port            = local.proxy_ip_and_port
-  node_details                 = local.node_details
-  subnet_list                  = var.powervs_subnet_list
-  reserved_subnet_list         = var.powervs_reserve_subnet_list
-  reserve_ip_data              = module.powervs_instance.reserve_ips
-  pha_cos_data                 = var.cos_powerha_image_download
-  repository_disk_wwn          = module.powervs_instance.shared_volume_data[0].wwn
-  shared_disk_wwns             = module.powervs_instance.pha_shared_volume_data[*].wwn
-  powerha_resource_group_count = var.powerha_resource_group
-  powerha_resource_group_list  = var.powerha_resource_group_list
-  volume_group_count           = var.volume_group
-  volume_group_list            = var.volume_group_list
-  file_system_count            = var.file_system
-  file_system_list             = var.file_system_list
-}

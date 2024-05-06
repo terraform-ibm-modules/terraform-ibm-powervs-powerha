@@ -53,12 +53,12 @@ output "nfs_host_or_ip_path" {
 ########################################################################
 output "proxy_ip_and_port" {
   description = "IBM VPC Proxy server IP and port details."
-  value       = local.proxy_ip_and_port
+  value       = module.fullstack.access_host_or_ip
 }
 
 output "bastion_host_ip" {
   description = "IBM VPC VSI host IP address."
-  value       = local.bastion_host_ip
+  value       = module.fullstack.proxy_host_or_ip_port
 }
 
 output "powervs_zone" {
@@ -109,9 +109,4 @@ output "cloud_connection" {
 output "powervs_instances" {
   description = "IBM PowerVS instance Data."
   value       = module.powervs_instance.instances
-}
-
-output "pha_shared_volume_data" {
-  description = "PowerHA shared volumes data for volume groups."
-  value       = module.powervs_instance.pha_shared_volume_data
 }
