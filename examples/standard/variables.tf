@@ -115,8 +115,8 @@ variable "cos_powerha_image_download" {
   Example:
     {
       "bucket_name":"bucket-name",
-      "cos_access_key_id":"1dxxxxxxxxxx36",
-      "cos_secret_access_key":"4dxxxxxx5c",
+      "cos_access_key_id":"xxxxxxxxxx",
+      "cos_secret_access_key":"xxxxxx",
       "cos_endpoint":"https://s3.region.cloud-object-storage.appdomain.cloud",
       "folder_name":"powerha-build-parent-folder-name",
       "ssl_file_name": "ssl-file-path"
@@ -135,14 +135,6 @@ variable "cos_powerha_image_download" {
     folder_name           = string
     ssl_file_name         = string
   })
-  default = {
-    "bucket_name" : "powerha-images",
-    "cos_access_key_id" : "",
-    "cos_secret_access_key" : "",
-    "cos_endpoint" : "https://s3.us-east.cloud-object-storage.appdomain.cloud",
-    "folder_name" : "728",
-    "ssl_file_name" : "openssl-1.1.2.2200.tar.Z"
-  }
 }
 
 variable "powerha_resource_group" {

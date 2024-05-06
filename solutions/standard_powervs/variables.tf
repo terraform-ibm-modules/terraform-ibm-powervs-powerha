@@ -111,8 +111,8 @@ variable "cos_powerha_image_download" {
   Example:
     {
       "bucket_name":"bucket-name",
-      "cos_access_key_id":"1dxxxxxxxxxx36",
-      "cos_secret_access_key":"4dxxxxxx5c",
+      "cos_access_key_id":"xxxxxxxxxx",
+      "cos_secret_access_key":"xxxxxx",
       "cos_endpoint":"https://s3.region.cloud-object-storage.appdomain.cloud",
       "folder_name":"powerha-build-parent-folder-name",
       "ssl_file_name": "ssl-file-path"

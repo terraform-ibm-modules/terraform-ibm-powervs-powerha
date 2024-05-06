@@ -14,7 +14,7 @@ import (
 )
 
 // Use existing resource group
-const resourceGroup = "geretain-test-resources"
+const resourceGroup = "Default" //"geretain-test-resources"
 const standardPhaExampleDir = "examples/standard"
 
 var sharedInfoSvc *cloudinfo.CloudInfoService
@@ -67,6 +67,14 @@ func setupOptions(t *testing.T, prefix string, dir string) *testhelper.TestOptio
 		"powervs_resource_group_name": options.ResourceGroup,
 		"landing_zone_configuration":  "3VPC_RHEL",
 		"external_access_ip":          "0.0.0.0/0",
+		"cos_powerha_image_download": map[string]interface{}{
+			"bucket_name":           "powerha-images",
+			"cos_access_key_id":     os.Getenv("TF_VAR_COS_ACCESS_KEY_ID"),
+			"cos_secret_access_key": os.Getenv("TF_VAR_COS_SECRET_ACCESS_KEY"),
+			"cos_endpoint":          "https://s3.us-east.cloud-object-storage.appdomain.cloud",
+			"folder_name":           "728",
+			"ssl_file_name":         "",
+		},
 	}
 
 	return options
