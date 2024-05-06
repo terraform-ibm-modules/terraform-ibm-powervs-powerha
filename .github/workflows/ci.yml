@@ -6,6 +6,10 @@ on:
     types:
       - created
 
+env:
+  TF_VAR_COS_ACCESS_KEY_ID: ${{ secrets.TF_VAR_COS_ACCESS_KEY_ID }}
+  TF_VAR_COS_SECRET_ACCESS_KEY: ${{ secrets.TF_VAR_COS_SECRET_ACCESS_KEY }}
+
 jobs:
   call-terraform-ci-pipeline:
     uses: terraform-ibm-modules/common-pipeline-assets/.github/workflows/common-terraform-module-ci-v2.yml@v1.22.1
