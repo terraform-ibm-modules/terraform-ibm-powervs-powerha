@@ -26,7 +26,7 @@ Solutions offered:
 * [terraform-ibm-powervs-powerha](#terraform-ibm-powervs-powerha)
 * [Submodules](./modules)
 * [Examples](./examples)
-    * [Basic Example](./examples/basic)
+    * [Basic Example: Power Virtual Server with VPC landing zone including Power Virtual Server for AIX instances](./examples/basic)
 * [Contributing](#contributing)
 <!-- END OVERVIEW HOOK -->
 

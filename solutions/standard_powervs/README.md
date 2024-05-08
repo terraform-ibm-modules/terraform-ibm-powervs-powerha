@@ -1,5 +1,34 @@
 # Power Virtual Server infrastructure for PowerHA deployments
 
+# Summary
+## Summary Outcome:
+   PowerHA standard cluster configuration on IBM PowerVS hosts.
+
+## Summary Tasks
+
+- Creates new private subnets according to the user's input for PowerHA cluster service and attaches it to cloud connections (in Non-PER DC).
+- Creates and configures PowerVS instances according to the user's input for the PowerHA cluster based on best practices. A minimum of 2 and a maximum of 8 PowerVS instances are allowed.
+- Connects all created PowerVS instances to a proxy server specified by IP address or hostname for installing the dependencies.
+- Post-instance provisioning and the PowerHA software download process(from COS) is being done.
+- PowerHA installation and resource configuration for powerHA cluster using Ansible scripts.
+- Tested with RHEL 8.6, AIX 7300-02-01 images.
+
+## Before you begin
+- **This solution requires a schematics workspace ID as input.**
+- If you do not have a [Power Virtual Server with VPC landing zone deployment](https://cloud.ibm.com/catalog/architecture/deploy-arch-ibm-pvs-inf-2dd486c7-b317-4aaa-907b-42671485ad96-global?catalog_query=aHR0cHM6Ly9jbG91ZC5pYm0uY29tL2NhdGFsb2c%2Fc2VhcmNoPXBvd2VyI3NlYXJjaF9yZXN1bHRz) that is the full stack solution for a PowerVS Workspace with Secure Landing Zone, create it first.
+
+## Notes
+- User can change volume size, iops(tier0, tier1, tier3, fixed IOPS), and count of shared and dedicated volume.
+- User can configure resource group, volume group, and filesystem for powerHA cluster services.
+
+|                                  Variation                                  | Available on IBM Catalog | Requires Schematics Workspace ID | Creates PowerVS with VPC landing zone | Creates PowerVS Instances | Performs PowerVS OS Config | Install PowerHA | Performs PowerHA Cluster Config |
+|:---------------------------------------------------------------------------:|:------------------------:|:--------------------------------:|:-------------------------------------:|:-----------------------------:|:--------------------------:|:---------------------------:|:--------------------:|
+| [ PowerHA Standard Edition ](./) |    :heavy_check_mark:    |        :heavy_check_mark:        |                  N/A                  |               2 to 8               |     :heavy_check_mark:     |      :heavy_check_mark:     |          :heavy_check_mark:         |
+
+## Architecture Diagram
+![powerha-standard](https://github.com/terraform-ibm-modules/terraform-ibm-powervs-powerha/blob/main/reference-architectures/standard_powervs/PowerVS-PowerHA-Diagram.svg)
+
+
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ### Requirements
 
