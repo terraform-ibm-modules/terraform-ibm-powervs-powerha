@@ -15,7 +15,7 @@ import (
 
 // Use existing resource group
 const resourceGroup = "geretain-test-resources"
-const standardPhaExampleDir = "examples/standard"
+const standardPhaExampleDir = "examples/basic"
 
 var sharedInfoSvc *cloudinfo.CloudInfoService
 
