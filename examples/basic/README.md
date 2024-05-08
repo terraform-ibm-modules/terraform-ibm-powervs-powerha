@@ -1,4 +1,39 @@
-# Basic Example
+# Basic Example: Power Virtual Server with VPC landing zone including Power Virtual Server for AIX instances
+
+The basic example automates the following tasks:
+
+- A **VPC Infrastructure** based on the value passed to `var.landing_zone_configuration` with the following components:
+    -  **landing_zone_configuration = 3VPC_RHEL or 3VPC_SLES**
+
+        - Provisions three VPCs with one VSI in each VPC: one management (jump/bastion) VSI, one inet-svs VSI configured as a squid proxy server, and one private-svs VSI (configured as NFS, NTP, DNS server) using [this preset](https://github.com/terraform-ibm-modules/terraform-ibm-powervs-infrastructure/blob/main/modules/powervs-vpc-landing-zone/presets/3vpc.preset.json.tftpl).
+        - Installs and configures the Squid Proxy, DNS Forwarder, NTP forwarder, and NFS on hosts, and sets the host as the server for the NTP, NFS, and DNS services using Ansible Galaxy Collection Roles [ibm.power_linux_sap collection](https://galaxy.ansible.com/ui/repo/published/ibm/power_linux_sap/).
+
+    -  **landing_zone_configuration = 1VPC_RHEL**
+
+        - One VPC with one VSI for management (jump/bastion) using [this preset](https://github.com/terraform-ibm-modules/terraform-ibm-powervs-infrastructure/blob/main/modules/powervs-vpc-landing-zone/presets/1vpc.preset.json.tftpl).
+        - Installation and configuration of Squid Proxy, DNS Forwarder, NTP forwarder, and NFS on the bastion host, and sets the host as the server for the NTP, NFS, and DNS services using Ansible Galaxy collection roles [ibm.power_linux_sap collection](https://galaxy.ansible.com/ui/repo/published/ibm/power_linux_sap/)
+
+- **A Power Virtual Server workspace**  with the following network topology:
+    - Creates two private networks: a management network and a backup network.
+    - Creates one or two IBM Cloud connections in a non-PER environment.
+    - Attaches the private networks to the IBM Cloud connections in a non-PER environment.
+    - Attaches the IBM Cloud connections to a transit gateway in a non-PER environment.
+    - Attaches the PowerVS workspace to Transit gateway in PER-enabled DC.
+    - Creates an SSH key.
+
+- Finally, interconnects both VPC and PowerVS infrastructure.
+
+- **Power Virtual Server Instances**
+   - Creates new private subnets according to the user's input for PowerHA cluster service and attaches it to cloud   connections (in Non-PER DC).
+  - Creates and configures PowerVS instances according to the user's input for the PowerHA cluster based on best practices. A minimum of 2 and a maximum of 8 PowerVS instances are allowed.
+- Tested with RHEL 8.6, AIX 7300-02-01 images.
+
+## Notes
+- User can change volume size, iops(tier0, tier1, tier3, fixed IOPS), and count of shared and dedicated volume.
+
+|                                  Variation                                  | Available on IBM Catalog | Requires Schematics Workspace ID | Creates PowerVS with VPC landing zone | Creates PowerVS Instances | Performs PowerVS OS Config | Install PowerHA | Performs PowerHA Cluster Config |
+|:---------------------------------------------------------------------------:|:------------------------:|:--------------------------------:|:-------------------------------------:|:-----------------------------:|:--------------------------:|:---------------------------:|:--------------------:|
+| [ Basic Example ](./) |    :heavy_check_mark:    |        :heavy_check_mark:        |                  N/A                  |               2 to 8               |     N/A     |      N/A     |          N/A         |
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ### Requirements

@@ -245,7 +245,7 @@
                             "key": "aix_os_image",
                             "type": "string",
                             "required": true,
-                            "default_value": "",
+                            "default_value": "7300-02-01",
                             "options": [
                                 {
                                     "displayname": "AIX 7300-02-01",
