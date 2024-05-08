@@ -39,7 +39,7 @@ module "powervs_instance" {
   powervs_workspace_guid = local.powervs_workspace_guid
   ssh_public_key_name    = local.powervs_sshkey_name
 
-  pi_prefix                   = var.prefix
+  pi_prefix                   = "${var.prefix}-pvs"
   pi_image_id                 = local.pi_instance.aix_image_id
   pi_networks                 = local.pi_instance.powervs_networks
   pi_number_of_processors     = local.pi_instance.number_of_processors

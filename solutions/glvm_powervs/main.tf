@@ -75,7 +75,7 @@ module "site1_powervs_instance" {
   powervs_workspace_guid = local.site1_powervs_workspace_guid
   ssh_public_key_name    = local.site1_powervs_sshkey_name
 
-  pi_prefix                   = var.prefix
+  pi_prefix                   = "${var.prefix}-s1pvs"
   pi_image_id                 = local.site1_pi_instance.aix_image_id
   pi_networks                 = local.site1_pi_instance.powervs_networks
   pi_number_of_processors     = local.site1_pi_instance.number_of_processors
@@ -104,7 +104,7 @@ module "site2_powervs_instance" {
   powervs_workspace_guid = module.site2_powervs_workspace_create.powervs_workspace_guid
   ssh_public_key_name    = module.site2_powervs_workspace_create.powervs_ssh_public_key
 
-  pi_prefix                   = var.prefix
+  pi_prefix                   = "${var.prefix}-s2pvs"
   pi_image_id                 = local.site2_pi_instance.aix_image_id
   pi_networks                 = local.site2_pi_instance.powervs_networks
   pi_number_of_processors     = local.site2_pi_instance.number_of_processors

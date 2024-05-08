@@ -73,7 +73,7 @@ variable "pi_prefix" {
   description = "A unique identifier for resources. The identifier must begin with a lowercase letter and end with a lowercase letter or a number. This prefix will be prepended to any resources provisioned by this template. Prefixes must be 8 characters or fewer than 8 characters."
   type        = string
   validation {
-    condition     = can(regex("^[a-zA-Z][a-zA-Z0-9-_]{0,7}$", var.pi_prefix))
+    condition     = can(regex("^[a-zA-Z][a-zA-Z0-9-_]{0,14}$", var.pi_prefix))
     error_message = "The prefix must begin with an alphabetic character followed by an alphanumeric character, an underscore, and a hyphen. Prefixes must be a maximum of 8  characters."
   }
 }

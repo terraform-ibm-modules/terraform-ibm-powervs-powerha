@@ -77,7 +77,7 @@ module "powervs_instance_node_1" {
   version    = "1.1.0"
   depends_on = [ibm_pi_placement_group.placement_group, ibm_pi_volume.shared_volumes]
 
-  pi_instance_name           = "${var.pi_prefix}-pvs-1"
+  pi_instance_name           = "${var.pi_prefix}-1"
   pi_workspace_guid          = var.powervs_workspace_guid
   pi_ssh_public_key_name     = var.ssh_public_key_name
   pi_image_id                = var.pi_image_id
@@ -105,7 +105,7 @@ module "powervs_instance_node_2" {
   count      = var.pi_instance_count > 1 ? 1 : 0
   depends_on = [module.powervs_instance_node_1, time_sleep.wait_60_sec_1]
 
-  pi_instance_name           = "${var.pi_prefix}-pvs-2"
+  pi_instance_name           = "${var.pi_prefix}-2"
   pi_workspace_guid          = var.powervs_workspace_guid
   pi_ssh_public_key_name     = var.ssh_public_key_name
   pi_image_id                = var.pi_image_id
@@ -134,7 +134,7 @@ module "powervs_instance_node_3" {
   count      = var.pi_instance_count > 2 ? 1 : 0
   depends_on = [module.powervs_instance_node_2, time_sleep.wait_60_sec_2]
 
-  pi_instance_name           = "${var.pi_prefix}-pvs-3"
+  pi_instance_name           = "${var.pi_prefix}-3"
   pi_workspace_guid          = var.powervs_workspace_guid
   pi_ssh_public_key_name     = var.ssh_public_key_name
   pi_image_id                = var.pi_image_id
@@ -163,7 +163,7 @@ module "powervs_instance_node_4" {
   count      = var.pi_instance_count > 3 ? 1 : 0
   depends_on = [module.powervs_instance_node_3, time_sleep.wait_60_sec_3]
 
-  pi_instance_name           = "${var.pi_prefix}-pvs-4"
+  pi_instance_name           = "${var.pi_prefix}-4"
   pi_workspace_guid          = var.powervs_workspace_guid
   pi_ssh_public_key_name     = var.ssh_public_key_name
   pi_image_id                = var.pi_image_id
@@ -192,7 +192,7 @@ module "powervs_instance_node_5" {
   count      = var.pi_instance_count > 4 ? 1 : 0
   depends_on = [module.powervs_instance_node_4, time_sleep.wait_60_sec_4]
 
-  pi_instance_name           = "${var.pi_prefix}-pvs-5"
+  pi_instance_name           = "${var.pi_prefix}-5"
   pi_workspace_guid          = var.powervs_workspace_guid
   pi_ssh_public_key_name     = var.ssh_public_key_name
   pi_image_id                = var.pi_image_id
@@ -221,7 +221,7 @@ module "powervs_instance_node_6" {
   count      = var.pi_instance_count > 5 ? 1 : 0
   depends_on = [module.powervs_instance_node_5, time_sleep.wait_60_sec_5]
 
-  pi_instance_name           = "${var.pi_prefix}-pvs-6"
+  pi_instance_name           = "${var.pi_prefix}-6"
   pi_workspace_guid          = var.powervs_workspace_guid
   pi_ssh_public_key_name     = var.ssh_public_key_name
   pi_image_id                = var.pi_image_id
@@ -250,7 +250,7 @@ module "powervs_instance_node_7" {
   count      = var.pi_instance_count > 6 ? 1 : 0
   depends_on = [module.powervs_instance_node_6, time_sleep.wait_60_sec_6]
 
-  pi_instance_name           = "${var.pi_prefix}-pvs-7"
+  pi_instance_name           = "${var.pi_prefix}-7"
   pi_workspace_guid          = var.powervs_workspace_guid
   pi_ssh_public_key_name     = var.ssh_public_key_name
   pi_image_id                = var.pi_image_id
@@ -279,7 +279,7 @@ module "powervs_instance_node_8" {
   count      = var.pi_instance_count > 7 ? 1 : 0
   depends_on = [module.powervs_instance_node_7, time_sleep.wait_60_sec_7]
 
-  pi_instance_name           = "${var.pi_prefix}-pvs-8"
+  pi_instance_name           = "${var.pi_prefix}-8"
   pi_workspace_guid          = var.powervs_workspace_guid
   pi_ssh_public_key_name     = var.ssh_public_key_name
   pi_image_id                = var.pi_image_id
