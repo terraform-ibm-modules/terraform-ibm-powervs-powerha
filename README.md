@@ -18,7 +18,7 @@ Solutions offered:
     - Creates Power Virtual Server workspace, Power Virtual instance, interconnects them, and configures AIX network management services and configure PowerHA SystemMirror using Ansible Scripts.
 
 ## Reference architectures
-- [PowerHA Standard Edition ready for PowerVS](https://github.com/terraform-ibm-modules/terraform-ibm-powervs-powerha/tree/main/reference-architectures/PowerVS-PowerHA-Diagram.svg)
+- [PowerHA Standard Edition ready for PowerVS](https://github.com/terraform-ibm-modules/terraform-ibm-powervs-powerha/blob/power-ha-standard/reference-architectures/standard_powervs/PowerVS-PowerHA-Diagram.svg)
 
 
 <!-- BEGIN OVERVIEW HOOK -->
