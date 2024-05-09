@@ -27,7 +27,6 @@ locals {
   powervs_workspace_name = local.powervs_infrastructure[0].powervs_workspace_name.value
   powervs_sshkey_name    = local.powervs_infrastructure[0].powervs_ssh_public_key.value.name
   cloud_connection_count = local.powervs_infrastructure[0].cloud_connection_count.value
-  powervs_image_id       = lookup(local.powervs_infrastructure[0].powervs_images.value, var.aix_os_image, null)
 
   # For now we are not using this
   # powervs_networks       = [local.powervs_infrastructure[0].powervs_management_subnet.value, local.powervs_infrastructure[0].powervs_backup_subnet.value]
@@ -56,7 +55,7 @@ locals {
   ##################################
 
   pi_instance = {
-    aix_image_id         = local.powervs_image_id == null ? module.powervs_workspace_update.powervs_images : local.powervs_image_id
+    aix_image_id         = module.powervs_workspace_update.powervs_images
     powervs_networks     = slice(module.powervs_workspace_update.powervs_subnet_list, 0, length(var.powervs_subnet_list))
     number_of_processors = local.tshirt_choice.cores
     memory_size          = local.tshirt_choice.memory

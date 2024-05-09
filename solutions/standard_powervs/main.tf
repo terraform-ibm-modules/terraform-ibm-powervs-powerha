@@ -7,7 +7,7 @@ module "powervs_workspace_update" {
 
   powervs_workspace_guid = local.powervs_workspace_guid
   powervs_subnet_list    = local.subnet_list
-  aix_os_image           = local.powervs_image_id == null ? var.aix_os_image : null
+  aix_os_image           = var.aix_os_image
 }
 
 
@@ -33,7 +33,7 @@ module "cloud_connection_network_attach" {
 #####################################################
 
 module "powervs_instance" {
-  depends_on = [module.cloud_connection_network_attach]
+  depends_on = [module.powervs_workspace_update, module.cloud_connection_network_attach]
   source     = "../../modules/powervs-instance-custom"
 
   powervs_workspace_guid = local.powervs_workspace_guid
@@ -59,10 +59,10 @@ module "powervs_instance" {
 
 #####################################################
 # PowerVS Instance Ansible Configuration
-# #####################################################
+#####################################################
 
 module "powervs_instance_ansible_config" {
-  depends_on = [module.powervs_instance, local.node_details]
+  depends_on = [module.powervs_workspace_update, module.cloud_connection_network_attach, module.powervs_instance, local.node_details]
   source     = "../../modules/powervs-instance-ansible-config"
 
   ssh_private_key              = var.ssh_private_key
