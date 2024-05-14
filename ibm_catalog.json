@@ -560,7 +560,7 @@
                     "name": "powerha-glvm-powervs",
                     "install_type": "glvm",
                     "index": 2,
-                    "working_directory": "solution/glvm_powervs",
+                    "working_directory": "solutions/glvm_powervs",
                     "compliance": {},
                     "dependencies": [
                         {
