@@ -50,7 +50,17 @@ variable "site2_shared_disk_wwns" {
   type        = list(string)
 }
 
-variable "node_details" {
+variable "site1_node_details" {
+  description = "PowerVS instances data for powerHA cluster creation."
+  type = list(object({
+    pi_instance_name        = string
+    pi_instance_primary_ip  = string
+    pi_instance_private_ips = list(string)
+    pi_extend_volume        = string
+  }))
+}
+
+variable "site2_node_details" {
   description = "PowerVS instances data for powerHA cluster creation."
   type = list(object({
     pi_instance_name        = string
@@ -84,11 +94,10 @@ variable "powerha_glvm_volume_group" {
 variable "powerha_glvm_volume_group_list" {
   description = "List of parameters for volume group - Individual PowerHA volume group configuration. Based on the volume_group count, you can provide all the volume group configuration like name, resource group name and type. Default configuration will be taken if details are not provided."
   type = list(object({
-    name    = string
-    rg_name = string
-    type    = string
-    size    = number
-    tier    = string
+    name = string
+    type = string
+    size = number
+    tier = string
   }))
 }
 

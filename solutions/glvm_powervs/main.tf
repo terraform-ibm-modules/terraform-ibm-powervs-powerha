@@ -7,7 +7,7 @@ module "site1_powervs_workspace_update" {
 
   powervs_workspace_guid = local.site1_powervs_workspace_guid
   powervs_subnet_list    = local.site1_powervs_subnet_list
-  aix_os_image           = local.site1_powervs_image_id == null ? var.aix_os_image : null
+  aix_os_image           = var.aix_os_image
 }
 
 
@@ -127,13 +127,14 @@ module "site2_powervs_instance" {
 #######################################################
 
 module "powervs_instance_glvm_ansible_config" {
-  depends_on = [module.site1_powervs_instance, module.site2_powervs_instance, local.node_details]
+  depends_on = [module.site1_powervs_instance, module.site2_powervs_instance, local.site1_node_details, local.site2_node_details]
   source     = "../../modules/powervs-instance-glvm-ansible-config"
 
   ssh_private_key                = var.ssh_private_key
   bastion_host_ip                = local.bastion_host_ip
   proxy_ip_and_port              = local.proxy_ip_and_port
-  node_details                   = local.node_details
+  site1_node_details             = local.site1_node_details
+  site2_node_details             = local.site2_node_details
   site1_subnet_list              = var.site1_subnet_list
   site1_reserved_subnet_list     = var.site1_reserve_subnet_list
   site2_subnet_list              = var.site2_subnet_list

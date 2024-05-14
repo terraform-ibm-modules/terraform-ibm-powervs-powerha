@@ -9,7 +9,8 @@ locals {
   destination_python_file_path = "download_files.py"
   destination_ansible_yml_file = "/etc/ansible/external_var.yml"
   python_path                  = "/usr/bin/python3"
-  nodes_ip                     = var.node_details[*].pi_instance_primary_ip
+  all_node_details             = concat(var.site1_node_details, var.site2_node_details)
+  nodes_ip                     = local.all_node_details[*].pi_instance_primary_ip
 }
 
 
@@ -36,7 +37,7 @@ resource "terraform_data" "extend_increase_filesystem" {
 
   ####### Copy Template file to target host ############
   provisioner "file" {
-    content     = templatefile(local.src_extend_filesystem, { "extend_volume_wwn" = var.node_details[count.index].pi_extend_volume })
+    content     = templatefile(local.src_extend_filesystem, { "extend_volume_wwn" = local.all_node_details[count.index].pi_extend_volume })
     destination = local.dst_extend_filesystem
   }
 
@@ -178,142 +179,128 @@ resource "terraform_data" "ansible_hosts" {
 }
 
 
-# # #########################################################################
-# # 6. Copy host and ansible_config.py files to the remote machine
-# #    Create ansible.yml file using ansible_config.py
-# # #########################################################################
+# #########################################################################
+# 6. Copy host and ansible_config.py files to the remote machine
+#    Create ansible.yml file using ansible_config.py
+# #########################################################################
 
-# resource "terraform_data" "copy_files_to_remote" {
-#   depends_on = [
-#     terraform_data.download_ansible,
-#     terraform_data.download_pha,
-#     terraform_data.ansible_hosts
-#   ]
-#   connection {
-#     type         = "ssh"
-#     user         = "root"
-#     bastion_host = var.bastion_host_ip
-#     host         = local.nodes_ip[0]
-#     private_key  = var.ssh_private_key
-#     agent        = false
-#     timeout      = "20m"
-#   }
+resource "terraform_data" "copy_files_to_remote" {
+  depends_on = [
+    terraform_data.download_ansible,
+    terraform_data.download_pha,
+    terraform_data.ansible_hosts
+  ]
+  connection {
+    type         = "ssh"
+    user         = "root"
+    bastion_host = var.bastion_host_ip
+    host         = local.nodes_ip[0]
+    private_key  = var.ssh_private_key
+    agent        = false
+    timeout      = "20m"
+  }
 
-#   provisioner "file" {
-#     source      = "${local.template_dir}/host"
-#     destination = "/etc/ansible/hosts"
-#   }
+  provisioner "file" {
+    source      = "${local.template_dir}/host"
+    destination = "/hosts"
+  }
 
-#   provisioner "file" {
-#     content = templatefile("${local.template_dir}/ansible_config.py.tftpl", { "rg_count" = var.powerha_resource_group_count, "rg_list" = jsonencode(var.powerha_resource_group_list),
-#       "vg_count"             = var.volume_group_count, "vg_list" = jsonencode(var.volume_group_list),
-#       "fs_count"             = var.file_system_count, "fs_list" = jsonencode(var.file_system_list),
-#       "repository_disk_wwn"  = jsonencode(var.repository_disk_wwn),
-#       "shared_wwn_disks"     = jsonencode(var.shared_disk_wwns), "node_details" = jsonencode(var.node_details),
-#       "subnet_list"          = jsonencode(var.subnet_list), "reserve_ip_data" = jsonencode(var.reserve_ip_data),
-#       "reserved_subnet_list" = jsonencode(var.reserved_subnet_list),
-#     "pha_build_path" = jsonencode(local.pha_build_path), "destination_ansible_yml_file" = jsonencode(local.destination_ansible_yml_file) })
-#     destination = "ansible_config.py"
-#   }
+  provisioner "file" {
+    content = templatefile("${local.template_dir}/ansible_config.py.tftpl", {
+      "glvm_vg_count"             = var.powerha_glvm_volume_group, "glvm_vg_list" = jsonencode(var.powerha_glvm_volume_group_list),
+      "site1_repository_disk_wwn" = jsonencode(var.site1_repository_disk_wwn), "site2_repository_disk_wwn" = jsonencode(var.site2_repository_disk_wwn),
+      "site1_shared_wwn_disks"    = jsonencode(var.site1_shared_disk_wwns), "site2_shared_wwn_disks" = jsonencode(var.site2_shared_disk_wwns),
+      "site1_node_details"        = jsonencode(var.site1_node_details), "site2_node_details" = jsonencode(var.site2_node_details),
+      "site1_subnet_list"         = jsonencode(var.site1_subnet_list), "site2_subnet_list" = jsonencode(var.site2_subnet_list),
+      "site1_reserve_ip_data"     = jsonencode(var.site1_reserve_ip_data), "site2_reserve_ip_data" = jsonencode(var.site2_reserve_ip_data),
+    "pha_build_path" = jsonencode(local.pha_build_path), "destination_ansible_yml_file" = jsonencode(local.destination_ansible_yml_file) })
+    destination = "ansible_config.py"
+  }
 
-#   provisioner "remote-exec" {
-#     inline = [
-#       "chmod +x ansible_config.py",
-#       "${local.python_path} ansible_config.py"
-#     ]
-#   }
-# }
+  provisioner "remote-exec" {
+    inline = [
+      "chmod +x ansible_config.py",
+      "${local.python_path} ansible_config.py"
+    ]
+  }
+}
 
 
-# # #########################################################################
-# # 7. Executing Ansible Playbook to the remote machine
-# # #########################################################################
+# #########################################################################
+# 7. Executing Ansible Playbook to the remote machine
+# #########################################################################
 
-# resource "terraform_data" "ansible_playbook_execution" {
-#   depends_on = [
-#     terraform_data.download_ansible,
-#     terraform_data.download_pha,
-#     terraform_data.ansible_hosts,
-#     terraform_data.copy_files_to_remote
-#   ]
-#   connection {
-#     type         = "ssh"
-#     user         = "root"
-#     bastion_host = var.bastion_host_ip
-#     host         = local.nodes_ip[0]
-#     private_key  = var.ssh_private_key
-#     agent        = false
-#     timeout      = "20m"
-#   }
+resource "terraform_data" "ansible_playbook_execution" {
+  depends_on = [
+    terraform_data.download_ansible,
+    terraform_data.download_pha,
+    terraform_data.ansible_hosts,
+    terraform_data.copy_files_to_remote
+  ]
+  connection {
+    type         = "ssh"
+    user         = "root"
+    bastion_host = var.bastion_host_ip
+    host         = local.nodes_ip[0]
+    private_key  = var.ssh_private_key
+    agent        = false
+    timeout      = "20m"
+  }
 
-#   provisioner "remote-exec" {
-#     inline = [
-#       "cd /.ansible/collections/ansible_collections/ibm/power_ha/playbooks",
-#       "/opt/freeware/bin/ansible-playbook -i /etc/ansible/hosts demo_map_hosts.yml"
-#     ]
-#   }
+  provisioner "remote-exec" {
+    inline = [
+      "cd /playbooks",
+      "ANSIBLE_CONFIG=/ansible.cfg /opt/freeware/bin/ansible-playbook -i /hosts demo_map_hosts.yml"
+    ]
+  }
 
-#   provisioner "remote-exec" {
-#     inline = [
-#       "cd /.ansible/collections/ansible_collections/ibm/power_ha/playbooks",
-#       "/opt/freeware/bin/ansible-playbook -i /etc/ansible/hosts demo_PowerHA.yml --tags install"
-#     ]
-#   }
+  provisioner "remote-exec" {
+    inline = [
+      "cd /playbooks",
+      "ANSIBLE_CONFIG=/ansible.cfg /opt/freeware/bin/ansible-playbook -i /hosts demo_PowerHA.yml --tags install"
+    ]
+  }
 
-#   provisioner "remote-exec" {
-#     inline = [
-#       "cd /.ansible/collections/ansible_collections/ibm/power_ha/playbooks",
-#       "/opt/freeware/bin/ansible-playbook -i /etc/ansible/hosts demo_cluster.yml --tags standard"
-#     ]
-#   }
+  provisioner "remote-exec" {
+    inline = [
+      "cd /playbooks",
+      "ANSIBLE_CONFIG=/ansible.cfg /opt/freeware/bin/ansible-playbook -i /hosts demo_cluster.yml --tags linked"
+    ]
+  }
 
-#   provisioner "remote-exec" {
-#     inline = [
-#       "cd /.ansible/collections/ansible_collections/ibm/power_ha/playbooks",
-#       "/opt/freeware/bin/ansible-playbook -i /etc/ansible/hosts demo_network.yml --tags create"
-#     ]
-#   }
+  provisioner "remote-exec" {
+    inline = [
+      "cd /playbooks",
+      "ANSIBLE_CONFIG=/ansible.cfg /opt/freeware/bin/ansible-playbook -i /hosts demo_glvm.yml --tags create,sync"
+    ]
+  }
 
-#   provisioner "remote-exec" {
-#     inline = [
-#       "cd /.ansible/collections/ansible_collections/ibm/power_ha/playbooks",
-#       "/opt/freeware/bin/ansible-playbook -i /etc/ansible/hosts demo_interface.yml --tags create"
-#     ]
-#   }
+  provisioner "remote-exec" {
+    inline = [
+      "cd /playbooks",
+      "ANSIBLE_CONFIG=/ansible.cfg /opt/freeware/bin/ansible-playbook -i /hosts demo_network.yml --tags create"
+    ]
+  }
 
-#   provisioner "remote-exec" {
-#     inline = [
-#       "cd /.ansible/collections/ansible_collections/ibm/power_ha/playbooks",
-#       "/opt/freeware/bin/ansible-playbook -i /etc/ansible/hosts demo_service_ip.yml --tags create"
-#     ]
-#   }
+  provisioner "remote-exec" {
+    inline = [
+      "cd /playbooks",
+      "ANSIBLE_CONFIG=/ansible.cfg /opt/freeware/bin/ansible-playbook -i /hosts demo_interface.yml --tags create"
+    ]
+  }
 
-#   provisioner "remote-exec" {
-#     inline = [
-#       "cd /.ansible/collections/ansible_collections/ibm/power_ha/playbooks",
-#       "/opt/freeware/bin/ansible-playbook -i /etc/ansible/hosts demo_resource_group.yml --tags create"
+  provisioner "remote-exec" {
+    inline = [
+      "cd /playbooks",
+      "ANSIBLE_CONFIG=/ansible.cfg /opt/freeware/bin/ansible-playbook -i /hosts demo_service_ip.yml --tags create"
+    ]
+  }
 
-#     ]
-#   }
+  provisioner "remote-exec" {
+    inline = [
+      "cd /playbooks",
+      "ANSIBLE_CONFIG=/ansible.cfg /opt/freeware/bin/ansible-playbook -i /hosts demo_resource_group.yml --tags create"
 
-#   provisioner "remote-exec" {
-#     inline = [
-#       "cd /.ansible/collections/ansible_collections/ibm/power_ha/playbooks",
-#       "/opt/freeware/bin/ansible-playbook -i /etc/ansible/hosts demo_volume_groups.yml --tags create"
-#     ]
-#   }
-
-#   provisioner "remote-exec" {
-#     inline = [
-#       "cd /.ansible/collections/ansible_collections/ibm/power_ha/playbooks",
-#       "/opt/freeware/bin/ansible-playbook -i /etc/ansible/hosts demo_file_system.yml  --tags create"
-#     ]
-#   }
-
-#   provisioner "remote-exec" {
-#     inline = [
-#       "cd /.ansible/collections/ansible_collections/ibm/power_ha/playbooks",
-#       "/opt/freeware/bin/ansible-playbook -i /etc/ansible/hosts demo_add_vg_to_rg.yml"
-#     ]
-#   }
-# }
+    ]
+  }
+}

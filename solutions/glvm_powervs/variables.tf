@@ -311,11 +311,10 @@ variable "powerha_resource_group_list" {
 variable "powerha_glvm_volume_group_list" {
   description = "List of parameters for volume group - Individual PowerHA volume group configuration. Based on the volume_group count, you can provide all the volume group configuration like name, resource group name, type, size, tier. Default configuration will be taken if details are not provided."
   type = list(object({
-    name    = string
-    rg_name = string
-    type    = string
-    size    = number
-    tier    = string
+    name = string
+    type = string
+    size = number
+    tier = string
   }))
   validation {
     condition     = (length(var.powerha_glvm_volume_group_list) == length(distinct([for item in var.powerha_glvm_volume_group_list : lower(item.name)]))) && alltrue([for data in var.powerha_glvm_volume_group_list : contains(["original", "big", "scalable", "legacy"], data.type)]) && alltrue([for data in var.powerha_glvm_volume_group_list : data.size >= 30 && data.size <= 1000]) && alltrue([for data in var.powerha_glvm_volume_group_list : contains(["tier0", "tier1", "tier3", "fixed IOPS"], data.tier)])

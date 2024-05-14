@@ -36,7 +36,6 @@ locals {
   site1_powervs_workspace_name = local.powervs_infrastructure[0].powervs_workspace_name.value
   site1_powervs_sshkey_name    = local.powervs_infrastructure[0].powervs_ssh_public_key.value.name
   site1_cloud_connection_count = local.powervs_infrastructure[0].cloud_connection_count.value
-  site1_powervs_image_id       = lookup(local.powervs_infrastructure[0].powervs_images.value, var.aix_os_image, null)
   site2_cloud_connection_count = module.site2_powervs_workspace_create.cloud_connection_count
 
   # For now we are not using this
@@ -67,7 +66,7 @@ locals {
   # ##################################
 
   site1_pi_instance = {
-    aix_image_id         = local.site1_powervs_image_id == null ? module.site1_powervs_workspace_update.powervs_images : local.site1_powervs_image_id
+    aix_image_id         = module.site1_powervs_workspace_update.powervs_images
     powervs_networks     = slice(module.site1_powervs_workspace_update.powervs_subnet_list, 0, length(var.site1_subnet_list))
     number_of_processors = local.site1_tshirt_choice.cores
     memory_size          = local.site1_tshirt_choice.memory
@@ -84,13 +83,19 @@ locals {
     cpu_proc_type        = local.site2_tshirt_choice.proc_type
   }
 
-  node_details = [for item in concat(module.site1_powervs_instance.instances, module.site2_powervs_instance.instances) : {
+  site1_node_details = [for item in module.site1_powervs_instance.instances : {
     pi_instance_name        = replace(lower(item.pi_instance_name), "_", "-")
     pi_instance_primary_ip  = item.pi_instance_primary_ip
     pi_instance_private_ips = item.pi_instance_private_ips[*]
     pi_extend_volume        = item.pi_storage_configuration[0].wwns
   }]
 
+  site2_node_details = [for item in module.site2_powervs_instance.instances : {
+    pi_instance_name        = replace(lower(item.pi_instance_name), "_", "-")
+    pi_instance_primary_ip  = item.pi_instance_primary_ip
+    pi_instance_private_ips = item.pi_instance_private_ips[*]
+    pi_extend_volume        = item.pi_storage_configuration[0].wwns
+  }]
 }
 
 

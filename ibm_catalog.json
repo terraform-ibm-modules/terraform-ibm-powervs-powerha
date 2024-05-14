@@ -1050,7 +1050,6 @@
                             "default_value": [
                                 {
                                     "name": "VG1",
-                                    "rg_name": "RG1",
                                     "type": "scalable",
                                     "size": 30,
                                     "tier": "tier3"
