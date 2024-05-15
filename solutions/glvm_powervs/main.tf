@@ -136,9 +136,7 @@ module "powervs_instance_glvm_ansible_config" {
   site1_node_details             = local.site1_node_details
   site2_node_details             = local.site2_node_details
   site1_subnet_list              = var.site1_subnet_list
-  site1_reserved_subnet_list     = var.site1_reserve_subnet_list
   site2_subnet_list              = var.site2_subnet_list
-  site2_reserved_subnet_list     = var.site2_reserve_subnet_list
   site1_reserve_ip_data          = module.site1_powervs_instance.reserve_ips
   site2_reserve_ip_data          = module.site2_powervs_instance.reserve_ips
   pha_cos_data                   = var.cos_powerha_image_download
@@ -146,8 +144,6 @@ module "powervs_instance_glvm_ansible_config" {
   site2_repository_disk_wwn      = module.site2_powervs_instance.shared_volume_data[0].wwn
   site1_shared_disk_wwns         = module.site1_powervs_instance.pha_shared_volume_data[*].wwn
   site2_shared_disk_wwns         = module.site2_powervs_instance.pha_shared_volume_data[*].wwn
-  powerha_resource_group_count   = var.powerha_resource_group
-  powerha_resource_group_list    = var.powerha_resource_group_list
   powerha_glvm_volume_group      = var.powerha_glvm_volume_group
   powerha_glvm_volume_group_list = var.powerha_glvm_volume_group_list
 }

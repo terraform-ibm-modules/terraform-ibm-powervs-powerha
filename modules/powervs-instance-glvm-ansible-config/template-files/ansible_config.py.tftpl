@@ -1,7 +1,7 @@
 import math
 # from ipaddress import ip_network, ip_address
 
-VG_DEFAULT = {"name": "", "type":"scalable","Site1_Disk":"", "Site2_Disk": ""}
+VG_DEFAULT = {"name": "", "type":"sync","Site1_Disk":"", "Site2_Disk": ""}
 VG_AUTO_PREFIX = "autoVG"
 
 
@@ -18,7 +18,7 @@ def resource_compute(resource_data, resource_prefix, default_dict,total_count, k
         for index in range(len(resource_data),total_count):
             default_resource_dict = default_dict.copy()
             while(is_value_present(key, resource_prefix+str(AUTO_COUNT), resource_data)):
-                    AUTO_COUNT+=1 
+                    AUTO_COUNT+=1
             default_resource_dict[key] = resource_prefix+str(AUTO_COUNT)
             resource_data.append(default_resource_dict)
             AUTO_COUNT+=1
@@ -105,7 +105,7 @@ def create_yaml_content(site1_node_details, site2_node_details, site1_repository
 
     yaml_string += "SITE1_NODES: " + (",").join([node.get("pi_instance_name") for node in site1_node_details]) + "\n" \
                    "SITE2_NODES: " + (",").join([node.get("pi_instance_name") for node in site2_node_details]) + "\n\n"
-    
+
 
     #Repository disk
     yaml_string += "SITE1_REPOSITORIES: " + str(site1_repository_disk_wwn) + "\n" \
@@ -115,7 +115,7 @@ def create_yaml_content(site1_node_details, site2_node_details, site1_repository
     yaml_string += "POWERHA_BLD_PATH: "+ str(powerha_build_path) + "\n\n"
 
     # VG data
-    yaml_string +="VG:\n"
+    yaml_string +="GLVM:\n"
     vg_yml_data = create_obj_to_str(glvm_vg_list)
     yaml_string += vg_yml_data
 
@@ -170,7 +170,7 @@ if __name__ == "__main__":
     pha_network_list = pha_site1_network_list
     if len(pha_site2_network_list) > len(pha_site2_network_list):
         pha_network_list = pha_site2_network_list
-    
+
     site1_pha_interface_list = get_pha_interface_list(site1_node_details,len(pha_site1_network_list),pha_network_list)
     site2_pha_interface_list = get_pha_interface_list(site2_node_details,len(pha_site2_network_list),pha_network_list)
     pha_interface_list = site1_pha_interface_list+site2_pha_interface_list

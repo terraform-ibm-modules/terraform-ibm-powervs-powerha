@@ -939,12 +939,6 @@
                             }
                         },
                         {
-                            "key": "powerha_resource_group",
-                            "type": "number",
-                            "required": true,
-                            "default_value": 1
-                        },
-                        {
                             "key": "powerha_glvm_volume_group",
                             "type": "number",
                             "required": true,
@@ -1022,24 +1016,6 @@
                             }
                         },
                         {
-                            "key": "powerha_resource_group_list",
-                            "required": false,
-                            "custom_config": {
-                                "grouping": "deployment",
-                                "original_grouping": "deployment",
-                                "type": "json_editor"
-                            },
-                            "default_value": [
-                                {
-                                    "name": "RG1",
-                                    "startup": "OHN",
-                                    "fallover": "FNPN",
-                                    "fallback": "NFB",
-                                    "site_policy": "both"
-                                }
-                            ]
-                        },
-                        {
                             "key": "powerha_glvm_volume_group_list",
                             "required": false,
                             "custom_config": {
@@ -1050,7 +1026,7 @@
                             "default_value": [
                                 {
                                     "name": "VG1",
-                                    "type": "scalable",
+                                    "type": "sync",
                                     "size": 30,
                                     "tier": "tier3"
                                 }

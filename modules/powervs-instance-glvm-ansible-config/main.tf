@@ -7,7 +7,7 @@ locals {
   src_extend_filesystem        = "${local.template_dir}/extend_filesystems.sh.tftpl"
   dst_extend_filesystem        = "${local.dst_files_dir}/extend_filesystems.sh"
   destination_python_file_path = "download_files.py"
-  destination_ansible_yml_file = "/etc/ansible/external_var.yml"
+  destination_ansible_yml_file = "/external_var.yml"
   python_path                  = "/usr/bin/python3"
   all_node_details             = concat(var.site1_node_details, var.site2_node_details)
   nodes_ip                     = local.all_node_details[*].pi_instance_primary_ip

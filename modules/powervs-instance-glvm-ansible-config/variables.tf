@@ -70,22 +70,6 @@ variable "site2_node_details" {
   }))
 }
 
-variable "powerha_resource_group_count" {
-  description = "Number of Resource Groups which need to be created in PowerHA."
-  type        = number
-}
-
-variable "powerha_resource_group_list" {
-  description = "List of parameters for Resource group - Individual PowerHA Resource group configuration. Based on the powerha_resource_group count, you can provide all the resource group configuration like name, start up, fallover and fallback polices. Default configuration will be taken if details are not provided."
-  type = list(object({
-    name        = string
-    startup     = string
-    fallover    = string
-    fallback    = string
-    site_policy = string
-  }))
-}
-
 variable "powerha_glvm_volume_group" {
   description = "Number of Volume Groups which need to be created in PowerHA."
   type        = number
@@ -109,29 +93,11 @@ variable "site1_subnet_list" {
   }))
 }
 
-variable "site1_reserved_subnet_list" {
-  description = "IBM Cloud Power Virtual Server subnet configuration details like name, CIDR, and reserved IP count used for PowerHA service label to be created."
-  type = list(object({
-    name              = string
-    cidr              = string
-    reserved_ip_count = number
-  }))
-}
-
 variable "site2_subnet_list" {
   description = "IBM Cloud Power Virtual Server subnet configuration details like name and CIDR."
   type = list(object({
     name = string
     cidr = string
-  }))
-}
-
-variable "site2_reserved_subnet_list" {
-  description = "IBM Cloud Power Virtual Server subnet configuration details like name, CIDR, and reserved IP count used for PowerHA service label to be created."
-  type = list(object({
-    name              = string
-    cidr              = string
-    reserved_ip_count = number
   }))
 }
 

@@ -186,14 +186,6 @@ variable "cos_powerha_image_download" {
   })
 }
 
-variable "powerha_resource_group" {
-  description = "Number of Resource Groups which need to be created in PowerHA."
-  type        = number
-  validation {
-    condition     = var.powerha_resource_group >= 1 && var.powerha_resource_group <= 256
-    error_message = "PowerHA resource group count should be between 1 to 256."
-  }
-}
 
 variable "powerha_glvm_volume_group" {
   description = "Number of Volume Groups which need to be created in PowerHA."
@@ -287,26 +279,6 @@ variable "shared_volume_attributes" {
   }
 }
 
-variable "powerha_resource_group_list" {
-  description = "List of parameters for Resource group - Individual PowerHA Resource group configuration. Based on the powerha_resource_group count, you can provide all the resource group configuration like name, start up, fallover and fallback polices. Default configuration will be taken if details are not provided."
-  type = list(object({
-    name        = string
-    startup     = string
-    fallover    = string
-    fallback    = string
-    site_policy = string
-  }))
-  validation {
-    condition     = (length(var.powerha_resource_group_list) == length(distinct([for item in var.powerha_resource_group_list : lower(item.name)]))) && alltrue([for data in var.powerha_resource_group_list : contains(["OHN", "OFAN", "OAAN", "OUDP"], data.startup)]) && alltrue([for data in var.powerha_resource_group_list : contains(["FNPN", "FUDNP", "BO"], data.fallover)]) && alltrue([for data in var.powerha_resource_group_list : contains(["NFB", "FBHPN"], data.fallback)])
-    error_message = <<EOT
-    Duplicate PowerHA resource group name or incorrect startup, fallover, fallback values.
-    Supported values:
-      startup: [OHN, OFAN, OAAN, OUDP]
-      fallover: [FNPN, FUDNP, BO]
-      fallback: [NFB, FBHPN]
-    EOT
-  }
-}
 
 variable "powerha_glvm_volume_group_list" {
   description = "List of parameters for volume group - Individual PowerHA volume group configuration. Based on the volume_group count, you can provide all the volume group configuration like name, resource group name, type, size, tier. Default configuration will be taken if details are not provided."
