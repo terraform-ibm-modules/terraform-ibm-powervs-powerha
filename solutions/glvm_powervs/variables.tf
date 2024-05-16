@@ -289,11 +289,11 @@ variable "powerha_glvm_volume_group_list" {
     tier = string
   }))
   validation {
-    condition     = (length(var.powerha_glvm_volume_group_list) == length(distinct([for item in var.powerha_glvm_volume_group_list : lower(item.name)]))) && alltrue([for data in var.powerha_glvm_volume_group_list : contains(["original", "big", "scalable", "legacy"], data.type)]) && alltrue([for data in var.powerha_glvm_volume_group_list : data.size >= 30 && data.size <= 1000]) && alltrue([for data in var.powerha_glvm_volume_group_list : contains(["tier0", "tier1", "tier3", "fixed IOPS"], data.tier)])
+    condition     = (length(var.powerha_glvm_volume_group_list) == length(distinct([for item in var.powerha_glvm_volume_group_list : lower(item.name)]))) && alltrue([for data in var.powerha_glvm_volume_group_list : contains(["original", "sync", "big", "scalable", "legacy"], data.type)]) && alltrue([for data in var.powerha_glvm_volume_group_list : data.size >= 30 && data.size <= 1000]) && alltrue([for data in var.powerha_glvm_volume_group_list : contains(["tier0", "tier1", "tier3", "fixed IOPS"], data.tier)])
     error_message = <<EOT
     Duplicate volume group name and size is less than 30 and more than 1000 is not allowed.
     Supported values:
-      type: [original, big, scalable, legacy]
+      type: [original, sync, big, scalable, legacy]
       tier: [tier0, tier1, tier3, fixed IOPS]
     EOT
   }
