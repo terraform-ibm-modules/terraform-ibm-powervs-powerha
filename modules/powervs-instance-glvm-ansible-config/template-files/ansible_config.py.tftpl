@@ -62,7 +62,7 @@ def get_pha_interface_list(node_details,subnet_length, pha_networks):
                 interface_dict = { "NAME": "en"+str(index)+"_"+node_name, "NETWORK": network.get("NAME"), "NODE": node_name, "INTERFACE": "en"+str(index), "IP": node_ips[index]}
                 pha_interface_list.append(interface_dict)
                 if (index+1)%2==0:
-                    count+=count
+                    count+=1
                     break
                 count+=1
 
@@ -170,6 +170,11 @@ if __name__ == "__main__":
     pha_network_list = pha_site1_network_list
     if len(pha_site2_network_list) > len(pha_site2_network_list):
         pha_network_list = pha_site2_network_list
+    
+    # update pha_network_list for first 2 networks
+    for idx in range(0,len(pha_network_list)):
+        if(idx<2):
+            pha_network_list[idx]["TYPE"] = "XD_data"
 
     site1_pha_interface_list = get_pha_interface_list(site1_node_details,len(pha_site1_network_list),pha_network_list)
     site2_pha_interface_list = get_pha_interface_list(site2_node_details,len(pha_site2_network_list),pha_network_list)

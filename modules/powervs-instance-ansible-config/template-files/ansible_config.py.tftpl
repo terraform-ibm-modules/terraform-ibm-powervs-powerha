@@ -120,7 +120,7 @@ def get_pha_interface_list(node_list,subnet_length, pha_networks, reserved_subne
                 interface_dict = { "NAME": "en"+str(index)+"_"+node_name, "NETWORK": network.get("NAME"), "NODE": node_name, "INTERFACE": "en"+str(index), "IP": node_ips[index]}
                 pha_interface_list.append(interface_dict)
                 if (index+1)%2==0:
-                    count+=count
+                    count+=1
                     break
                 count+=1
 
