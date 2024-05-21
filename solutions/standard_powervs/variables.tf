@@ -4,11 +4,11 @@ variable "prerequisite_workspace_id" {
 }
 
 variable "prefix" {
-  description = "A unique identifier for resources. The identifier must begin with a lowercase letter and end with a lowercase letter or a number. This prefix will be prepended to any resources provisioned by this template. Prefix must be 8 characters or fewer than 8 characters."
+  description = "A unique identifier for resources. The identifier must begin with a lowercase letter and end with a lowercase letter or a number. This prefix will be prepended to any resources provisioned by this template. Prefix should between 1 to 8 characters."
   type        = string
   validation {
     condition     = can(regex("^[a-zA-Z][a-zA-Z0-9-_]{0,7}$", var.prefix))
-    error_message = "The prefix must begin with an alphabetic character followed by an alphanumeric character, an underscore, and a hyphen. Prefixes must be a maximum of 8  characters."
+    error_message = "The prefix must begin with an alphabetic character followed by an alphanumeric character, an underscore, and a hyphen. Prefix should between 1 to 8 characters."
   }
 }
 
@@ -108,6 +108,7 @@ variable "shared_volume" {
 variable "cos_powerha_image_download" {
   description = <<EOT
   Details about cloud object storage bucket where PowerHA installation media folder and ssl file are located. For more details click [here](https://cloud.ibm.com/docs/cloud-object-storage?topic=cloud-object-storage-service-credentials).
+  ssl_file_name is only applicable to AIX 7.2 and can be skipped for AIX 7.3.
   Example:
     {
       "bucket_name":"bucket-name",
@@ -165,7 +166,7 @@ variable "file_system" {
 #####################################################
 
 variable "custom_profile" {
-  description = "Overrides t-shirt profile: Custom PowerVS instance. Specify combination of cores, memory, proc_type and storage tier."
+  description = "Overrides t-shirt profile: Custom PowerVS instance. Specify combination of cores, memory, proc_type and storage tier. For more details click [here](https://cloud.ibm.com/docs/power-iaas?topic=power-iaas-creating-power-virtual-server#creating-power-virtual-server%22)."
   type = object({
     cores     = number
     memory    = number
