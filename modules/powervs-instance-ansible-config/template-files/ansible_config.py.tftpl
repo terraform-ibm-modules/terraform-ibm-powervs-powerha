@@ -124,7 +124,7 @@ def get_service_ip_list(reserve_ip_details, pha_network_list):
     pha_service_ip_list = []
     pha_networks_extended = (pha_network_list * math.ceil(len(reserve_ip_details)/len(pha_network_list)))[:len(reserve_ip_details)]
     for index, (reserve_ip_data, pha_network) in enumerate(zip(reserve_ip_details, pha_networks_extended)):
-        pha_service_ip_list.append({ "NAME": 'service_ip'+str(index), "IP": reserve_ip_data.get("ip"), "NETWORK": pha_network.get("NAME")})
+        pha_service_ip_list.append({ "NAME": 'service_ip'+str(index), "IP": reserve_ip_data.get("ip"), "NETWORK": pha_network.get("NAME"), "SITE": "ignore"})
     return pha_service_ip_list
 
 
