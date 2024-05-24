@@ -1,15 +1,18 @@
 locals {
   dst_files_dir                = "/installation_script"
-  template_dir                 = "${path.module}/template-files"
+  template_dir                 = "${path.module}/../common-assets"
   src_script_tftpl_path        = "${local.template_dir}/powervs_installation.sh.tftpl"
   dst_script_file_path         = "${local.dst_files_dir}/install_packages.sh"
   python_cos_path              = "${local.template_dir}/download_files.py"
   src_extend_filesystem        = "${local.template_dir}/extend_filesystems.sh.tftpl"
   dst_extend_filesystem        = "${local.dst_files_dir}/extend_filesystems.sh"
+  src_ansible_tar_file         = "${local.template_dir}/ansible_powerha_tarball.tar.gz"
+  dest_ansible_tar_file        = "ansible_powerha_tarball.tar.gz"
   destination_python_file_path = "download_files.py"
   destination_ansible_yml_file = "/external_var.yml"
   python_path                  = "/usr/bin/python3"
   nodes_ip                     = var.node_details[*].pi_instance_primary_ip
+  pha_build_path               = "/${var.pha_cos_data.folder_name}/pha/"
 }
 
 
@@ -116,13 +119,6 @@ resource "terraform_data" "download_pha" {
 }
 
 
-locals {
-  src_ansible_tar_file  = "${path.module}/ansible/ansible_powerha_tarball.tar.gz"
-  dest_ansible_tar_file = "ansible_powerha_tarball.tar.gz"
-  pha_build_path        = "/${var.pha_cos_data.folder_name}/pha/"
-}
-
-
 # ##########################################################################
 # 4. Download ansible filesets : After galaxy we need to modify it
 # ##########################################################################
@@ -205,7 +201,7 @@ resource "terraform_data" "copy_files_to_remote" {
   }
 
   provisioner "file" {
-    content = templatefile("${local.template_dir}/ansible_config.py.tftpl", { "rg_count" = var.powerha_resource_group_count, "rg_list" = jsonencode(var.powerha_resource_group_list),
+    content = templatefile("${path.module}/template-files/ansible_config.py.tftpl", { "rg_count" = var.powerha_resource_group_count, "rg_list" = jsonencode(var.powerha_resource_group_list),
       "vg_count"             = var.volume_group_count, "vg_list" = jsonencode(var.volume_group_list),
       "fs_count"             = var.file_system_count, "fs_list" = jsonencode(var.file_system_list),
       "repository_disk_wwn"  = jsonencode(var.repository_disk_wwn),
