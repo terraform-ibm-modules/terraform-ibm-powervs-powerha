@@ -73,7 +73,7 @@
                             "default_value": "",
                             "options": [
                                 {
-                                    "displayname": "Dallas (dallas)",
+                                    "displayname": "Dallas (dallas) PER",
                                     "value": "us-south"
                                 },
                                 {
@@ -137,7 +137,7 @@
                                     "value": "tok04"
                                 },
                                 {
-                                    "displayname": "Toronto 01 (tor01)",
+                                    "displayname": "Toronto 01 (tor01) PER",
                                     "value": "tor01"
                                 },
                                 {
@@ -461,9 +461,6 @@
                         },
                         {
                             "key": "powervs_images"
-                        },
-                        {
-                            "key": "cloud_connection"
                         },
                         {
                             "key": "powervs_instances"

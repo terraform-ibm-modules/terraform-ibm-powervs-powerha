@@ -20,7 +20,8 @@ locals {
 #######################################################
 
 resource "ibm_pi_image" "import_images" {
-  count = local.is_import == {} ? 1 : 0
+  depends_on = [data.ibm_pi_catalog_images.catalog_images_ds, data.ibm_pi_images.ds_images]
+  count      = local.is_import == {} ? 1 : 0
 
   pi_cloud_instance_id = var.powervs_workspace_guid
   pi_image_id          = local.powervs_images[var.aix_os_image]

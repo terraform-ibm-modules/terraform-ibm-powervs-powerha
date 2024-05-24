@@ -4,7 +4,7 @@ output "instances" {
 }
 
 output "reserve_ips" {
-  description = "Reserve IP address of the network interface of IBM PowerVS instance."
+  description = "Reserve the IP address of the network interface of the IBM PowerVS instance."
   value       = local.reserve_ips
 }
 
@@ -19,6 +19,6 @@ output "shared_volume_data" {
 }
 
 output "pha_shared_volume_data" {
-  description = "PowerHA shared volumes data for volume groups."
+  description = "PowerHA shared volume data for volume groups."
   value       = ibm_pi_volume.pha_shared_volumes[*]
 }
