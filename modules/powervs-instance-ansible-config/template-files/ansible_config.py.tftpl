@@ -1,6 +1,5 @@
+import ipaddress
 import math
-import sys
-import json
 from ipaddress import ip_network, ip_address
 
 RG_DEFAULT = {
@@ -22,22 +21,16 @@ def is_value_present(key, value, obj_list):
     return False
 
 
-def resource_compute(resource_data, resource_prefix, default_dict,total_count, key):
+def resource_compute(resource_data, resource_prefix, default_dict, total_count, key):
     AUTO_COUNT = 1
     if len(resource_data)<total_count:
         for index in range(len(resource_data),total_count):
-            default_rg_dict = default_dict.copy()
-            if is_value_present(key,resource_prefix+str(AUTO_COUNT), resource_data):
-                AUTO_COUNT+=1
-                while(is_value_present(resource_prefix+str(AUTO_COUNT), resource_data)):
-                    AUTO_RG_COUNT+=1
-                default_rg_dict[key] = resource_prefix+str(AUTO_COUNT)
-                resource_data.append(default_rg_dict)
-                AUTO_COUNT+=1
-            else:
-                default_rg_dict[key] = resource_prefix+str(AUTO_COUNT)
-                resource_data.append(default_rg_dict)
-                AUTO_COUNT+=1
+            default_resource_dict = default_dict.copy()
+            while(is_value_present(key, resource_prefix+str(AUTO_COUNT), resource_data)):
+                    AUTO_COUNT+=1
+            default_resource_dict[key] = resource_prefix+str(AUTO_COUNT)
+            resource_data.append(default_resource_dict)
+            AUTO_COUNT+=1
     else:
         resource_data = [resource_data[index] for index in range(len(resource_data)) if index<=(total_count-1)]
     return resource_data
@@ -127,14 +120,15 @@ def get_pha_interface_list(node_list,subnet_length, pha_networks, reserved_subne
         pha_interface_list = [data for data in pha_interface_list if data.get("IP")!= primary_ip]
     return pha_interface_list
 
-def get_service_ip_list(reserve_ip_details):
+def get_service_ip_list(reserve_ip_details, pha_network_list):
     pha_service_ip_list = []
-    for index in range(len(reserve_ip_details)):
-        pha_service_ip_list.append({ "NAME": 'service_ip'+str(index), "IP": reserve_ip_details[index].get("ip"), "NETWORK": "reserved_network"})
+    pha_networks_extended = (pha_network_list * math.ceil(len(reserve_ip_details)/len(pha_network_list)))[:len(reserve_ip_details)]
+    for index, (reserve_ip_data, pha_network) in enumerate(zip(reserve_ip_details, pha_networks_extended)):
+        pha_service_ip_list.append({ "NAME": 'service_ip'+str(index), "IP": reserve_ip_data.get("ip"), "NETWORK": pha_network.get("NAME"), "SITE": "ignore"})
     return pha_service_ip_list
 
 
-def get_serviceip_with_vg(pha_service_ip_list,computed_rg_list):
+def get_serviceip_with_rg(pha_service_ip_list,computed_rg_list):
     rg_names = get_value_by_key("name",computed_rg_list)
     serviceip_names = get_value_by_key("NAME",pha_service_ip_list)
     serviceip_vg_list = []
@@ -167,7 +161,7 @@ def create_rg_object(rg_data):
     rg_yml_data = []
     rg_string = ""
     for rg_obj in rg_data:
-        rg_dict = {"name": "", "STARTUP": "", "FALLOVER": "", "FALLBACK": ""}
+        rg_dict = {"name": "", "STARTUP": "", "FALLOVER": "", "FALLBACK": "", "SITE_POLICY": ""}
         for key, value in rg_obj.items():
             if(key=="name"):
                 rg_dict.update({"name" : value})
@@ -337,7 +331,7 @@ if __name__ == "__main__":
     for obj in node_details:
         for key,value in obj.items():
             if key == "pi_instance_private_ips" :
-                obj[key] = [ip.strip() for ip in value[0].split(",")]
+                obj[key] = sorted([ip.strip() for ip in value[0].split(",")], key=ipaddress.IPv4Address)
     subnets = ${subnet_list}
     reserved_subnets = ${reserved_subnet_list}
     reserve_ip_details = ${reserve_ip_data}
@@ -357,8 +351,8 @@ if __name__ == "__main__":
     pha_service_ip_list = []
     serviceip_with_rg = []
     if(service_ip_flag):
-        pha_service_ip_list = get_service_ip_list(reserve_ip_details)
-        serviceip_with_rg = get_serviceip_with_vg(pha_service_ip_list,computed_rg_list)
+        pha_service_ip_list = get_service_ip_list(reserve_ip_details, pha_network_list)
+        serviceip_with_rg = get_serviceip_with_rg(pha_service_ip_list,computed_rg_list)
 
     # Create YAML String
     yaml_data = create_yaml_content(node_details, repository_disk, shared_disks, powerha_build_path,computed_rg_list,filtered_vg_list, rg_with_vg, filtered_fs_list, pha_network_list, pha_interface_list, pha_service_ip_list, serviceip_with_rg)

@@ -12,28 +12,11 @@ module "powervs_workspace_update" {
 
 
 #####################################################
-# CC Subnet Attach module
-# Non PER DC: Attaches Subnets to CCs
-# PER DC: Skip
-#####################################################
-
-module "cloud_connection_network_attach" {
-  depends_on = [module.powervs_workspace_update]
-  source     = "../../modules/cloud-connection-network-attach"
-  count      = local.cloud_connection_count > 0 ? 1 : 0
-
-  powervs_workspace_guid = local.powervs_workspace_guid
-  private_subnet_ids     = module.powervs_workspace_update.powervs_subnet_list[*].id
-  cloud_connection_count = local.cloud_connection_count
-}
-
-
-#####################################################
 # PowerVS Instance Creation
 #####################################################
 
 module "powervs_instance" {
-  depends_on = [module.powervs_workspace_update, module.cloud_connection_network_attach]
+  depends_on = [module.powervs_workspace_update]
   source     = "../../modules/powervs-instance-custom"
 
   powervs_workspace_guid = local.powervs_workspace_guid
@@ -62,7 +45,7 @@ module "powervs_instance" {
 #####################################################
 
 module "powervs_instance_ansible_config" {
-  depends_on = [module.powervs_workspace_update, module.cloud_connection_network_attach, module.powervs_instance, local.node_details]
+  depends_on = [module.powervs_workspace_update, module.powervs_instance, local.node_details]
   source     = "../../modules/powervs-instance-ansible-config"
 
   ssh_private_key              = var.ssh_private_key

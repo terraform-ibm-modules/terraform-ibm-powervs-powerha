@@ -1,15 +1,18 @@
 locals {
   dst_files_dir                = "/installation_script"
-  template_dir                 = "${path.module}/template-files"
+  template_dir                 = "${path.module}/../common-assets"
   src_script_tftpl_path        = "${local.template_dir}/powervs_installation.sh.tftpl"
   dst_script_file_path         = "${local.dst_files_dir}/install_packages.sh"
   python_cos_path              = "${local.template_dir}/download_files.py"
   src_extend_filesystem        = "${local.template_dir}/extend_filesystems.sh.tftpl"
   dst_extend_filesystem        = "${local.dst_files_dir}/extend_filesystems.sh"
+  src_ansible_tar_file         = "${local.template_dir}/ansible_powerha_tarball.tar.gz"
+  dest_ansible_tar_file        = "ansible_powerha_tarball.tar.gz"
   destination_python_file_path = "download_files.py"
-  destination_ansible_yml_file = "/etc/ansible/external_var.yml"
+  destination_ansible_yml_file = "/external_var.yml"
   python_path                  = "/usr/bin/python3"
   nodes_ip                     = var.node_details[*].pi_instance_primary_ip
+  pha_build_path               = "/${var.pha_cos_data.folder_name}/pha/"
 }
 
 
@@ -116,13 +119,6 @@ resource "terraform_data" "download_pha" {
 }
 
 
-locals {
-  src_ansible_tar_file  = "${path.module}/ansible/ansible_powerha_tarball.tar.gz"
-  dest_ansible_tar_file = "ansible_powerha_tarball.tar.gz"
-  pha_build_path        = "/${var.pha_cos_data.folder_name}/pha/"
-}
-
-
 # ##########################################################################
 # 4. Download ansible filesets : After galaxy we need to modify it
 # ##########################################################################
@@ -201,11 +197,11 @@ resource "terraform_data" "copy_files_to_remote" {
 
   provisioner "file" {
     source      = "${local.template_dir}/host"
-    destination = "/etc/ansible/hosts"
+    destination = "/hosts"
   }
 
   provisioner "file" {
-    content = templatefile("${local.template_dir}/ansible_config.py.tftpl", { "rg_count" = var.powerha_resource_group_count, "rg_list" = jsonencode(var.powerha_resource_group_list),
+    content = templatefile("${path.module}/template-files/ansible_config.py.tftpl", { "rg_count" = var.powerha_resource_group_count, "rg_list" = jsonencode(var.powerha_resource_group_list),
       "vg_count"             = var.volume_group_count, "vg_list" = jsonencode(var.volume_group_list),
       "fs_count"             = var.file_system_count, "fs_list" = jsonencode(var.file_system_list),
       "repository_disk_wwn"  = jsonencode(var.repository_disk_wwn),
@@ -248,72 +244,79 @@ resource "terraform_data" "ansible_playbook_execution" {
 
   provisioner "remote-exec" {
     inline = [
-      "cd /.ansible/collections/ansible_collections/ibm/power_ha/playbooks",
-      "/opt/freeware/bin/ansible-playbook -i /etc/ansible/hosts demo_map_hosts.yml"
+      "cd /playbooks",
+      "ANSIBLE_CONFIG=/ansible.cfg /opt/freeware/bin/ansible-playbook -i /hosts demo_map_hosts.yml"
     ]
   }
 
   provisioner "remote-exec" {
     inline = [
-      "cd /.ansible/collections/ansible_collections/ibm/power_ha/playbooks",
-      "/opt/freeware/bin/ansible-playbook -i /etc/ansible/hosts demo_PowerHA.yml --tags install"
+      "cd /playbooks",
+      "ANSIBLE_CONFIG=/ansible.cfg /opt/freeware/bin/ansible-playbook -i /hosts demo_PowerHA.yml --tags install"
     ]
   }
 
   provisioner "remote-exec" {
     inline = [
-      "cd /.ansible/collections/ansible_collections/ibm/power_ha/playbooks",
-      "/opt/freeware/bin/ansible-playbook -i /etc/ansible/hosts demo_cluster.yml --tags standard"
+      "cd /playbooks",
+      "ANSIBLE_CONFIG=/ansible.cfg /opt/freeware/bin/ansible-playbook -i /hosts demo_cluster.yml --tags standard"
     ]
   }
 
   provisioner "remote-exec" {
     inline = [
-      "cd /.ansible/collections/ansible_collections/ibm/power_ha/playbooks",
-      "/opt/freeware/bin/ansible-playbook -i /etc/ansible/hosts demo_network.yml --tags create"
+      "cd /playbooks",
+      "ANSIBLE_CONFIG=/ansible.cfg /opt/freeware/bin/ansible-playbook -i /hosts demo_network.yml --tags create"
     ]
   }
 
   provisioner "remote-exec" {
     inline = [
-      "cd /.ansible/collections/ansible_collections/ibm/power_ha/playbooks",
-      "/opt/freeware/bin/ansible-playbook -i /etc/ansible/hosts demo_interface.yml --tags create"
+      "cd /playbooks",
+      "ANSIBLE_CONFIG=/ansible.cfg /opt/freeware/bin/ansible-playbook -i /hosts demo_interface.yml --tags create"
     ]
   }
 
   provisioner "remote-exec" {
     inline = [
-      "cd /.ansible/collections/ansible_collections/ibm/power_ha/playbooks",
-      "/opt/freeware/bin/ansible-playbook -i /etc/ansible/hosts demo_service_ip.yml --tags create"
+      "cd /playbooks",
+      "ANSIBLE_CONFIG=/ansible.cfg /opt/freeware/bin/ansible-playbook -i /hosts demo_service_ip.yml --tags create"
     ]
   }
 
   provisioner "remote-exec" {
     inline = [
-      "cd /.ansible/collections/ansible_collections/ibm/power_ha/playbooks",
-      "/opt/freeware/bin/ansible-playbook -i /etc/ansible/hosts demo_resource_group.yml --tags create"
+      "cd /playbooks",
+      "ANSIBLE_CONFIG=/ansible.cfg /opt/freeware/bin/ansible-playbook -i /hosts demo_resource_group.yml --tags create"
 
     ]
   }
 
   provisioner "remote-exec" {
     inline = [
-      "cd /.ansible/collections/ansible_collections/ibm/power_ha/playbooks",
-      "/opt/freeware/bin/ansible-playbook -i /etc/ansible/hosts demo_volume_groups.yml --tags create"
+      "cd /playbooks",
+      "ANSIBLE_CONFIG=/ansible.cfg /opt/freeware/bin/ansible-playbook -i /hosts demo_volume_groups.yml --tags create"
     ]
   }
 
   provisioner "remote-exec" {
     inline = [
-      "cd /.ansible/collections/ansible_collections/ibm/power_ha/playbooks",
-      "/opt/freeware/bin/ansible-playbook -i /etc/ansible/hosts demo_file_system.yml  --tags create"
+      "cd /playbooks",
+      "ANSIBLE_CONFIG=/ansible.cfg /opt/freeware/bin/ansible-playbook -i /hosts demo_file_system.yml --tags create"
     ]
   }
 
   provisioner "remote-exec" {
     inline = [
-      "cd /.ansible/collections/ansible_collections/ibm/power_ha/playbooks",
-      "/opt/freeware/bin/ansible-playbook -i /etc/ansible/hosts demo_add_vg_to_rg.yml"
+      "cd /playbooks",
+      "ANSIBLE_CONFIG=/ansible.cfg /opt/freeware/bin/ansible-playbook -i /hosts demo_add_vg_to_rg.yml"
+    ]
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "cd /playbooks",
+      "ANSIBLE_CONFIG=/ansible.cfg /opt/freeware/bin/ansible-playbook -i /hosts demo_add_service_ip_to_rg.yml"
     ]
   }
 }

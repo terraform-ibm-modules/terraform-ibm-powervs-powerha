@@ -5,7 +5,7 @@ locals {
 
   default_pi_storage_config = var.dedicated_volume_count > 0 ? [
     { name = "extended-volume", size = "80", count = "1", tier = var.pi_storage_type, mount = null },
-    { name = "${var.pi_prefix}-volume", size = var.dedicated_volume_attributes.size, count = var.dedicated_volume_count, tier = var.dedicated_volume_attributes.tier, mount = null }
+    { name = "volume", size = var.dedicated_volume_attributes.size, count = var.dedicated_volume_count, tier = var.dedicated_volume_attributes.tier, mount = null }
     ] : [
     { name = "extended-volume", size = "80", count = "1", tier = var.pi_storage_type, mount = null }
   ]

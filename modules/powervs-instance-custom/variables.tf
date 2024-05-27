@@ -61,25 +61,25 @@ variable "pi_memory_size" {
 }
 
 variable "pi_storage_type" {
-  description = "Storage Type, The supported storage types are tier0, tier1, tier3, fixed IOPS."
+  description = "Storage Type, The supported storage types are tier0, tier1, tier3, and fixed IOPS."
   type        = string
   validation {
     condition     = contains(["tier0", "tier1", "tier3", "fixed IOPS"], var.pi_storage_type)
-    error_message = "The supported storage types are: tier0, tier1, tier3, fixed IOPS."
+    error_message = "The supported storage types are: tier0, tier1, tier3, and fixed IOPS."
   }
 }
 
 variable "pi_prefix" {
-  description = "A unique identifier for resources. The identifier must begin with a lowercase letter and end with a lowercase letter or a number. This prefix will be prepended to any resources provisioned by this template. Prefixes must be 8 characters or fewer than 8 characters."
+  description = "A unique identifier for resources. This identifier must start with a letter, followed by a combination of letters, numbers, hyphens (-), or underscores (_). It should be between 1 and 14 characters in length. This prefix will be added to any resources created by using this template."
   type        = string
   validation {
     condition     = can(regex("^[a-zA-Z][a-zA-Z0-9-_]{0,14}$", var.pi_prefix))
-    error_message = "The prefix must begin with an alphabetic character followed by an alphanumeric character, an underscore, and a hyphen. Prefixes must be a maximum of 8  characters."
+    error_message = "The prefix must start with a letter, followed by a combination of letters, numbers, hyphens (-), or underscores (_). It should be between 1 and 14 characters in length."
   }
 }
 
 variable "pi_instance_count" {
-  description = "Number of Power Virtual Server instances required to create in the workspace for PowerHA cluster."
+  description = "Number of Power Virtual Server instances required to create in the workspace for PowerHA cluster. Allowed values are between 1 and 8."
   type        = number
   validation {
     condition     = var.pi_instance_count <= 8 && var.pi_instance_count >= 1
@@ -88,7 +88,7 @@ variable "pi_instance_count" {
 }
 
 variable "powervs_reserve_subnet_list" {
-  description = "IBM Cloud Power Virtual Server subnet configuration details like name, CIDR, and reserved IP count used for PowerHA service label to be created."
+  description = "IBM Cloud Power Virtual Server subnet configuration details like name, CIDR, and reserved IP count used for PowerHA Service Label to be created. Ensure no duplicate subnet names or CIDRs, and reserved_ip_count must be greater than 0."
   type = list(object({
     name              = string
     cidr              = string
@@ -123,7 +123,7 @@ variable "shared_volume_attributes" {
 }
 
 variable "pha_shared_volume" {
-  description = "List which contains size and tier of shared volumes for powerHA volume groups."
+  description = "List which contains size and tier of shared volumes for PowerHA volume groups."
   type = list(object({
     size = number
     tier = string

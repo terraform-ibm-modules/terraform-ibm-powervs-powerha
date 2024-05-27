@@ -4,7 +4,7 @@ variable "powervs_workspace_guid" {
 }
 
 variable "powervs_subnet_list" {
-  description = "IBM Cloud Power Virtual Server subnet configuration details like name and CIDR."
+  description = "IBM Cloud Power Virtual Server subnet configuration details like name and CIDR. Ensure no duplicate subnet names or CIDRs. A maximum of 16 subnets are allowed."
   type = list(object({
     name              = string
     cidr              = string
@@ -12,7 +12,7 @@ variable "powervs_subnet_list" {
   }))
   validation {
     condition     = (length(var.powervs_subnet_list) == length(distinct([for item in var.powervs_subnet_list : lower(item.name)]))) && (length(var.powervs_subnet_list) == length(distinct([for item in var.powervs_subnet_list : join(".", slice(split(".", item.cidr), 0, 3))]))) && length(var.powervs_subnet_list) >= 1 && length(var.powervs_subnet_list) <= 16
-    error_message = "More than 16 subnets and Duplicate subnet name and cidr are not allowed."
+    error_message = "Ensure no duplicate subnet names or CIDRs. A maximum of 16 subnets are allowed."
   }
 }
 

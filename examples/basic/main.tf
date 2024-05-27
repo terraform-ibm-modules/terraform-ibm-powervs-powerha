@@ -7,12 +7,11 @@
 
 module "fullstack" {
   source  = "terraform-ibm-modules/powervs-infrastructure/ibm//modules/powervs-vpc-landing-zone"
-  version = "4.10.0"
+  version = "5.1.0"
 
-  providers = { ibm.ibm-is = ibm.ibm-is, ibm.ibm-pi = ibm.ibm-pi }
+  providers = { ibm.ibm-is = ibm.ibm-is, ibm.ibm-pi = ibm.ibm-pi, ibm.ibm-sm = ibm.ibm-sm }
 
   powervs_zone                = var.powervs_zone
-  landing_zone_configuration  = var.landing_zone_configuration
   prefix                      = var.prefix
   external_access_ip          = var.external_access_ip
   ssh_public_key              = var.ssh_public_key
@@ -44,30 +43,11 @@ module "powervs_workspace_update" {
 
 
 #####################################################
-# Test CC Subnet Attach module
-# Non PER DC: Attaches Subnets to CCs
-# PER DC: Skip
-#####################################################
-
-module "cloud_connection_network_attach" {
-  depends_on = [module.powervs_workspace_update]
-  source     = "../../modules/cloud-connection-network-attach"
-  providers  = { ibm = ibm.ibm-pi }
-
-  count = local.cloud_connection_count > 0 ? 1 : 0
-
-  powervs_workspace_guid = local.powervs_workspace_guid
-  private_subnet_ids     = module.powervs_workspace_update.powervs_subnet_list[*].id
-  cloud_connection_count = local.cloud_connection_count
-}
-
-
-#####################################################
 # Test PowerVS Instance Creation
 #####################################################
 
 module "powervs_instance" {
-  depends_on = [module.cloud_connection_network_attach]
+  depends_on = [module.powervs_workspace_update]
   source     = "../../modules/powervs-instance-custom"
   providers  = { ibm = ibm.ibm-pi }
 

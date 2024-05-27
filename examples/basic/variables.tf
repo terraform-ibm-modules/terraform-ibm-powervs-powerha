@@ -1,21 +1,11 @@
 variable "prefix" {
-  description = "A unique identifier for resources. The identifier must begin with a lowercase letter and end with a lowercase letter or a number. This prefix will be prepended to any resources provisioned by this template. Prefix must be 8 characters or fewer than 8 characters."
+  description = "A unique identifier for resources. This identifier must start with a letter, followed by a combination of letters, numbers, hyphens (-), or underscores (_). It should be between 1 and 8 characters in length. This prefix will be added to any resources created by using this template."
   type        = string
 }
 
 variable "powervs_zone" {
   description = "IBM Cloud data center location corresponding to the location used in 'Power Virtual Server with VPC landing zone' pre-requisite deployment."
   type        = string
-}
-
-variable "landing_zone_configuration" {
-  description = "VPC landing zone configuration."
-  type        = string
-
-  validation {
-    condition     = contains(["3VPC_RHEL", "3VPC_SLES"], var.landing_zone_configuration)
-    error_message = "Provided value must be one of ['3VPC_RHEL', '3VPC_SLES'] only"
-  }
 }
 
 variable "ssh_public_key" {
@@ -73,7 +63,7 @@ variable "powervs_machine_type" {
 }
 
 variable "aix_os_image" {
-  description = "AIX operating system images for Power Virtual Server instances. Power Virtual Server instances are installed with the given AIX OS image. The supported AIX OS images are: 7300-02-01, 7300-00-01, 7200-05-06."
+  description = "AIX operating system images for Power Virtual Server instances. Power Virtual Server instances are installed with the given AIX OS image."
   type        = string
   default     = "7300-02-01"
 }
@@ -88,7 +78,7 @@ variable "powervs_subnet_list" {
 }
 
 variable "powervs_reserve_subnet_list" {
-  description = "IBM Cloud Power Virtual Server subnet configuration details like name, CIDR, and reserved IP count used for PowerHA service label to be created."
+  description = "IBM Cloud Power Virtual Server subnet configuration details like name, CIDR, and reserved IP count used for PowerHA Service Label to be created. Ensure no duplicate subnet names or CIDRs, and reserved_ip_count must be greater than 0."
   type = list(object({
     name              = string
     cidr              = string
