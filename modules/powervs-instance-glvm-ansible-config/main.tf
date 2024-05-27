@@ -1,16 +1,19 @@
 locals {
   dst_files_dir                = "/installation_script"
-  template_dir                 = "${path.module}/template-files"
+  template_dir                 = "${path.module}/../common-assets"
   src_script_tftpl_path        = "${local.template_dir}/powervs_installation.sh.tftpl"
   dst_script_file_path         = "${local.dst_files_dir}/install_packages.sh"
   python_cos_path              = "${local.template_dir}/download_files.py"
   src_extend_filesystem        = "${local.template_dir}/extend_filesystems.sh.tftpl"
   dst_extend_filesystem        = "${local.dst_files_dir}/extend_filesystems.sh"
+  src_ansible_tar_file         = "${local.template_dir}/ansible_powerha_tarball.tar.gz"
+  dest_ansible_tar_file        = "ansible_powerha_tarball.tar.gz"
   destination_python_file_path = "download_files.py"
   destination_ansible_yml_file = "/external_var.yml"
   python_path                  = "/usr/bin/python3"
   all_node_details             = concat(var.site1_node_details, var.site2_node_details)
   nodes_ip                     = local.all_node_details[*].pi_instance_primary_ip
+  pha_build_path               = "/${var.pha_cos_data.folder_name}/pha/"
 }
 
 
@@ -117,13 +120,6 @@ resource "terraform_data" "download_pha" {
 }
 
 
-locals {
-  src_ansible_tar_file  = "${path.module}/ansible/ansible_powerha_tarball.tar.gz"
-  dest_ansible_tar_file = "ansible_powerha_tarball.tar.gz"
-  pha_build_path        = "/${var.pha_cos_data.folder_name}/pha/"
-}
-
-
 # ##########################################################################
 # 4. Download ansible filesets : After galaxy we need to modify it
 # ##########################################################################
@@ -206,7 +202,7 @@ resource "terraform_data" "copy_files_to_remote" {
   }
 
   provisioner "file" {
-    content = templatefile("${local.template_dir}/ansible_config.py.tftpl", {
+    content = templatefile("${path.module}/template-files/ansible_config.py.tftpl", {
       "glvm_vg_count"             = var.powerha_glvm_volume_group, "glvm_vg_list" = jsonencode(var.powerha_glvm_volume_group_list),
       "site1_repository_disk_wwn" = jsonencode(var.site1_repository_disk_wwn), "site2_repository_disk_wwn" = jsonencode(var.site2_repository_disk_wwn),
       "site1_shared_wwn_disks"    = jsonencode(var.site1_shared_disk_wwns), "site2_shared_wwn_disks" = jsonencode(var.site2_shared_disk_wwns),
@@ -299,8 +295,7 @@ resource "terraform_data" "ansible_playbook_execution" {
   provisioner "remote-exec" {
     inline = [
       "cd /playbooks",
-      "ANSIBLE_CONFIG=/ansible.cfg /opt/freeware/bin/ansible-playbook -i /hosts demo_resource_group.yml --tags create"
-
+      "ANSIBLE_CONFIG=/ansible.cfg /opt/freeware/bin/ansible-playbook -i /hosts demo_add_service_ip_to_rg.yml"
     ]
   }
 }

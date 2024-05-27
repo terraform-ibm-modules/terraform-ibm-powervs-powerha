@@ -35,8 +35,6 @@ locals {
   site1_powervs_workspace_id   = local.powervs_infrastructure[0].powervs_workspace_id.value
   site1_powervs_workspace_name = local.powervs_infrastructure[0].powervs_workspace_name.value
   site1_powervs_sshkey_name    = local.powervs_infrastructure[0].powervs_ssh_public_key.value.name
-  site1_cloud_connection_count = local.powervs_infrastructure[0].cloud_connection_count.value
-  site2_cloud_connection_count = module.site2_powervs_workspace_create.cloud_connection_count
 
   # For now we are not using this
   # powervs_networks       = [local.powervs_infrastructure[0].powervs_management_subnet.value, local.powervs_infrastructure[0].powervs_backup_subnet.value]

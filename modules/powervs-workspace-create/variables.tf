@@ -1,5 +1,5 @@
 variable "prefix" {
-  description = "A unique identifier for resources. Must begin with a lowercase letter and end with a lowercase letter or number. This prefix will be prepended to any resources provisioned by this template. Prefixes must be 16 or fewer characters."
+  description = "A unique identifier for resources. This identifier must start with a letter, followed by a combination of letters, numbers, hyphens (-), or underscores (_). It should be between 1 and 8 characters in length. This prefix will be added to any resources created by using this template."
   type        = string
 }
 
@@ -9,7 +9,7 @@ variable "powervs_zone" {
 }
 
 variable "ssh_public_key" {
-  description = "Public SSH Key for VSI creation. Must be an RSA key with a key size of either 2048 bits or 4096 bits (recommended). Must be a valid SSH key that does not already exist in the deployment region."
+  description = "Public SSH Key for workspace and Power Virtual Server instance creation. The public SSH key must be an RSA key with a key size of either 2048 bits or 4096 bits (recommended). It must be a valid SSH key and the same SSH Key that was used in VPC creation."
   type        = string
 }
 
@@ -18,18 +18,8 @@ variable "powervs_resource_group_name" {
   type        = string
 }
 
-variable "cloud_connection" {
-  description = "Cloud connection configuration: speed (50, 100, 200, 500, 1000, 2000, 5000, 10000 Mb/s), count (1 or 2 connections), global_routing (true or false), metered (true or false). Not applicable for DCs where PER is enabled."
-  type = object({
-    count          = string
-    speed          = number
-    global_routing = bool
-    metered        = bool
-  })
-}
-
 variable "transit_gateway_connection" {
-  description = "Set enable to true and provide ID of the existing transit gateway to attach the CCs( Non PER DC) to TGW or to attach PowerVS workspace to TGW (PER DC). If enable is false, CCs will not be attached to TGW , or PowerVS workspace will not be attached to TGW, but CCs in (Non PER DC) will be created."
+  description = "Set enable to true and provide the ID of the existing transit gateway to attach the PowerVS workspace to TGW. If enable is false, the PowerVS workspace will not be attached to TGW."
   type = object({
     enable             = bool
     transit_gateway_id = string
@@ -56,6 +46,6 @@ variable "powervs_subnet_list" {
   }))
   validation {
     condition     = (length(var.powervs_subnet_list) == length(distinct([for item in var.powervs_subnet_list : lower(item.name)]))) && (length(var.powervs_subnet_list) == length(distinct([for item in var.powervs_subnet_list : join(".", slice(split(".", item.cidr), 0, 3))]))) && length(var.powervs_subnet_list) >= 1 && length(var.powervs_subnet_list) <= 16
-    error_message = "More than 16 subnets and Duplicate subnet name and cidr are not allowed."
+    error_message = "Ensure no duplicate subnet names or CIDRs. A maximum of 14 subnets are allowed."
   }
 }

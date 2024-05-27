@@ -3,7 +3,7 @@
 ########################################################################
 
 output "site2_powervs_zone" {
-  description = "Zone where PowerVS infrastructure is created."
+  description = "Zone where PowerVS infrastructure was created for site2."
   value       = var.site2_powervs_zone
 }
 
@@ -33,86 +33,76 @@ output "site2_powervs_workspace_name" {
 }
 
 output "site1_powervs_workspace_id" {
-  description = "PowerVS infrastructure workspace id. The unique identifier of the new resource instance."
+  description = "PowerVS infrastructure workspace id for site1."
   value       = local.site1_powervs_workspace_id
 }
 
 output "site2_powervs_workspace_id" {
-  description = "PowerVS infrastructure workspace id. The unique identifier of the new resource instance."
+  description = "PowerVS infrastructure workspace id for site2."
   value       = module.site2_powervs_workspace_create.powervs_workspace_id
 }
 
 output "site1_powervs_workspace_guid" {
-  description = "PowerVS infrastructure workspace guid. The GUID of the resource instance."
+  description = "PowerVS infrastructure workspace guid for site1."
   value       = local.site1_powervs_workspace_guid
 }
 
 output "site2_powervs_workspace_guid" {
-  description = "PowerVS infrastructure workspace guid. The GUID of the resource instance."
+  description = "PowerVS infrastructure workspace guid for site2."
   value       = module.site2_powervs_workspace_create.powervs_workspace_guid
 }
 
 output "site1_powervs_ssh_public_key" {
-  description = "SSH public key name."
+  description = "SSH public key name for site1."
   value       = local.site1_powervs_sshkey_name
 }
 
 output "site2_powervs_ssh_public_key" {
-  description = "SSH public key name."
+  description = "SSH public key name for site2."
   value       = module.site2_powervs_workspace_create.powervs_ssh_public_key
 }
 
 output "site1_powervs_subnet_list" {
-  description = "Network ID and name of private networks in PowerVS Workspace."
+  description = "PowerVS Workspace Network ID and name for site1."
   value       = module.site1_powervs_workspace_update.powervs_subnet_list
 }
 
 output "site2_powervs_subnet_list" {
-  description = "Network ID and name of private networks in PowerVS Workspace."
+  description = "PowerVS Workspace Network ID and name for site2."
   value       = module.site2_powervs_workspace_create.powervs_subnet_list
 }
 
 output "site1_subnet_reserve_ips" {
-  description = "Reserve IP address of the network interface of IBM PowerVS instance."
+  description = "Reserve IP address of the network interface of IBM PowerVS instance for site1."
   value       = module.site1_powervs_instance.port_data[*]
 }
 
 output "site2_subnet_reserve_ips" {
-  description = "Reserve IP address of the network interface of IBM PowerVS instance."
+  description = "Reserve IP address of the network interface of IBM PowerVS instance for site2."
   value       = module.site2_powervs_instance.port_data[*]
 }
 
 output "powervs_images" {
-  description = "Object containing imported PowerVS image name and image id."
+  description = "Imported PowerVS image name and image id."
   value       = module.site1_powervs_workspace_update.powervs_images
 }
 
-output "site1_cloud_connection" {
-  description = "Number of cloud connections configured in created PowerVS infrastructure."
-  value       = module.site1_cloud_connection_network_attach
-}
-
-output "site2_cloud_connection" {
-  description = "Number of cloud connections configured in created PowerVS infrastructure."
-  value       = module.site2_cloud_connection_network_attach
-}
-
 output "site1_powervs_instances" {
-  description = "IBM PowerVS instance Data."
+  description = "IBM PowerVS instance Data for site1."
   value       = module.site1_powervs_instance.instances
 }
 
 output "site2_powervs_instances" {
-  description = "IBM PowerVS instance Data."
+  description = "IBM PowerVS instance Data for site2."
   value       = module.site2_powervs_instance.instances
 }
 
 output "site1_pha_shared_volume_data" {
-  description = "PowerHA shared volumes data for volume groups."
+  description = "PowerHA shared volumes data for site1's volume groups."
   value       = module.site1_powervs_instance.pha_shared_volume_data
 }
 
 output "site2_pha_shared_volume_data" {
-  description = "PowerHA shared volumes data for volume groups."
+  description = "PowerHA shared volumes data for site2's volume groups."
   value       = module.site2_powervs_instance.pha_shared_volume_data
 }

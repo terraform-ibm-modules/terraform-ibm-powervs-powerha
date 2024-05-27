@@ -11,23 +11,6 @@ module "site1_powervs_workspace_update" {
 }
 
 
-#####################################################
-# CC Subnet Attach module
-# Non PER DC: Attaches Subnets to CCs
-# PER DC: Skip
-#####################################################
-
-module "site1_cloud_connection_network_attach" {
-  depends_on = [module.site1_powervs_workspace_update]
-  source     = "../../modules/cloud-connection-network-attach"
-  count      = local.site1_cloud_connection_count > 0 ? 1 : 0
-
-  powervs_workspace_guid = local.site1_powervs_workspace_guid
-  private_subnet_ids     = module.site1_powervs_workspace_update.powervs_subnet_list[*].id
-  cloud_connection_count = local.site1_cloud_connection_count
-}
-
-
 #######################################################
 # Site2 PowerVS Workspace, Network Creation and Import Image
 #######################################################
@@ -39,7 +22,6 @@ module "site2_powervs_workspace_create" {
   powervs_zone                = var.site2_powervs_zone
   ssh_public_key              = var.ssh_public_key
   powervs_resource_group_name = var.powervs_resource_group_name
-  cloud_connection            = var.site2_cloud_connection
   transit_gateway_connection  = local.transit_gateway_connection
   aix_os_image                = [var.aix_os_image]
   tags                        = var.tags
@@ -48,28 +30,11 @@ module "site2_powervs_workspace_create" {
 
 
 #####################################################
-# CC Subnet Attach module
-# Non PER DC: Attaches Subnets to CCs
-# PER DC: Skip
-#####################################################
-
-module "site2_cloud_connection_network_attach" {
-  depends_on = [module.site2_powervs_workspace_create]
-  source     = "../../modules/cloud-connection-network-attach"
-  count      = local.site2_cloud_connection_count > 0 ? 1 : 0
-
-  powervs_workspace_guid = module.site2_powervs_workspace_create.powervs_workspace_guid
-  private_subnet_ids     = module.site2_powervs_workspace_create.powervs_subnet_list[*].id
-  cloud_connection_count = local.site2_cloud_connection_count
-}
-
-
-#####################################################
 # Site1 PowerVS Instance Creation
 #####################################################
 
 module "site1_powervs_instance" {
-  depends_on = [module.site1_powervs_workspace_update, module.site1_cloud_connection_network_attach]
+  depends_on = [module.site1_powervs_workspace_update]
   source     = "../../modules/powervs-instance-custom"
 
   powervs_workspace_guid = local.site1_powervs_workspace_guid
@@ -98,7 +63,7 @@ module "site1_powervs_instance" {
 #####################################################
 
 module "site2_powervs_instance" {
-  depends_on = [module.site2_powervs_workspace_create, module.site2_cloud_connection_network_attach]
+  depends_on = [module.site2_powervs_workspace_create]
   source     = "../../modules/powervs-instance-custom"
 
   powervs_workspace_guid = module.site2_powervs_workspace_create.powervs_workspace_guid
