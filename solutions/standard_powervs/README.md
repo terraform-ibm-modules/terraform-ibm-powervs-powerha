@@ -6,7 +6,7 @@
 
 ## Summary Tasks
 
-- Creates new private subnets according to the user's input for PowerHA cluster service and attaches it to cloud connections (in Non-PER DC).
+- Creates new private subnets according to the user's input for PowerHA cluster service.
 - Creates and configures PowerVS instances according to the user's input for the PowerHA cluster based on best practices. A minimum of 2 and a maximum of 8 PowerVS instances are allowed.
 - Connects all created PowerVS instances to a proxy server specified by IP address or hostname for installing the dependencies.
 - Post-instance provisioning and the PowerHA software download process(from COS) is being done.
