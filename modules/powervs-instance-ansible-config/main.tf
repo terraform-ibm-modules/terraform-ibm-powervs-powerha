@@ -110,8 +110,9 @@ resource "terraform_data" "download_pha" {
 
   provisioner "remote-exec" {
     inline = [
-      "export http_proxy='${var.proxy_ip_and_port}' ",
-      "export https_proxy='${var.proxy_ip_and_port}' ",
+      "ntpdate ${split(":", var.proxy_ip_and_port)[0]}",
+      "export http_proxy='${var.proxy_ip_and_port}'",
+      "export https_proxy='${var.proxy_ip_and_port}'",
       "chmod +x ${local.destination_python_file_path}",
       "${local.python_path} ${local.destination_python_file_path} 'pha' ${var.pha_cos_data.bucket_name} ${var.pha_cos_data.folder_name} ${var.pha_cos_data.cos_endpoint} ${var.pha_cos_data.cos_access_key_id} ${var.pha_cos_data.cos_secret_access_key}"
     ]

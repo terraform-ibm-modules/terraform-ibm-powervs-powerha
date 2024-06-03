@@ -983,7 +983,7 @@
                             },
                             "default_value": [
                                 {
-                                    "name": "VG1",
+                                    "name": "GLVM_VG1",
                                     "type": "sync",
                                     "size": 30,
                                     "tier": "tier3"
