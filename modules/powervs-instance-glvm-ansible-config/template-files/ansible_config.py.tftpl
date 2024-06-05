@@ -172,6 +172,14 @@ def node_ip_list(node_list):
     return node_list
 
 
+def remove_reserve_ips(site_node_details, site1_reserve_ip_data):
+    for node_data in site_node_details:
+        for reserve_ip_data in site1_reserve_ip_data:
+            if reserve_ip_data.get('ip') in node_data.get('pi_instance_private_ips'):
+                node_data.get('pi_instance_private_ips').remove(reserve_ip_data.get('ip'))
+    return site_node_details
+
+
 if __name__ == "__main__":
     glvm_vg_count = ${glvm_vg_count}
     glvm_vg_list = ${glvm_vg_list}
@@ -188,6 +196,8 @@ if __name__ == "__main__":
     powerha_build_path = ${pha_build_path}
     ansible_dir = ${destination_ansible_yml_file}
 
+    site1_node_details = remove_reserve_ips(site1_node_details, site1_reserve_ip_data)
+    site2_node_details = remove_reserve_ips(site2_node_details, site2_reserve_ip_data)
     # Object Validation and creation
     computed_vg_list = resource_compute(glvm_vg_list,VG_AUTO_PREFIX,VG_DEFAULT,glvm_vg_count,"name")
     glvm_vg_list = get_glvm_vg_list(computed_vg_list, site1_shared_wwn_disks, site2_shared_wwn_disks)
