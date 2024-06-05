@@ -26,3 +26,10 @@ provider "ibm" {
   zone             = var.site2_powervs_zone
   ibmcloud_api_key = var.ibmcloud_api_key != null ? var.ibmcloud_api_key : null
 }
+
+provider "ibm" {
+  alias            = "ibm-is"
+  region           = lookup(local.ibm_powervs_zone_region_map, var.site1_powervs_zone, null)
+  zone             = var.site1_powervs_zone
+  ibmcloud_api_key = var.ibmcloud_api_key != null ? var.ibmcloud_api_key : null
+}

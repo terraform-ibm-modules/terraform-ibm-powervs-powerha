@@ -2,6 +2,11 @@
 # PowerHA Standard Edition outputs
 ########################################################################
 
+output "site1_powervs_zone" {
+  description = "Zone where PowerVS infrastructure was created for site1."
+  value       = var.site1_powervs_zone
+}
+
 output "site2_powervs_zone" {
   description = "Zone where PowerVS infrastructure was created for site2."
   value       = var.site2_powervs_zone

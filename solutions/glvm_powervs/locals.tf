@@ -49,9 +49,9 @@ locals {
   site1_powervs_subnet_list = concat([for net in var.site1_subnet_list : merge(net, { reserved_ip_count : 0 })], var.site1_reserve_subnet_list)
   site2_powervs_subnet_list = concat([for net in var.site2_subnet_list : merge(net, { reserved_ip_count : 0 })], var.site2_reserve_subnet_list)
 
-  # ##################################
-  # # PowerHA Shared Volume Locals
-  # ##################################
+  ##################################
+  # PowerHA Shared Volume Locals
+  ##################################
 
   pha_vg_shared_disks = [for idx in range(var.powerha_glvm_volume_group) :
     idx < length(var.powerha_glvm_volume_group_list) ?
@@ -59,9 +59,9 @@ locals {
     { size = 30, tier = "tier3" }
   ]
 
-  # ##################################
-  # # PowerVS Instance Locals
-  # ##################################
+  ##################################
+  # PowerVS Instance Locals
+  ##################################
 
   site1_pi_instance = {
     aix_image_id         = module.site1_powervs_workspace_update.powervs_images

@@ -12,6 +12,11 @@ variable "prefix" {
   }
 }
 
+variable "site1_powervs_zone" {
+  description = "IBM Cloud data center location corresponds to the location used in the 'Power Virtual Server with VPC landing zone' pre-requisite deployment."
+  type        = string
+}
+
 variable "site2_powervs_zone" {
   description = "IBM Cloud data center location for the site2, where IBM PowerVS infrastructure will be created for the site2."
   type        = string

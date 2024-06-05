@@ -3,7 +3,8 @@
 #######################################################
 
 module "powervs_workspace_update" {
-  source = "../../modules/powervs-workspace-update"
+  source    = "../../modules/powervs-workspace-update"
+  providers = { ibm = ibm }
 
   powervs_workspace_guid = local.powervs_workspace_guid
   powervs_subnet_list    = local.subnet_list
@@ -18,6 +19,7 @@ module "powervs_workspace_update" {
 module "powervs_instance" {
   depends_on = [module.powervs_workspace_update]
   source     = "../../modules/powervs-instance-custom"
+  providers  = { ibm = ibm }
 
   powervs_workspace_guid = local.powervs_workspace_guid
   ssh_public_key_name    = local.powervs_sshkey_name
