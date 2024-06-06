@@ -8,6 +8,8 @@ locals {
     "mon01"    = "mon"
     "eu-de-1"  = "eu-de"
     "eu-de-2"  = "eu-de"
+    "mad02"    = "mad"
+    "mad04"    = "mad"
     "lon04"    = "lon"
     "lon06"    = "lon"
     "osa21"    = "osa"
