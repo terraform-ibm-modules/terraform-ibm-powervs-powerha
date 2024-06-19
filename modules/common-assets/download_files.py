@@ -22,7 +22,10 @@ def download_pha_from_cos(cos, bucket_name, folder_name):
             # Unzip and extract powerha tar file
             if not os.path.exists("./" + folder_name + "/pha"):
                 os.makedirs("./" + folder_name + "/pha")
-            os.system(f"tar -xvf {key} -C ./{folder_name}/pha/")
+            if key.endswith(".tar.gz"):
+                os.system(f"gunzip -c {key} | tar -xvf - -C ./{folder_name}/pha/")
+            else:
+                os.system(f"tar -xvf {key} -C ./{folder_name}/pha/")
 
         print(f"File downloaded, unzip and extracted successfully to: {folder_name}")
 

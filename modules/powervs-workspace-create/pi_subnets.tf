@@ -2,8 +2,16 @@
 # Create Private Subnets
 #####################################################
 
+# Adding sleep because of PER enabled workspace
+# which needs some time to initialize
+resource "time_sleep" "wait_30_sec" {
+  depends_on      = [module.powervs_workspace]
+  create_duration = "30s"
+}
+
 resource "ibm_pi_network" "private_subnet_1" {
-  count = length(var.powervs_subnet_list) > 0 ? 1 : 0
+  depends_on = [time_sleep.wait_30_sec]
+  count      = length(var.powervs_subnet_list) > 0 ? 1 : 0
 
   pi_cloud_instance_id = module.powervs_workspace.pi_workspace_guid
   pi_network_name      = var.powervs_subnet_list[0].name
