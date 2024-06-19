@@ -270,7 +270,7 @@
                                 {
                                     "cidr": "10.62.0.0/24",
                                     "name": "reserve_network_1",
-                                    "reserved_ip_count": 2
+                                    "reserved_ip_count": 1
                                 }
                             ]
                         },
@@ -924,7 +924,7 @@
                                 {
                                     "cidr": "10.62.0.0/24",
                                     "name": "reserve_network_1",
-                                    "reserved_ip_count": 2
+                                    "reserved_ip_count": 1
                                 }
                             ]
                         },
@@ -955,7 +955,7 @@
                                 {
                                     "cidr": "10.64.0.0/24",
                                     "name": "reserve_network_2",
-                                    "reserved_ip_count": 2
+                                    "reserved_ip_count": 1
                                 }
                             ]
                         },

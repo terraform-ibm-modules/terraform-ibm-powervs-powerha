@@ -8,21 +8,21 @@ def download_pha_from_cos(cos, bucket_name, folder_name):
     # Download PAH file from COS
     try:
         my_bucket = cos.list_objects(Bucket=bucket_name, Prefix=folder_name + "/")
-        for obj in my_bucket["Contents"]:
-            key = obj["Key"]
-
+        list_of_file = [
+            item["Key"]
+            for item in my_bucket["Contents"]
+            if item["Key"].endswith((".tar", ".tar.gz"))
+        ]
+        for key in list_of_file:
             # created directories in local
             if not os.path.exists("./" + os.path.dirname(key)):
                 os.makedirs("./" + os.path.dirname(key))
             cos.download_file(bucket_name, key, "./" + key)
 
             # Unzip and extract powerha tar file
-            if not os.path.exists("./" + folder_name + "/pha/" + key.split("/")[1]):
-                os.makedirs("./" + folder_name + "/pha/" + key.split("/")[1])
-            os.system(
-                f"gunzip -c {key} | tar -xvf -  -C ./{folder_name}/pha/"
-                + key.split("/")[1]
-            )
+            if not os.path.exists("./" + folder_name + "/pha"):
+                os.makedirs("./" + folder_name + "/pha")
+            os.system(f"tar -xvf {key} -C ./{folder_name}/pha/")
 
         print(f"File downloaded, unzip and extracted successfully to: {folder_name}")
 
