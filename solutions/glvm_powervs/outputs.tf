@@ -79,12 +79,22 @@ output "site2_powervs_subnet_list" {
 
 output "site1_subnet_reserve_ips" {
   description = "Reserve IP address of the network interface of IBM PowerVS instance for site1."
-  value       = module.site1_powervs_instance.port_data[*]
+  value       = module.site1_powervs_instance.reserve_port_data[*]
 }
 
 output "site2_subnet_reserve_ips" {
   description = "Reserve IP address of the network interface of IBM PowerVS instance for site2."
-  value       = module.site2_powervs_instance.port_data[*]
+  value       = module.site2_powervs_instance.reserve_port_data[*]
+}
+
+output "site1_subnet_persistent_ips" {
+  description = "Persistent IP address of the network interface of IBM PowerVS instance for site1."
+  value       = module.site1_powervs_instance.persistent_port_data[*]
+}
+
+output "site2_subnet_persistent_ips" {
+  description = "Persistent IP address of the network interface of IBM PowerVS instance for site2."
+  value       = module.site2_powervs_instance.persistent_port_data[*]
 }
 
 output "powervs_images" {

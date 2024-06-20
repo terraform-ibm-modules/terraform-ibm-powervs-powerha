@@ -19,14 +19,13 @@ variable "ssh_private_key" {
 #######################################
 
 variable "pha_cos_data" {
-  description = "Details about cloud object storage bucket where PowerHA installation media folder and SSL file are located."
+  description = "Details about cloud object storage bucket where PowerHA installation media folder are located."
   type = object({
     bucket_name           = string
     cos_access_key_id     = string
     cos_secret_access_key = string
     cos_endpoint          = string
     folder_name           = string
-    ssl_file_name         = string
   })
 }
 

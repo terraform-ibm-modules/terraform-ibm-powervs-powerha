@@ -210,6 +210,7 @@ resource "terraform_data" "copy_files_to_remote" {
       "site1_node_details"        = jsonencode(var.site1_node_details), "site2_node_details" = jsonencode(var.site2_node_details),
       "site1_subnet_list"         = jsonencode(var.site1_subnet_list), "site2_subnet_list" = jsonencode(var.site2_subnet_list),
       "site1_reserve_ip_data"     = jsonencode(var.site1_reserve_ip_data), "site2_reserve_ip_data" = jsonencode(var.site2_reserve_ip_data),
+      "site1_persistent_ip_data"  = jsonencode(var.site1_persistent_ip_data), "site2_persistent_ip_data" = jsonencode(var.site2_persistent_ip_data),
     "pha_build_path" = jsonencode(local.pha_build_path), "destination_ansible_yml_file" = jsonencode(local.destination_ansible_yml_file) })
     destination = "ansible_config.py"
   }
@@ -269,6 +270,13 @@ resource "terraform_data" "ansible_playbook_execution" {
     inline = [
       "cd /playbooks",
       "ANSIBLE_CONFIG=/ansible.cfg /opt/freeware/bin/ansible-playbook -i /hosts demo_network.yml --tags create"
+    ]
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "cd /playbooks",
+      "ANSIBLE_CONFIG=/ansible.cfg /opt/freeware/bin/ansible-playbook -i /hosts demo_persistent_ip.yml --tags create"
     ]
   }
 

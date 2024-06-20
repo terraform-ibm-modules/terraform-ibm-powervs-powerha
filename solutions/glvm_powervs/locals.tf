@@ -35,6 +35,7 @@ locals {
   site1_powervs_workspace_id   = local.powervs_infrastructure[0].powervs_workspace_id.value
   site1_powervs_workspace_name = local.powervs_infrastructure[0].powervs_workspace_name.value
   site1_powervs_sshkey_name    = local.powervs_infrastructure[0].powervs_ssh_public_key.value.name
+  is_import                    = { for image in data.ibm_pi_images.ds_images.image_info : image.name => image.id if image.name == var.aix_os_image }
 
   # For now we are not using this
   # powervs_networks       = [local.powervs_infrastructure[0].powervs_management_subnet.value, local.powervs_infrastructure[0].powervs_backup_subnet.value]
@@ -46,8 +47,12 @@ locals {
   # PowerVS Networks Locals
   ##################################
 
-  site1_powervs_subnet_list = concat([for net in var.site1_subnet_list : merge(net, { reserved_ip_count : 0 })], var.site1_reserve_subnet_list)
-  site2_powervs_subnet_list = concat([for net in var.site2_subnet_list : merge(net, { reserved_ip_count : 0 })], var.site2_reserve_subnet_list)
+  persistent_ip_count      = floor(length(var.site1_subnet_list) > length(var.site2_subnet_list) ? length(var.site1_subnet_list) / 2 : length(var.site2_subnet_list) / 2) > 1 ? 2 : 1
+  site1_persistent_subnets = [for net in(length(var.site1_subnet_list) == 1 ? [] : length(var.site1_subnet_list) < 4 && length(var.site1_persistent_subnet_list) == 2 ? [var.site1_persistent_subnet_list[0]] : var.site1_persistent_subnet_list) : merge(net, { reserved_ip_count : length(var.site1_persistent_subnet_list) < 2 ? local.persistent_ip_count : 1 })]
+  site2_persistent_subnets = [for net in(length(var.site2_subnet_list) == 1 ? [] : length(var.site2_subnet_list) < 4 && length(var.site2_persistent_subnet_list) == 2 ? [var.site2_persistent_subnet_list[0]] : var.site2_persistent_subnet_list) : merge(net, { reserved_ip_count : length(var.site2_persistent_subnet_list) < 2 ? local.persistent_ip_count : 1 })]
+
+  site1_powervs_subnet_list = concat([for net in var.site1_subnet_list : merge(net, { reserved_ip_count : 0 })], concat(var.site1_reserve_subnet_list, length(var.site1_subnet_list) > 2 || length(local.site1_persistent_subnets) == 0 ? local.site1_persistent_subnets : [local.site1_persistent_subnets[0]]))
+  site2_powervs_subnet_list = concat([for net in var.site2_subnet_list : merge(net, { reserved_ip_count : 0 })], concat(var.site2_reserve_subnet_list, length(var.site2_subnet_list) > 2 || length(local.site2_persistent_subnets) == 0 ? local.site2_persistent_subnets : [local.site2_persistent_subnets[0]]))
 
   ##################################
   # PowerHA Shared Volume Locals
@@ -64,7 +69,7 @@ locals {
   ##################################
 
   site1_pi_instance = {
-    aix_image_id         = module.site1_powervs_workspace_update.powervs_images
+    aix_image_id         = local.is_import == {} ? module.site1_powervs_workspace_update.powervs_images : local.is_import[var.aix_os_image]
     powervs_networks     = slice(module.site1_powervs_workspace_update.powervs_subnet_list, 0, length(var.site1_subnet_list))
     number_of_processors = local.site1_tshirt_choice.cores
     memory_size          = local.site1_tshirt_choice.memory
@@ -83,6 +88,7 @@ locals {
 
   site1_node_details = [for item in module.site1_powervs_instance.instances : {
     pi_instance_name        = replace(lower(item.pi_instance_name), "_", "-")
+    pi_instance_id          = item.pi_instance_instance_id
     pi_instance_primary_ip  = item.pi_instance_primary_ip
     pi_instance_private_ips = item.pi_instance_private_ips[*]
     pi_extend_volume        = item.pi_storage_configuration[0].wwns
@@ -90,6 +96,7 @@ locals {
 
   site2_node_details = [for item in module.site2_powervs_instance.instances : {
     pi_instance_name        = replace(lower(item.pi_instance_name), "_", "-")
+    pi_instance_id          = item.pi_instance_instance_id
     pi_instance_primary_ip  = item.pi_instance_primary_ip
     pi_instance_private_ips = item.pi_instance_private_ips[*]
     pi_extend_volume        = item.pi_storage_configuration[0].wwns
@@ -110,4 +117,8 @@ data "ibm_schematics_output" "schematics_output" {
   workspace_id = var.prerequisite_workspace_id
   location     = local.location
   template_id  = data.ibm_schematics_workspace.schematics_workspace.runtime_data[0].id
+}
+
+data "ibm_pi_images" "ds_images" {
+  pi_cloud_instance_id = local.site1_powervs_workspace_guid
 }

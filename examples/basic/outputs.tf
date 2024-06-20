@@ -94,7 +94,7 @@ output "powervs_subnet_list" {
 
 output "subnet_reserve_ips" {
   description = "Reserve IP address of the network interface of IBM PowerVS instance."
-  value       = module.powervs_instance.port_data[*]
+  value       = module.powervs_instance.reserve_port_data[*]
 }
 
 output "powervs_images" {

@@ -96,6 +96,15 @@ variable "powervs_reserve_subnet_list" {
   }))
 }
 
+variable "powervs_persistent_subnet_list" {
+  description = "IBM Cloud Power Virtual Server subnet configuration details like name, CIDR, and reserved IP count used for PowerHA Service Label to be created. Ensure no duplicate subnet names or CIDRs, and reserved_ip_count must be greater than 0."
+  type = list(object({
+    name              = string
+    cidr              = string
+    reserved_ip_count = number
+  }))
+}
+
 variable "dedicated_volume_count" {
   description = "Count of dedicated volumes that need to be created and attached to every Power Virtual Server instance separately."
   type        = number

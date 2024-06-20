@@ -302,7 +302,7 @@ resource "time_sleep" "wait_60_sec_8" {
 }
 
 
-resource "ibm_pi_network_port_attach" "port_attach" {
+resource "ibm_pi_network_port_attach" "port_attach_reserve" {
   depends_on = [module.powervs_instance_node_8, time_sleep.wait_60_sec_8]
   count      = length(local.reserve_ips) > 0 ? length(local.reserve_ips) : 0
 
@@ -310,4 +310,21 @@ resource "ibm_pi_network_port_attach" "port_attach" {
   pi_instance_id            = local.reserve_ips[count.index].pvm_instance_id
   pi_network_name           = local.reserve_ips[count.index].name
   pi_network_port_ipaddress = local.reserve_ips[count.index].ip
+}
+
+resource "time_sleep" "wait_60_sec_reserve_port" {
+  depends_on      = [ibm_pi_network_port_attach.port_attach_reserve, time_sleep.wait_60_sec_8]
+  count           = length(local.reserve_ips) > 0 ? length(local.reserve_ips) : 0
+  create_duration = "60s"
+}
+
+
+resource "ibm_pi_network_port_attach" "port_attach_persistent" {
+  depends_on = [ibm_pi_network_port_attach.port_attach_reserve, time_sleep.wait_60_sec_reserve_port]
+  count      = length(local.persistent_ips) > 0 ? length(local.persistent_ips) : 0
+
+  pi_cloud_instance_id      = var.powervs_workspace_guid
+  pi_instance_id            = local.persistent_ips[count.index].pvm_instance_id
+  pi_network_name           = local.persistent_ips[count.index].name
+  pi_network_port_ipaddress = local.persistent_ips[count.index].ip
 }

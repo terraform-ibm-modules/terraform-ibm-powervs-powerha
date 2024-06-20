@@ -19,14 +19,13 @@ variable "ssh_private_key" {
 #######################################
 
 variable "pha_cos_data" {
-  description = "Details about cloud object storage bucket where PowerHA installation media folder and SSL file are located."
+  description = "Details about cloud object storage bucket where PowerHA installation media folder are located."
   type = object({
     bucket_name           = string
     cos_access_key_id     = string
     cos_secret_access_key = string
     cos_endpoint          = string
     folder_name           = string
-    ssl_file_name         = string
   })
 }
 
@@ -54,9 +53,11 @@ variable "site1_node_details" {
   description = "PowerVS instances data for PowerHA cluster creation."
   type = list(object({
     pi_instance_name        = string
+    pi_instance_id          = string
     pi_instance_primary_ip  = string
     pi_instance_private_ips = list(string)
     pi_extend_volume        = string
+
   }))
 }
 
@@ -64,6 +65,7 @@ variable "site2_node_details" {
   description = "PowerVS instances data for powerHA cluster creation."
   type = list(object({
     pi_instance_name        = string
+    pi_instance_id          = string
     pi_instance_primary_ip  = string
     pi_instance_private_ips = list(string)
     pi_extend_volume        = string
@@ -112,6 +114,24 @@ variable "site1_reserve_ip_data" {
 
 variable "site2_reserve_ip_data" {
   description = "Reserve IP address of the network interface of IBM PowerVS instance."
+  type = list(object({
+    ip              = string
+    name            = string
+    pvm_instance_id = string
+  }))
+}
+
+variable "site1_persistent_ip_data" {
+  description = "Persistent IP address of the network interface of IBM PowerVS instance."
+  type = list(object({
+    ip              = string
+    name            = string
+    pvm_instance_id = string
+  }))
+}
+
+variable "site2_persistent_ip_data" {
+  description = "Persistent IP address of the network interface of IBM PowerVS instance."
   type = list(object({
     ip              = string
     name            = string

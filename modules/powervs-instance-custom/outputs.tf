@@ -8,9 +8,19 @@ output "reserve_ips" {
   value       = local.reserve_ips
 }
 
-output "port_data" {
-  description = "IBM PowerVS instance Port Data."
-  value       = ibm_pi_network_port_attach.port_attach[*]
+output "persistent_ips" {
+  description = "Persistent IP address of the network interface of the IBM PowerVS instance."
+  value       = local.persistent_ips
+}
+
+output "reserve_port_data" {
+  description = "IBM PowerVS instance Reserve Port Data."
+  value       = ibm_pi_network_port_attach.port_attach_reserve[*]
+}
+
+output "persistent_port_data" {
+  description = "IBM PowerVS instance Persistent Port Data."
+  value       = ibm_pi_network_port_attach.port_attach_persistent[*]
 }
 
 output "shared_volume_data" {

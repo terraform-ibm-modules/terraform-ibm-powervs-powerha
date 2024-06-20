@@ -26,6 +26,7 @@ locals {
   powervs_workspace_id   = local.powervs_infrastructure[0].powervs_workspace_id.value
   powervs_workspace_name = local.powervs_infrastructure[0].powervs_workspace_name.value
   powervs_sshkey_name    = local.powervs_infrastructure[0].powervs_ssh_public_key.value.name
+  is_import              = { for image in data.ibm_pi_images.ds_images.image_info : image.name => image.id if image.name == var.aix_os_image }
 
   # For now we are not using this
   # powervs_networks       = [local.powervs_infrastructure[0].powervs_management_subnet.value, local.powervs_infrastructure[0].powervs_backup_subnet.value]
@@ -54,7 +55,7 @@ locals {
   ##################################
 
   pi_instance = {
-    aix_image_id         = module.powervs_workspace_update.powervs_images
+    aix_image_id         = local.is_import == {} ? module.powervs_workspace_update.powervs_images : local.is_import[var.aix_os_image]
     powervs_networks     = slice(module.powervs_workspace_update.powervs_subnet_list, 0, length(var.powervs_subnet_list))
     number_of_processors = local.tshirt_choice.cores
     memory_size          = local.tshirt_choice.memory
@@ -85,4 +86,8 @@ data "ibm_schematics_output" "schematics_output" {
   workspace_id = var.prerequisite_workspace_id
   location     = local.location
   template_id  = data.ibm_schematics_workspace.schematics_workspace.runtime_data[0].id
+}
+
+data "ibm_pi_images" "ds_images" {
+  pi_cloud_instance_id = local.powervs_workspace_guid
 }

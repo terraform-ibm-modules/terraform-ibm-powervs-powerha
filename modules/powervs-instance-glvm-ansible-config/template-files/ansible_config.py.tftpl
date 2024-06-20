@@ -51,6 +51,18 @@ def get_pha_network_list(subnet_list):
     return pha_network_list
 
 
+def get_persistent_nws(site1_node_details,persistent_networks, pha_network_list, increment_by=0):
+    persistent_network_list = []
+    count = increment_by
+    pha_xd_data_networks = [net for net in pha_network_list if net.get("TYPE")=="XD_data"]
+    for node in site1_node_details:
+        node_persistent_networks=[persistent_net for persistent_net in persistent_networks if node.get("pi_instance_id")==persistent_net.get("pvm_instance_id")]
+        for xd_data_net, persistent_network in zip(pha_xd_data_networks,node_persistent_networks):
+            count+=1
+            persistent_network_list.append({ "NAME": "persistent_ip"+str(count), "NETWORK": xd_data_net.get("NAME"), "NODE": node.get("pi_instance_name") , "IP": persistent_network.get("ip") })
+    return persistent_network_list
+
+
 def get_pha_interface_list(node_details,subnet_length, pha_networks):
     pha_interface_list = []
     count = 0
@@ -111,7 +123,7 @@ def create_obj_to_str(obj_list):
     return obj_str
 
 
-def create_yaml_content(site1_node_details, site2_node_details, site1_repository_disk_wwn, site2_repository_disk_wwn, powerha_build_path, glvm_vg_list, pha_network_list, pha_interface_list, pha_service_ip_list):
+def create_yaml_content(site1_node_details, site2_node_details, site1_repository_disk_wwn, site2_repository_disk_wwn, powerha_build_path, glvm_vg_list, pha_network_list, pha_interface_list, pha_service_ip_list, persistent_nw_list):
     node_details = site1_node_details + site2_node_details
     yaml_string = ""
     yaml_string += "Using_for_Cloud_catalog: True\n\n"
@@ -146,6 +158,11 @@ def create_yaml_content(site1_node_details, site2_node_details, site1_repository
     yaml_string +="NETWORK:\n"
     network_yml_data = create_obj_to_str(pha_network_list)
     yaml_string += network_yml_data
+
+    if(len(persistent_nw_list)>0):
+        yaml_string +="PERSISTENT_IP:\n"
+        persistent_yml_data = create_obj_to_str(persistent_nw_list)
+        yaml_string += persistent_yml_data
 
     if(len(pha_interface_list)>0):
         yaml_string +="INTERFACES:\n"
@@ -193,11 +210,13 @@ if __name__ == "__main__":
     site2_subnet_list = ${site2_subnet_list}
     site1_reserve_ip_data = ${site1_reserve_ip_data}
     site2_reserve_ip_data = ${site2_reserve_ip_data}
+    site1_persistent_ip_data = ${site1_persistent_ip_data}
+    site2_persistent_ip_data = ${site2_persistent_ip_data}
     powerha_build_path = ${pha_build_path}
     ansible_dir = ${destination_ansible_yml_file}
 
-    site1_node_details = remove_reserve_ips(site1_node_details, site1_reserve_ip_data)
-    site2_node_details = remove_reserve_ips(site2_node_details, site2_reserve_ip_data)
+    site1_node_details = remove_reserve_ips(remove_reserve_ips(site1_node_details, site1_reserve_ip_data), site1_persistent_ip_data)
+    site2_node_details = remove_reserve_ips(remove_reserve_ips(site2_node_details, site2_reserve_ip_data), site2_persistent_ip_data)
     # Object Validation and creation
     computed_vg_list = resource_compute(glvm_vg_list,VG_AUTO_PREFIX,VG_DEFAULT,glvm_vg_count,"name")
     glvm_vg_list = get_glvm_vg_list(computed_vg_list, site1_shared_wwn_disks, site2_shared_wwn_disks)
@@ -214,6 +233,10 @@ if __name__ == "__main__":
         if(idx<2):
             pha_network_list[idx]["TYPE"] = "XD_data"
             pha_network_list[idx]["NAME"] = "net_XD_data_"+"{0:02d}".format(idx+1)
+
+    site1_pha_persistent_nws = get_persistent_nws(site1_node_details,site1_persistent_ip_data, pha_network_list)
+    site2_pha_persistent_nws = get_persistent_nws(site2_node_details,site2_persistent_ip_data, pha_network_list, len(site1_pha_persistent_nws))
+    persistent_nw_list = site1_pha_persistent_nws + site2_pha_persistent_nws
 
     site1_pha_interface_list = get_pha_interface_list(site1_node_details,len(pha_site1_network_list),pha_network_list)
     site2_pha_interface_list = get_pha_interface_list(site2_node_details,len(pha_site2_network_list),pha_network_list)
@@ -242,7 +265,7 @@ if __name__ == "__main__":
         serviceip_with_rg = get_serviceip_with_rg(pha_service_ip_combined_list, glvm_vg_list)
 
     # Create YAML String
-    yaml_data = create_yaml_content(site1_node_details, site2_node_details, site1_repository_disk_wwn, site2_repository_disk_wwn, powerha_build_path, glvm_vg_list, pha_network_list, pha_interface_list, pha_service_ip_list)
+    yaml_data = create_yaml_content(site1_node_details, site2_node_details, site1_repository_disk_wwn, site2_repository_disk_wwn, powerha_build_path, glvm_vg_list, pha_network_list, pha_interface_list, pha_service_ip_list, persistent_nw_list)
     # # write data in yaml file
     with open(ansible_dir,"w+") as fp:
         fp.write(yaml_data)

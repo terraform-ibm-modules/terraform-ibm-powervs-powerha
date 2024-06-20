@@ -96,13 +96,13 @@ variable "aix_os_image" {
 }
 
 variable "site1_subnet_list" {
-  description = "IBM Cloud Power Virtual Server subnet configuration details for site1 like name and CIDR. Ensure no duplicate subnet names or CIDRs. A maximum of 14 subnets are allowed."
+  description = "IBM Cloud Power Virtual Server subnet configuration details for site1 like name and CIDR. Ensure no duplicate subnet names or CIDRs. A maximum of 12 subnets are allowed."
   type = list(object({
     name = string
     cidr = string
   }))
   validation {
-    condition     = (length(var.site1_subnet_list) == length(distinct([for item in var.site1_subnet_list : lower(item.name)]))) && (length(var.site1_subnet_list) == length(distinct([for item in var.site1_subnet_list : join(".", slice(split(".", item.cidr), 0, 3))]))) && length(var.site1_subnet_list) >= 1 && length(var.site1_subnet_list) <= 14
+    condition     = (length(var.site1_subnet_list) == length(distinct([for item in var.site1_subnet_list : lower(item.name)]))) && (length(var.site1_subnet_list) == length(distinct([for item in var.site1_subnet_list : join(".", slice(split(".", item.cidr), 0, 3))]))) && length(var.site1_subnet_list) >= 1 && length(var.site1_subnet_list) <= 12
     error_message = "Ensure no duplicate subnet names or CIDRs. A maximum of 14 subnets are allowed."
   }
 }
@@ -120,14 +120,26 @@ variable "site1_reserve_subnet_list" {
   }
 }
 
-variable "site2_subnet_list" {
-  description = "IBM Cloud Power Virtual Server subnet configuration details for site2 like name and CIDR. Ensure no duplicate subnet names or CIDRs. A maximum of 14 subnets are allowed."
+variable "site1_persistent_subnet_list" {
+  description = "IBM Cloud Power Virtual Server subnet configuration details for site1 like name and CIDR. Ensure no duplicate subnet names or CIDRs. A maximum of 2 persistent subnets are allowed."
   type = list(object({
     name = string
     cidr = string
   }))
   validation {
-    condition     = (length(var.site2_subnet_list) == length(distinct([for item in var.site2_subnet_list : lower(item.name)]))) && (length(var.site2_subnet_list) == length(distinct([for item in var.site2_subnet_list : join(".", slice(split(".", item.cidr), 0, 3))]))) && length(var.site2_subnet_list) >= 1 && length(var.site2_subnet_list) <= 14
+    condition     = (length(var.site1_persistent_subnet_list) == length(distinct([for item in var.site1_persistent_subnet_list : lower(item.name)]))) && (length(var.site1_persistent_subnet_list) == length(distinct([for item in var.site1_persistent_subnet_list : join(".", slice(split(".", item.cidr), 0, 3))]))) && length(var.site1_persistent_subnet_list) >= 1 && length(var.site1_persistent_subnet_list) <= 2
+    error_message = "Ensure no duplicate subnet names or CIDRs. A maximum of 2 persistent subnets are allowed."
+  }
+}
+
+variable "site2_subnet_list" {
+  description = "IBM Cloud Power Virtual Server subnet configuration details for site2 like name and CIDR. Ensure no duplicate subnet names or CIDRs. A maximum of 12 subnets are allowed."
+  type = list(object({
+    name = string
+    cidr = string
+  }))
+  validation {
+    condition     = (length(var.site2_subnet_list) == length(distinct([for item in var.site2_subnet_list : lower(item.name)]))) && (length(var.site2_subnet_list) == length(distinct([for item in var.site2_subnet_list : join(".", slice(split(".", item.cidr), 0, 3))]))) && length(var.site2_subnet_list) >= 1 && length(var.site2_subnet_list) <= 12
     error_message = "Ensure no duplicate subnet names or CIDRs. A maximum of 14 subnets are allowed."
   }
 }
@@ -145,6 +157,18 @@ variable "site2_reserve_subnet_list" {
   }
 }
 
+variable "site2_persistent_subnet_list" {
+  description = "IBM Cloud Power Virtual Server subnet configuration details for site2 like name and CIDR. Ensure no duplicate subnet names or CIDRs. A maximum of 2 persistent subnets are allowed."
+  type = list(object({
+    name = string
+    cidr = string
+  }))
+  validation {
+    condition     = (length(var.site2_persistent_subnet_list) == length(distinct([for item in var.site2_persistent_subnet_list : lower(item.name)]))) && (length(var.site2_persistent_subnet_list) == length(distinct([for item in var.site2_persistent_subnet_list : join(".", slice(split(".", item.cidr), 0, 3))]))) && length(var.site2_persistent_subnet_list) >= 1 && length(var.site2_persistent_subnet_list) <= 2
+    error_message = "Ensure no duplicate subnet names or CIDRs. A maximum of 2 persistent subnets are allowed."
+  }
+}
+
 variable "dedicated_volume" {
   description = "Count of dedicated volumes that need to be created and attached to every Power Virtual Server instance separately. Allowed values are between 0 and 127."
   type        = number
@@ -155,7 +179,7 @@ variable "dedicated_volume" {
 }
 
 variable "shared_volume" {
-  description = "Count of shared volumes that need to created and attached to every Power Virtual Server instances. Allowed values are between 1 and 127."
+  description = "Count of shared volumes that need to created and attached to every Power Virtual Server instances for each site. Allowed values are between 1 and 127."
   type        = number
   validation {
     condition     = var.shared_volume >= 1 && var.shared_volume <= 127
@@ -166,7 +190,6 @@ variable "shared_volume" {
 variable "cos_powerha_image_download" {
   description = <<EOT
   Details about cloud object storage bucket where PowerHA installation media folder and SSL file are located. For more details click [here](https://cloud.ibm.com/docs/cloud-object-storage?topic=cloud-object-storage-service-credentials).
-  ssl_file_name is only applicable to AIX 7.2 and can be skipped for AIX 7.3.
   Example:
     {
       "bucket_name":"bucket-name",
@@ -174,7 +197,6 @@ variable "cos_powerha_image_download" {
       "cos_secret_access_key":"xxxxxx",
       "cos_endpoint":"https://s3.region.cloud-object-storage.appdomain.cloud",
       "folder_name":"powerha-build-parent-folder-name",
-      "ssl_file_name": "ssl-file-path"
     }
 
   You can keep the PowerHA images in the following format in the IBM Cloud COS Bucket.
@@ -188,7 +210,6 @@ variable "cos_powerha_image_download" {
     cos_secret_access_key = string
     cos_endpoint          = string
     folder_name           = string
-    ssl_file_name         = string
   })
 }
 
@@ -247,7 +268,7 @@ variable "site2_custom_profile" {
 }
 
 variable "dedicated_volume_attributes" {
-  description = "Size(In GB) of dedicated volumes that need to be created and attached to every Power Virtual Server instance separately."
+  description = "Size(In GB) and Tier of dedicated volumes that need to be created and attached to every Power Virtual Server instance separately."
   type = object({
     size = number
     tier = string
@@ -259,7 +280,7 @@ variable "dedicated_volume_attributes" {
 }
 
 variable "shared_volume_attributes" {
-  description = "Size(In GB) of shared volumes that need to be created and attached to every Power Virtual Server instance separately."
+  description = "Size(In GB) and Tier of shared volumes that need to be created and attached to every Power Virtual Server instance separately."
   type = object({
     size = number
     tier = string
@@ -271,7 +292,7 @@ variable "shared_volume_attributes" {
 }
 
 variable "powerha_glvm_volume_group_list" {
-  description = "List of parameters for GLVM volume group - Individual PowerHA GLVM volume group configuration. Based on the powerha_glvm_volume_group count, you can provide all the GLVM volume group configurations like name, type, size, and tier. The default configuration will be taken if details are not provided."
+  description = "List of parameters for GLVM volume group - Individual PowerHA GLVM volume group configuration. Based on the powerha_glvm_volume_group count, you can provide all the GLVM volume group configurations like name, type, size(in GB), and tier. The default configuration will be taken if details are not provided."
   type = list(object({
     name = string
     type = string

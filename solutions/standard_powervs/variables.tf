@@ -108,7 +108,6 @@ variable "shared_volume" {
 variable "cos_powerha_image_download" {
   description = <<EOT
   Details about cloud object storage bucket where PowerHA installation media folder and SSL file are located. For more details click [here](https://cloud.ibm.com/docs/cloud-object-storage?topic=cloud-object-storage-service-credentials).
-  ssl_file_name is only applicable to AIX 7.2 and can be skipped for AIX 7.3.
   Example:
     {
       "bucket_name":"bucket-name",
@@ -116,7 +115,6 @@ variable "cos_powerha_image_download" {
       "cos_secret_access_key":"xxxxxx",
       "cos_endpoint":"https://s3.region.cloud-object-storage.appdomain.cloud",
       "folder_name":"powerha-build-parent-folder-name",
-      "ssl_file_name": "ssl-file-path"
     }
 
   You can keep the PowerHA images in the following format in the IBM Cloud COS Bucket.
@@ -130,7 +128,6 @@ variable "cos_powerha_image_download" {
     cos_secret_access_key = string
     cos_endpoint          = string
     folder_name           = string
-    ssl_file_name         = string
   })
 }
 
@@ -186,7 +183,7 @@ variable "custom_profile" {
 }
 
 variable "dedicated_volume_attributes" {
-  description = "Size(In GB) of dedicated volumes that need to be created and attached to every Power Virtual Server instance separately."
+  description = "Size(In GB) and Tier of dedicated volumes that need to be created and attached to every Power Virtual Server instance separately."
   type = object({
     size = number
     tier = string
@@ -198,7 +195,7 @@ variable "dedicated_volume_attributes" {
 }
 
 variable "shared_volume_attributes" {
-  description = "Size(In GB) of shared volumes that need to be created and attached to every Power Virtual Server instance separately."
+  description = "Size(In GB) and Tier of shared volumes that need to be created and attached to every Power Virtual Server instance separately."
   type = object({
     size = number
     tier = string
@@ -230,7 +227,7 @@ variable "powerha_resource_group_list" {
 }
 
 variable "volume_group_list" {
-  description = "List of parameters for volume group - Individual PowerHA volume group configuration. Based on the volume_group count, you can provide all the volume group configurations like name, resource group name, type, size, and tier. The default configuration will be taken if details are not provided."
+  description = "List of parameters for volume group - Individual PowerHA volume group configuration. Based on the volume_group count, you can provide all the volume group configurations like name, resource group name, type, size(in GB), and tier. The default configuration will be taken if details are not provided."
   type = list(object({
     name    = string
     rg_name = string

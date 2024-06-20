@@ -14,7 +14,7 @@ import (
 )
 
 // Use existing resource group
-const resourceGroup = "Default" //"geretain-test-resources"
+const resourceGroup = "geretain-test-resources"
 const standardPhaExampleDir = "examples/basic"
 
 var sharedInfoSvc *cloudinfo.CloudInfoService
@@ -65,7 +65,6 @@ func setupOptions(t *testing.T, prefix string, dir string) *testhelper.TestOptio
 		"powervs_zone":                options.Region,
 		"prefix":                      options.Prefix,
 		"powervs_resource_group_name": options.ResourceGroup,
-		"landing_zone_configuration":  "3VPC_RHEL",
 		"external_access_ip":          "0.0.0.0/0",
 	}
 

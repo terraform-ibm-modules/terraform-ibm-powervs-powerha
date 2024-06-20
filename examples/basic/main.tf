@@ -55,19 +55,20 @@ module "powervs_instance" {
   powervs_workspace_guid = local.powervs_workspace_guid
   ssh_public_key_name    = local.powervs_sshkey_name
 
-  pi_prefix                   = var.prefix
-  pi_image_id                 = module.powervs_workspace_update.powervs_images
-  pi_networks                 = local.pi_instance.powervs_networks
-  pi_number_of_processors     = local.pi_instance.number_of_processors
-  pi_memory_size              = local.pi_instance.memory_size
-  pi_cpu_proc_type            = local.pi_instance.cpu_proc_type
-  pi_storage_type             = local.pi_instance.tier
-  pi_server_type              = var.powervs_machine_type
-  pi_instance_count           = var.powervs_instance_count
-  powervs_reserve_subnet_list = var.powervs_reserve_subnet_list
-  dedicated_volume_count      = var.dedicated_volume
-  shared_volume_count         = var.shared_volume
-  dedicated_volume_attributes = var.dedicated_volume_attributes
-  shared_volume_attributes    = var.shared_volume_attributes
-  pha_shared_volume           = local.pha_vg_shared_disks
+  pi_prefix                      = var.prefix
+  pi_image_id                    = module.powervs_workspace_update.powervs_images
+  pi_networks                    = local.pi_instance.powervs_networks
+  pi_number_of_processors        = local.pi_instance.number_of_processors
+  pi_memory_size                 = local.pi_instance.memory_size
+  pi_cpu_proc_type               = local.pi_instance.cpu_proc_type
+  pi_storage_type                = local.pi_instance.tier
+  pi_server_type                 = var.powervs_machine_type
+  pi_instance_count              = var.powervs_instance_count
+  powervs_reserve_subnet_list    = var.powervs_reserve_subnet_list
+  powervs_persistent_subnet_list = null
+  dedicated_volume_count         = var.dedicated_volume
+  shared_volume_count            = var.shared_volume
+  dedicated_volume_attributes    = var.dedicated_volume_attributes
+  shared_volume_attributes       = var.shared_volume_attributes
+  pha_shared_volume              = local.pha_vg_shared_disks
 }
