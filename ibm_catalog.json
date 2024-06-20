@@ -906,7 +906,7 @@
                             },
                             "default_value": [
                                 {
-                                    "cidr": "10.61.1.0/24",
+                                    "cidr": "10.61.0.0/24",
                                     "name": "network_1"
                                 }
                             ]
@@ -921,7 +921,7 @@
                             },
                             "default_value": [
                                 {
-                                    "cidr": "10.62.1.0/24",
+                                    "cidr": "10.62.0.0/24",
                                     "name": "reserve_network_1",
                                     "reserved_ip_count": 1
                                 }
@@ -937,7 +937,7 @@
                             },
                             "default_value": [
                                 {
-                                    "cidr": "10.63.1.0/24",
+                                    "cidr": "10.63.0.0/24",
                                     "name": "persistent_network_1"
                                 }
                             ]
@@ -952,7 +952,7 @@
                             },
                             "default_value": [
                                 {
-                                    "cidr": "10.61.2.0/24",
+                                    "cidr": "10.71.0.0/24",
                                     "name": "network_2"
                                 }
                             ]
@@ -967,14 +967,14 @@
                             },
                             "default_value": [
                                 {
-                                    "cidr": "10.62.2.0/24",
+                                    "cidr": "10.72.0.0/24",
                                     "name": "reserve_network_2",
                                     "reserved_ip_count": 1
                                 }
                             ]
                         },
                         {
-                            "key": "site1_persistent_subnet_list",
+                            "key": "site2_persistent_subnet_list",
                             "required": true,
                             "custom_config": {
                                 "grouping": "deployment",
@@ -983,7 +983,7 @@
                             },
                             "default_value": [
                                 {
-                                    "cidr": "10.63.2.0/24",
+                                    "cidr": "10.73.0.0/24",
                                     "name": "persistent_network_2"
                                 }
                             ]
