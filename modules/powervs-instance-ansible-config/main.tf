@@ -12,7 +12,7 @@ locals {
   destination_ansible_yml_file = "/external_var.yml"
   python_path                  = "/usr/bin/python3"
   nodes_ip                     = var.node_details[*].pi_instance_primary_ip
-  pha_build_path               = "/${var.pha_cos_data.folder_name}/pha/"
+  pha_build_path               = "/${var.pha_cos_data.folder_name}/"
 }
 
 

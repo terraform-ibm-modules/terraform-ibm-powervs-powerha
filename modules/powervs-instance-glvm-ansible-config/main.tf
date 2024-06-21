@@ -13,7 +13,7 @@ locals {
   python_path                  = "/usr/bin/python3"
   all_node_details             = concat(var.site1_node_details, var.site2_node_details)
   nodes_ip                     = local.all_node_details[*].pi_instance_primary_ip
-  pha_build_path               = "/${var.pha_cos_data.folder_name}/pha/"
+  pha_build_path               = "/${var.pha_cos_data.folder_name}/"
 }
 
 

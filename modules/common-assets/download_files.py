@@ -15,17 +15,16 @@ def download_pha_from_cos(cos, bucket_name, folder_name):
         ]
         for key in list_of_file:
             # created directories in local
-            if not os.path.exists("./" + os.path.dirname(key)):
-                os.makedirs("./" + os.path.dirname(key))
+            dir = os.path.dirname(key)
+            if not os.path.exists("./" + dir):
+                os.makedirs("./" + dir)
             cos.download_file(bucket_name, key, "./" + key)
 
             # Unzip and extract powerha tar file
-            if not os.path.exists("./" + folder_name + "/pha"):
-                os.makedirs("./" + folder_name + "/pha")
             if key.endswith(".tar.gz"):
-                os.system(f"gunzip -c {key} | tar -xvf - -C ./{folder_name}/pha/")
+                os.system(f"gunzip -c {key} | tar -xvf - -C ./{dir}")
             else:
-                os.system(f"tar -xvf {key} -C ./{folder_name}/pha/")
+                os.system(f"tar -xvf {key} -C ./{dir}")
 
         print(f"File downloaded, unzip and extracted successfully to: {folder_name}")
 
