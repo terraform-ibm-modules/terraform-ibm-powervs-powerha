@@ -4,7 +4,7 @@
 
 module "site1_powervs_workspace_update" {
   source    = "../../modules/powervs-workspace-update"
-  providers = { ibm = ibm.ibm-is }
+  providers = { ibm = ibm }
 
   powervs_workspace_guid = local.site1_powervs_workspace_guid
   powervs_subnet_list    = local.site1_powervs_subnet_list
@@ -18,7 +18,7 @@ module "site1_powervs_workspace_update" {
 
 module "site2_powervs_workspace_create" {
   source    = "../../modules/powervs-workspace-create"
-  providers = { ibm = ibm }
+  providers = { ibm = ibm.ibm-pi }
 
   prefix                      = var.prefix
   powervs_zone                = var.site2_powervs_zone
@@ -38,7 +38,7 @@ module "site2_powervs_workspace_create" {
 module "site1_powervs_instance" {
   depends_on = [module.site1_powervs_workspace_update]
   source     = "../../modules/powervs-instance-custom"
-  providers  = { ibm = ibm.ibm-is }
+  providers  = { ibm = ibm }
 
   powervs_workspace_guid = local.site1_powervs_workspace_guid
   ssh_public_key_name    = local.site1_powervs_sshkey_name
@@ -69,7 +69,7 @@ module "site1_powervs_instance" {
 module "site2_powervs_instance" {
   depends_on = [module.site2_powervs_workspace_create]
   source     = "../../modules/powervs-instance-custom"
-  providers  = { ibm = ibm }
+  providers  = { ibm = ibm.ibm-pi }
 
   powervs_workspace_guid = module.site2_powervs_workspace_create.powervs_workspace_guid
   ssh_public_key_name    = module.site2_powervs_workspace_create.powervs_ssh_public_key
