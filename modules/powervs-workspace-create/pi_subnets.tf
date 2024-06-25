@@ -18,10 +18,6 @@ resource "ibm_pi_network" "private_subnet_1" {
   pi_cidr              = var.powervs_subnet_list[0].cidr
   pi_network_type      = "vlan"
   pi_network_mtu       = 9000
-  pi_ipaddress_range {
-    pi_starting_ip_address = cidrhost(var.powervs_subnet_list[0].cidr, 200)
-    pi_ending_ip_address   = cidrhost(var.powervs_subnet_list[0].cidr, 254)
-  }
 }
 
 resource "ibm_pi_network" "private_subnet_2" {
@@ -33,10 +29,6 @@ resource "ibm_pi_network" "private_subnet_2" {
   pi_cidr              = var.powervs_subnet_list[1].cidr
   pi_network_type      = "vlan"
   pi_network_mtu       = 9000
-  pi_ipaddress_range {
-    pi_starting_ip_address = cidrhost(var.powervs_subnet_list[1].cidr, 200)
-    pi_ending_ip_address   = cidrhost(var.powervs_subnet_list[1].cidr, 254)
-  }
 }
 
 resource "ibm_pi_network" "private_subnet_3" {
@@ -48,10 +40,6 @@ resource "ibm_pi_network" "private_subnet_3" {
   pi_cidr              = var.powervs_subnet_list[2].cidr
   pi_network_type      = "vlan"
   pi_network_mtu       = 9000
-  pi_ipaddress_range {
-    pi_starting_ip_address = cidrhost(var.powervs_subnet_list[2].cidr, 200)
-    pi_ending_ip_address   = cidrhost(var.powervs_subnet_list[2].cidr, 254)
-  }
 }
 
 resource "ibm_pi_network" "private_subnet_4" {
@@ -63,10 +51,6 @@ resource "ibm_pi_network" "private_subnet_4" {
   pi_cidr              = var.powervs_subnet_list[3].cidr
   pi_network_type      = "vlan"
   pi_network_mtu       = 9000
-  pi_ipaddress_range {
-    pi_starting_ip_address = cidrhost(var.powervs_subnet_list[3].cidr, 200)
-    pi_ending_ip_address   = cidrhost(var.powervs_subnet_list[3].cidr, 254)
-  }
 }
 
 resource "ibm_pi_network" "private_subnet_5" {
@@ -78,10 +62,6 @@ resource "ibm_pi_network" "private_subnet_5" {
   pi_cidr              = var.powervs_subnet_list[4].cidr
   pi_network_type      = "vlan"
   pi_network_mtu       = 9000
-  pi_ipaddress_range {
-    pi_starting_ip_address = cidrhost(var.powervs_subnet_list[4].cidr, 200)
-    pi_ending_ip_address   = cidrhost(var.powervs_subnet_list[4].cidr, 254)
-  }
 }
 
 resource "ibm_pi_network" "private_subnet_6" {
@@ -93,10 +73,6 @@ resource "ibm_pi_network" "private_subnet_6" {
   pi_cidr              = var.powervs_subnet_list[5].cidr
   pi_network_type      = "vlan"
   pi_network_mtu       = 9000
-  pi_ipaddress_range {
-    pi_starting_ip_address = cidrhost(var.powervs_subnet_list[5].cidr, 200)
-    pi_ending_ip_address   = cidrhost(var.powervs_subnet_list[5].cidr, 254)
-  }
 }
 
 resource "ibm_pi_network" "private_subnet_7" {
@@ -108,10 +84,6 @@ resource "ibm_pi_network" "private_subnet_7" {
   pi_cidr              = var.powervs_subnet_list[6].cidr
   pi_network_type      = "vlan"
   pi_network_mtu       = 9000
-  pi_ipaddress_range {
-    pi_starting_ip_address = cidrhost(var.powervs_subnet_list[6].cidr, 200)
-    pi_ending_ip_address   = cidrhost(var.powervs_subnet_list[6].cidr, 254)
-  }
 }
 
 resource "ibm_pi_network" "private_subnet_8" {
@@ -123,10 +95,6 @@ resource "ibm_pi_network" "private_subnet_8" {
   pi_cidr              = var.powervs_subnet_list[7].cidr
   pi_network_type      = "vlan"
   pi_network_mtu       = 9000
-  pi_ipaddress_range {
-    pi_starting_ip_address = cidrhost(var.powervs_subnet_list[7].cidr, 200)
-    pi_ending_ip_address   = cidrhost(var.powervs_subnet_list[7].cidr, 254)
-  }
 }
 
 resource "ibm_pi_network" "private_subnet_9" {
@@ -138,10 +106,6 @@ resource "ibm_pi_network" "private_subnet_9" {
   pi_cidr              = var.powervs_subnet_list[8].cidr
   pi_network_type      = "vlan"
   pi_network_mtu       = 9000
-  pi_ipaddress_range {
-    pi_starting_ip_address = cidrhost(var.powervs_subnet_list[8].cidr, 200)
-    pi_ending_ip_address   = cidrhost(var.powervs_subnet_list[8].cidr, 254)
-  }
 }
 
 resource "ibm_pi_network" "private_subnet_10" {
@@ -153,10 +117,6 @@ resource "ibm_pi_network" "private_subnet_10" {
   pi_cidr              = var.powervs_subnet_list[9].cidr
   pi_network_type      = "vlan"
   pi_network_mtu       = 9000
-  pi_ipaddress_range {
-    pi_starting_ip_address = cidrhost(var.powervs_subnet_list[9].cidr, 200)
-    pi_ending_ip_address   = cidrhost(var.powervs_subnet_list[9].cidr, 254)
-  }
 }
 
 resource "ibm_pi_network" "private_subnet_11" {
@@ -168,10 +128,6 @@ resource "ibm_pi_network" "private_subnet_11" {
   pi_cidr              = var.powervs_subnet_list[10].cidr
   pi_network_type      = "vlan"
   pi_network_mtu       = 9000
-  pi_ipaddress_range {
-    pi_starting_ip_address = cidrhost(var.powervs_subnet_list[10].cidr, 200)
-    pi_ending_ip_address   = cidrhost(var.powervs_subnet_list[10].cidr, 254)
-  }
 }
 
 resource "ibm_pi_network" "private_subnet_12" {
@@ -183,10 +139,6 @@ resource "ibm_pi_network" "private_subnet_12" {
   pi_cidr              = var.powervs_subnet_list[11].cidr
   pi_network_type      = "vlan"
   pi_network_mtu       = 9000
-  pi_ipaddress_range {
-    pi_starting_ip_address = cidrhost(var.powervs_subnet_list[11].cidr, 200)
-    pi_ending_ip_address   = cidrhost(var.powervs_subnet_list[11].cidr, 254)
-  }
 }
 
 resource "ibm_pi_network" "private_subnet_13" {
@@ -198,10 +150,6 @@ resource "ibm_pi_network" "private_subnet_13" {
   pi_cidr              = var.powervs_subnet_list[12].cidr
   pi_network_type      = "vlan"
   pi_network_mtu       = 9000
-  pi_ipaddress_range {
-    pi_starting_ip_address = cidrhost(var.powervs_subnet_list[12].cidr, 200)
-    pi_ending_ip_address   = cidrhost(var.powervs_subnet_list[12].cidr, 254)
-  }
 }
 
 resource "ibm_pi_network" "private_subnet_14" {
@@ -213,10 +161,6 @@ resource "ibm_pi_network" "private_subnet_14" {
   pi_cidr              = var.powervs_subnet_list[13].cidr
   pi_network_type      = "vlan"
   pi_network_mtu       = 9000
-  pi_ipaddress_range {
-    pi_starting_ip_address = cidrhost(var.powervs_subnet_list[13].cidr, 200)
-    pi_ending_ip_address   = cidrhost(var.powervs_subnet_list[13].cidr, 254)
-  }
 }
 
 resource "ibm_pi_network" "private_subnet_15" {
@@ -228,10 +172,6 @@ resource "ibm_pi_network" "private_subnet_15" {
   pi_cidr              = var.powervs_subnet_list[14].cidr
   pi_network_type      = "vlan"
   pi_network_mtu       = 9000
-  pi_ipaddress_range {
-    pi_starting_ip_address = cidrhost(var.powervs_subnet_list[14].cidr, 200)
-    pi_ending_ip_address   = cidrhost(var.powervs_subnet_list[14].cidr, 254)
-  }
 }
 
 resource "ibm_pi_network" "private_subnet_16" {
@@ -243,10 +183,6 @@ resource "ibm_pi_network" "private_subnet_16" {
   pi_cidr              = var.powervs_subnet_list[15].cidr
   pi_network_type      = "vlan"
   pi_network_mtu       = 9000
-  pi_ipaddress_range {
-    pi_starting_ip_address = cidrhost(var.powervs_subnet_list[15].cidr, 200)
-    pi_ending_ip_address   = cidrhost(var.powervs_subnet_list[15].cidr, 254)
-  }
 }
 
 
