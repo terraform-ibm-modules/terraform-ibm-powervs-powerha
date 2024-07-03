@@ -7,7 +7,7 @@
 
 module "fullstack" {
   source  = "terraform-ibm-modules/powervs-infrastructure/ibm//modules/powervs-vpc-landing-zone"
-  version = "5.1.0"
+  version = "5.2.1"
 
   providers = { ibm.ibm-is = ibm.ibm-is, ibm.ibm-pi = ibm.ibm-pi, ibm.ibm-sm = ibm.ibm-sm }
 

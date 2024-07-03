@@ -1,10 +1,43 @@
 #######################################################
+# Check PowerHA Filesets
+#######################################################
+
+resource "terraform_data" "validate_pha" {
+
+  connection {
+    type        = "ssh"
+    user        = "root"
+    host        = local.bastion_host_ip
+    private_key = var.ssh_private_key
+    agent       = false
+    timeout     = "20m"
+  }
+
+  ####### Copy Template file to target host ############
+  provisioner "file" {
+    source      = "${path.module}/../../modules/common-assets/download_files.py"
+    destination = "download_files.py"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "dnf install python3",
+      "pip3 install boto3",
+      "chmod +x download_files.py",
+      "python3 download_files.py 'pha_standard' ${var.cos_powerha_image_download.bucket_name} ${var.cos_powerha_image_download.folder_name} ${var.cos_powerha_image_download.cos_endpoint} ${var.cos_powerha_image_download.cos_access_key_id} ${var.cos_powerha_image_download.cos_secret_access_key}"
+    ]
+  }
+}
+
+
+#######################################################
 # PowerVS Workspace Network Creation and Import Image
 #######################################################
 
 module "powervs_workspace_update" {
-  source    = "../../modules/powervs-workspace-update"
-  providers = { ibm = ibm }
+  depends_on = [terraform_data.validate_pha]
+  source     = "../../modules/powervs-workspace-update"
+  providers  = { ibm = ibm }
 
   powervs_workspace_guid = local.powervs_workspace_guid
   powervs_subnet_list    = local.subnet_list

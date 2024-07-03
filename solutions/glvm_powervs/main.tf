@@ -1,10 +1,43 @@
 #######################################################
+# Check PowerHA Filesets
+#######################################################
+
+resource "terraform_data" "validate_pha" {
+
+  connection {
+    type        = "ssh"
+    user        = "root"
+    host        = local.bastion_host_ip
+    private_key = var.ssh_private_key
+    agent       = false
+    timeout     = "1m"
+  }
+
+  ####### Copy Template file to target host ############
+  provisioner "file" {
+    source      = "${path.module}/../../modules/common-assets/download_files.py"
+    destination = "download_files.py"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "dnf install python3",
+      "pip3 install boto3",
+      "chmod +x download_files.py",
+      "python3 download_files.py 'pha_glvm' ${var.cos_powerha_image_download.bucket_name} ${var.cos_powerha_image_download.folder_name} ${var.cos_powerha_image_download.cos_endpoint} ${var.cos_powerha_image_download.cos_access_key_id} ${var.cos_powerha_image_download.cos_secret_access_key}"
+    ]
+  }
+}
+
+
+#######################################################
 # Site1 PowerVS Network Creation and Import Image
 #######################################################
 
 module "site1_powervs_workspace_update" {
-  source    = "../../modules/powervs-workspace-update"
-  providers = { ibm = ibm }
+  depends_on = [terraform_data.validate_pha]
+  source     = "../../modules/powervs-workspace-update"
+  providers  = { ibm = ibm }
 
   powervs_workspace_guid = local.site1_powervs_workspace_guid
   powervs_subnet_list    = local.site1_powervs_subnet_list
@@ -17,8 +50,9 @@ module "site1_powervs_workspace_update" {
 #######################################################
 
 module "site2_powervs_workspace_create" {
-  source    = "../../modules/powervs-workspace-create"
-  providers = { ibm = ibm.ibm-pi }
+  depends_on = [terraform_data.validate_pha]
+  source     = "../../modules/powervs-workspace-create"
+  providers  = { ibm = ibm.ibm-pi }
 
   prefix                      = var.prefix
   powervs_zone                = var.site2_powervs_zone
