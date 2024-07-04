@@ -22,7 +22,7 @@ resource "ibm_pi_image" "import_images" {
   pi_image_name        = var.aix_os_image
 
   timeouts {
-    create = "9m"
+    create = "10m"
   }
 }
 

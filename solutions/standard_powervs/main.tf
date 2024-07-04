@@ -10,7 +10,7 @@ resource "terraform_data" "validate_pha" {
     host        = local.bastion_host_ip
     private_key = var.ssh_private_key
     agent       = false
-    timeout     = "20m"
+    timeout     = "5m"
   }
 
   ####### Copy Template file to target host ############

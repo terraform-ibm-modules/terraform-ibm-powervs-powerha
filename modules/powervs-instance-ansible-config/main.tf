@@ -29,7 +29,7 @@ resource "terraform_data" "extend_increase_filesystem" {
     host         = local.nodes_ip[count.index]
     private_key  = var.ssh_private_key
     agent        = false
-    timeout      = "20m"
+    timeout      = "5m"
   }
 
   ####### Create Terraform scripts directory ############
@@ -64,7 +64,7 @@ resource "terraform_data" "install_packages" {
     host         = local.nodes_ip[count.index]
     private_key  = var.ssh_private_key
     agent        = false
-    timeout      = "20m"
+    timeout      = "5m"
   }
 
   provisioner "file" {
@@ -99,7 +99,7 @@ resource "terraform_data" "download_pha" {
     host         = local.nodes_ip[count.index]
     private_key  = var.ssh_private_key
     agent        = false
-    timeout      = "20m"
+    timeout      = "5m"
   }
 
   ####### Copy Template file to target host ############
@@ -134,7 +134,7 @@ resource "terraform_data" "download_ansible" {
     host         = local.nodes_ip[count.index]
     private_key  = var.ssh_private_key
     agent        = false
-    timeout      = "20m"
+    timeout      = "5m"
   }
 
   provisioner "file" {
@@ -193,7 +193,7 @@ resource "terraform_data" "copy_files_to_remote" {
     host         = local.nodes_ip[0]
     private_key  = var.ssh_private_key
     agent        = false
-    timeout      = "20m"
+    timeout      = "5m"
   }
 
   provisioner "file" {
@@ -240,7 +240,7 @@ resource "terraform_data" "ansible_playbook_execution" {
     host         = local.nodes_ip[0]
     private_key  = var.ssh_private_key
     agent        = false
-    timeout      = "20m"
+    timeout      = "5m"
   }
 
   provisioner "remote-exec" {
