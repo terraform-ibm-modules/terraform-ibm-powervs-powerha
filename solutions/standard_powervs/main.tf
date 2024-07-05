@@ -21,7 +21,7 @@ resource "terraform_data" "validate_pha" {
 
   provisioner "remote-exec" {
     inline = [
-      "dnf install python3",
+      "echo 'y' | dnf install python3",
       "pip3 install boto3",
       "chmod +x download_files.py",
       "python3 download_files.py 'pha_standard' ${var.cos_powerha_image_download.bucket_name} ${var.cos_powerha_image_download.folder_name} ${var.cos_powerha_image_download.cos_endpoint} ${var.cos_powerha_image_download.cos_access_key_id} ${var.cos_powerha_image_download.cos_secret_access_key}"
