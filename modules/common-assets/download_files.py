@@ -1,9 +1,8 @@
-import glob
 import os
-import shutil
 import sys
-
+import glob
 import boto3
+import shutil
 
 DIR_PATH = os.path.dirname(os.path.realpath(__file__))
 
@@ -17,15 +16,26 @@ class CustomError(Exception):
 
 
 def validate_filesets(cluster_type, folder_path):
-    file_sets = []
+    file_sets = license_file_sets = []
     if cluster_type.lower() == "pha_standard":
         file_sets = glob.glob(f"{folder_path}/**/cluster.doc*", recursive=True)
+        if len(file_sets):
+            print("PowerHA filesets are found.")
+        else:
+            raise CustomError("Error: PowerHA filesets are not found.")
+        
     elif cluster_type.lower() == "pha_glvm":
         file_sets = glob.glob(f"{folder_path}/**/cluster.xd.glvm*", recursive=True)
-
+        license_file_sets = glob.glob(f"{folder_path}/**/cluster.xd.license*", recursive=True)
+        if len(file_sets) and len(license_file_sets):
+            print("Mandatory GLVM filesets are found.")
+        elif not len(file_sets):
+            raise CustomError("Error: Mandatory GLVM filesets are not found. Include cluster.xd.glvm filesets along with PowerHA filesets in COS folder.")
+        else:
+            raise CustomError("Error: Mandatory GLVM filesets are not found. Include cluster.xd.license filesets along with PowerHA filesets in COS folder.")
+        
     # Delete folder after validation
     shutil.rmtree(f"{folder_path}")
-    return True if len(file_sets) else False
 
 
 def download_pha_from_cos(cos, bucket_name, folder_name, cluster_type):
@@ -50,19 +60,13 @@ def download_pha_from_cos(cos, bucket_name, folder_name, cluster_type):
             else:
                 os.system(f"tar -xvf {file} -C /{dir}")
 
-        print(
-            f"PowerHA files sets downloaded, unzip and extracted successfully to: {folder_name} folder."
-        )
-        if cluster_type.lower() in ["pha_standard", "pha_glvm"]:
-            if validate_filesets(cluster_type, os.path.join(DIR_PATH, folder_name)):
-                print("PowerHA files sets are found.")
-            else:
-                raise (CustomError("Error: PowerHA files sets are not found."))
+        print(f"PowerHA filesets downloaded, unzip and extracted successfully to: {folder_name} folder.")
 
     except Exception:
-        raise CustomError(
-            "Error: Unable to download the PowerHA files sets, Please check COS Details."
-        )
+        raise CustomError("Error: Unable to download the PowerHA filesets, Please check COS Details.")
+
+    if cluster_type.lower() in ["pha_standard", "pha_glvm"]:
+        validate_filesets(cluster_type, os.path.join(DIR_PATH, folder_name))
 
 
 def download_file_from_cos(cos, bucket_name, file_path):
@@ -93,4 +97,4 @@ if __name__ == "__main__":
     elif solution_type == "file":
         download_file_from_cos(cos, bucket_name, path)
     else:
-        raise CustomError("Error: downloading file.")
+        raise CustomError("Error: downloading file, It support solution type : [pha_glvm, pha_standard, pha, file].")
