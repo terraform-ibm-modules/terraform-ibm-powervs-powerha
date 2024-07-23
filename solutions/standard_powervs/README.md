@@ -50,9 +50,9 @@
 | Name | Type |
 |------|------|
 | [terraform_data.validate_pha](https://registry.terraform.io/providers/hashicorp/terraform/latest/docs/resources/data) | resource |
-| [ibm_pi_images.ds_images](https://registry.terraform.io/providers/IBM-Cloud/ibm/1.66.0/docs/data-sources/pi_images) | data source |
-| [ibm_schematics_output.schematics_output](https://registry.terraform.io/providers/IBM-Cloud/ibm/1.66.0/docs/data-sources/schematics_output) | data source |
-| [ibm_schematics_workspace.schematics_workspace](https://registry.terraform.io/providers/IBM-Cloud/ibm/1.66.0/docs/data-sources/schematics_workspace) | data source |
+| [ibm_pi_images.ds_images](https://registry.terraform.io/providers/IBM-Cloud/ibm/1.67.1/docs/data-sources/pi_images) | data source |
+| [ibm_schematics_output.schematics_output](https://registry.terraform.io/providers/IBM-Cloud/ibm/1.67.1/docs/data-sources/schematics_output) | data source |
+| [ibm_schematics_workspace.schematics_workspace](https://registry.terraform.io/providers/IBM-Cloud/ibm/1.67.1/docs/data-sources/schematics_workspace) | data source |
 
 ### Inputs
 
