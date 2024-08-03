@@ -51,6 +51,7 @@ output "nfs_host_or_ip_path" {
 ########################################################################
 # PowerHA Standard Edition outputs
 ########################################################################
+
 output "proxy_ip_and_port" {
   description = "IBM VPC Proxy server IP and port details."
   value       = module.fullstack.access_host_or_ip
@@ -62,7 +63,7 @@ output "bastion_host_ip" {
 }
 
 output "powervs_zone" {
-  description = "Zone where PowerVS infrastructure is created."
+  description = "Zone where PowerVS infrastructure was created."
   value       = var.powervs_zone
 }
 
@@ -87,23 +88,18 @@ output "powervs_ssh_public_key" {
 }
 
 output "powervs_subnet_list" {
-  description = "Network ID and name of private networks in PowerVS Workspace."
+  description = "PowerVS Workspace Network ID and name."
   value       = module.powervs_workspace_update.powervs_subnet_list
 }
 
 output "subnet_reserve_ips" {
   description = "Reserve IP address of the network interface of IBM PowerVS instance."
-  value       = module.powervs_instance.port_data[*]
+  value       = module.powervs_instance.reserve_port_data[*]
 }
 
 output "powervs_images" {
-  description = "Object containing imported PowerVS image name and image id."
+  description = "Imported PowerVS image name and image ID."
   value       = module.powervs_workspace_update.powervs_images
-}
-
-output "cloud_connection" {
-  description = "Number of cloud connections configured in created PowerVS infrastructure."
-  value       = module.cloud_connection_network_attach
 }
 
 output "powervs_instances" {

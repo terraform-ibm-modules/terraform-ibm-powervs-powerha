@@ -16,7 +16,6 @@ locals {
   powervs_workspace_id   = module.fullstack.powervs_workspace_id
   powervs_workspace_name = module.fullstack.powervs_workspace_name
   powervs_sshkey_name    = module.fullstack.powervs_ssh_public_key.name
-  cloud_connection_count = module.fullstack.cloud_connection_count
 
   ##################################
   # PowerVS Networks Locals

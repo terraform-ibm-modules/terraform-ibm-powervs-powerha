@@ -3,7 +3,7 @@
 ########################################################################
 
 output "powervs_zone" {
-  description = "Zone where PowerVS infrastructure is created."
+  description = "Zone where PowerVS infrastructure was created."
   value       = var.powervs_zone
 }
 
@@ -28,12 +28,12 @@ output "powervs_workspace_name" {
 }
 
 output "powervs_workspace_id" {
-  description = "PowerVS infrastructure workspace id. The unique identifier of the new resource instance."
+  description = "PowerVS infrastructure workspace id."
   value       = local.powervs_workspace_id
 }
 
 output "powervs_workspace_guid" {
-  description = "PowerVS infrastructure workspace guid. The GUID of the resource instance."
+  description = "PowerVS infrastructure workspace guid."
   value       = local.powervs_workspace_guid
 }
 
@@ -43,23 +43,18 @@ output "powervs_ssh_public_key" {
 }
 
 output "powervs_subnet_list" {
-  description = "Network ID and name of private networks in PowerVS Workspace."
+  description = "PowerVS Workspace Network ID and name."
   value       = module.powervs_workspace_update.powervs_subnet_list
 }
 
 output "subnet_reserve_ips" {
-  description = "Reserve IP address of the network interface of IBM PowerVS instance."
-  value       = module.powervs_instance.port_data[*]
+  description = "Reserve the IP address of the network interface of the IBM PowerVS instance."
+  value       = module.powervs_instance.reserve_port_data[*]
 }
 
 output "powervs_images" {
-  description = "Object containing imported PowerVS image name and image id."
+  description = "Imported PowerVS image name and image ID."
   value       = module.powervs_workspace_update.powervs_images
-}
-
-output "cloud_connection" {
-  description = "Number of cloud connections configured in created PowerVS infrastructure."
-  value       = module.cloud_connection_network_attach
 }
 
 output "powervs_instances" {
@@ -68,6 +63,6 @@ output "powervs_instances" {
 }
 
 output "pha_shared_volume_data" {
-  description = "PowerHA shared volumes data for volume groups."
+  description = "PowerHA shared volume data for volume groups."
   value       = module.powervs_instance.pha_shared_volume_data
 }

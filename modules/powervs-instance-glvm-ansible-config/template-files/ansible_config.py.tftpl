@@ -1,0 +1,271 @@
+import math
+import ipaddress
+
+VG_DEFAULT = {"name": "", "type":"sync","Site1_Disk":"", "Site2_Disk": ""}
+VG_AUTO_PREFIX = "sync_gmvg"
+
+
+def is_value_present(key, value, obj_list):
+    for item in obj_list:
+        if item.get(key).lower() == value.lower():
+            return True
+    return False
+
+
+def resource_compute(resource_data, resource_prefix, default_dict,total_count, key):
+    AUTO_COUNT = 1
+    if len(resource_data)<total_count:
+        for index in range(len(resource_data),total_count):
+            default_resource_dict = default_dict.copy()
+            while(is_value_present(key, resource_prefix+str(AUTO_COUNT), resource_data)):
+                    AUTO_COUNT+=1
+            default_resource_dict[key] = resource_prefix+str(AUTO_COUNT)
+            resource_data.append(default_resource_dict)
+            AUTO_COUNT+=1
+    else:
+        resource_data = [resource_data[index] for index in range(len(resource_data)) if index<=(total_count-1)]
+    return resource_data
+
+
+def get_value_by_key(key,computed_resource_list):
+    return [item.get(key) for item in computed_resource_list]
+
+
+def get_glvm_vg_list(computed_vg_list, site1_shared_wwn_disks, site2_shared_wwn_disks):
+    vg_data = []
+    for index, vg in enumerate(computed_vg_list):
+        default_vg_dict = {}
+        default_vg_dict["GLVM_name"] = vg["name"]
+        default_vg_dict["type"] = vg["type"]
+        default_vg_dict["Site1_Disk"] = site1_shared_wwn_disks[index]
+        default_vg_dict["Site2_Disk"] = site2_shared_wwn_disks[index]
+        vg_data.append(default_vg_dict)
+    return vg_data
+
+
+def get_pha_network_list(subnet_list):
+    pha_network_list = []
+    for index in range(math.ceil(len(subnet_list)/2)):
+        net_dict = {"NAME": "net_ether_"+"{0:02d}".format(index+1), "TYPE": "ether"}
+        pha_network_list.append(net_dict)
+    return pha_network_list
+
+
+def get_persistent_nws(site1_node_details,persistent_networks, pha_network_list, increment_by=0):
+    persistent_network_list = []
+    count = increment_by
+    pha_xd_data_networks = [net for net in pha_network_list if net.get("TYPE")=="XD_data"]
+    for node in site1_node_details:
+        node_persistent_networks=[persistent_net for persistent_net in persistent_networks if node.get("pi_instance_id")==persistent_net.get("pvm_instance_id")]
+        for xd_data_net, persistent_network in zip(pha_xd_data_networks,node_persistent_networks):
+            count+=1
+            persistent_network_list.append({ "NAME": "persistent_ip"+str(count), "NETWORK": xd_data_net.get("NAME"), "NODE": node.get("pi_instance_name") , "IP": persistent_network.get("ip") })
+    return persistent_network_list
+
+
+def get_pha_interface_list(node_details,subnet_length, pha_networks):
+    pha_interface_list = []
+    count = 0
+    for node in node_details:
+        node_name = node.get("pi_instance_name")
+        node_ips =  node.get("pi_instance_private_ips") # get_pha_node_ips(node, reserved_subnet_list)
+        primary_ip = node.get("pi_instance_primary_ip")
+        node_ips.remove(primary_ip)
+        node_ips.insert(0,primary_ip)
+        count = 0
+        for network in pha_networks:
+            for index in range(count,len(node_ips)):
+                interface_dict = { "NAME": "en"+str(index)+"_"+node_name, "NETWORK": network.get("NAME"), "NODE": node_name, "INTERFACE": "en"+str(index), "IP": node_ips[index]}
+                pha_interface_list.append(interface_dict)
+                if (index+1)%2==0:
+                    count+=1
+                    break
+                count+=1
+
+        pha_interface_list = [data for data in pha_interface_list if data.get("IP")!= primary_ip]
+    return pha_interface_list
+
+
+def get_service_ip_list(reserve_ip_details, pha_network_list, site="ignore",increment_by=0):
+    pha_service_ip_list = []
+    pha_networks_extended = (pha_network_list * math.ceil(len(reserve_ip_details)/len(pha_network_list)))[:len(reserve_ip_details)]
+    for index, (reserve_ip_data, pha_network) in enumerate(zip(reserve_ip_details, pha_networks_extended)):
+        pha_service_ip_list.append({ "NAME": 'service_ip'+str(index+increment_by), "IP": reserve_ip_data.get("ip"), "NETWORK": pha_network.get("NAME"), "SITE": site})
+    return pha_service_ip_list
+
+
+def get_serviceip_with_rg(pha_service_ip_list,computed_vg_list):
+    vg_names = get_value_by_key("GLVM_name",computed_vg_list)
+    serviceip_names = get_value_by_key("NAME",pha_service_ip_list)
+    serviceip_vg_list = []
+    serviceip_with_vg_obj =[]
+    if(len(vg_names)>0 and len(serviceip_names)>0):
+        vg_names_extended = (vg_names * math.ceil((len(serviceip_names)/len(vg_names))))[:len(serviceip_names)]
+        for serviceip_name, vg_name in zip(serviceip_names,vg_names_extended):
+            serviceip_vg_list.append({"SERVICE_IP_NAME":serviceip_name,"RG_NAME":vg_name})
+        for vg_name in vg_names:
+            service_ip_list = []
+            for item in serviceip_vg_list:
+                if(item.get("RG_NAME")==vg_name):
+                    service_ip_list.append(item["SERVICE_IP_NAME"])
+            if(len(service_ip_list)>0):
+                serviceip_with_vg_obj.append({"SERVICE_IP_NAMES":(",").join(service_ip_list), "RG_NAME":vg_name+"_RG"})
+    return serviceip_with_vg_obj
+
+
+def create_obj_to_str(obj_list):
+    obj_str = ""
+    for data in obj_list:
+        obj_str+="  - { "
+        obj_str+=(", ").join([(key + ": '" + str(value) + "'") for key, value in data.items()])
+        obj_str+="}\n"
+    obj_str += "\n"
+    return obj_str
+
+
+def create_yaml_content(site1_node_details, site2_node_details, site1_repository_disk_wwn, site2_repository_disk_wwn, powerha_build_path, glvm_vg_list, pha_network_list, pha_interface_list, pha_service_ip_list, persistent_nw_list):
+    node_details = site1_node_details + site2_node_details
+    yaml_string = ""
+    yaml_string += "Using_for_Cloud_catalog: True\n\n"
+
+    # Add Nodes
+    yaml_string +="NODES: " + (",").join([node.get("pi_instance_name") for node in node_details]) +"\n\n"
+
+    # Add Node details
+    yaml_string +="NODE_DETAILS:\n"
+    for node in node_details:
+        yaml_string +="- full_name: " + node.get("pi_instance_name") + "\n" \
+                      "  ip: " + node.get("pi_instance_primary_ip") + "\n" \
+                      "  name: " + node.get("pi_instance_name") + "\n"
+    yaml_string +="\n"
+
+    yaml_string += "SITE1_NODES: " + (",").join([node.get("pi_instance_name") for node in site1_node_details]) + "\n" \
+                   "SITE2_NODES: " + (",").join([node.get("pi_instance_name") for node in site2_node_details]) + "\n\n"
+
+
+    #Repository disk
+    yaml_string += "SITE1_REPOSITORIES: " + str(site1_repository_disk_wwn) + "\n" \
+                   "SITE2_REPOSITORIES: " + str(site2_repository_disk_wwn) + "\n\n"
+
+    #Powerha build path
+    yaml_string += "POWERHA_BLD_PATH: "+ str(powerha_build_path) + "\n\n"
+
+    # VG data
+    yaml_string +="GLVM:\n"
+    vg_yml_data = create_obj_to_str(glvm_vg_list)
+    yaml_string += vg_yml_data
+
+    yaml_string +="NETWORK:\n"
+    network_yml_data = create_obj_to_str(pha_network_list)
+    yaml_string += network_yml_data
+
+    if(len(persistent_nw_list)>0):
+        yaml_string +="PERSISTENT_IP:\n"
+        persistent_yml_data = create_obj_to_str(persistent_nw_list)
+        yaml_string += persistent_yml_data
+
+    if(len(pha_interface_list)>0):
+        yaml_string +="INTERFACES:\n"
+        interface_yml_data = create_obj_to_str(pha_interface_list)
+        yaml_string += interface_yml_data
+
+    if(len(pha_service_ip_list)>0):
+        yaml_string +="SERVICE_IP:\n"
+        service_yml_data = create_obj_to_str(pha_service_ip_list)
+        yaml_string += service_yml_data
+
+        yaml_string +="SERVICE_IP_RG:\n"
+        service_with_rg_yml_data = create_obj_to_str(serviceip_with_rg)
+        yaml_string += service_with_rg_yml_data
+
+    return yaml_string
+
+
+def node_ip_list(node_list):
+    for obj in node_list:
+        for key,value in obj.items():
+            if key == "pi_instance_private_ips" :
+                obj[key] = sorted([ip.strip() for ip in value[0].split(",")], key=ipaddress.IPv4Address)
+    return node_list
+
+
+def remove_reserve_ips(site_node_details, site1_reserve_ip_data):
+    for node_data in site_node_details:
+        for reserve_ip_data in site1_reserve_ip_data:
+            if reserve_ip_data.get('ip') in node_data.get('pi_instance_private_ips'):
+                node_data.get('pi_instance_private_ips').remove(reserve_ip_data.get('ip'))
+    return site_node_details
+
+
+if __name__ == "__main__":
+    glvm_vg_count = ${glvm_vg_count}
+    glvm_vg_list = ${glvm_vg_list}
+    site1_repository_disk_wwn = ${site1_repository_disk_wwn}
+    site2_repository_disk_wwn = ${site2_repository_disk_wwn}
+    site1_shared_wwn_disks = ${site1_shared_wwn_disks}
+    site2_shared_wwn_disks = ${site2_shared_wwn_disks}
+    site1_node_details = node_ip_list(${site1_node_details})
+    site2_node_details = node_ip_list(${site2_node_details})
+    site1_subnet_list = ${site1_subnet_list}
+    site2_subnet_list = ${site2_subnet_list}
+    site1_reserve_ip_data = ${site1_reserve_ip_data}
+    site2_reserve_ip_data = ${site2_reserve_ip_data}
+    site1_persistent_ip_data = ${site1_persistent_ip_data}
+    site2_persistent_ip_data = ${site2_persistent_ip_data}
+    powerha_build_path = ${pha_build_path}
+    ansible_dir = ${destination_ansible_yml_file}
+
+    site1_node_details = remove_reserve_ips(remove_reserve_ips(site1_node_details, site1_reserve_ip_data), site1_persistent_ip_data)
+    site2_node_details = remove_reserve_ips(remove_reserve_ips(site2_node_details, site2_reserve_ip_data), site2_persistent_ip_data)
+    # Object Validation and creation
+    computed_vg_list = resource_compute(glvm_vg_list,VG_AUTO_PREFIX,VG_DEFAULT,glvm_vg_count,"name")
+    glvm_vg_list = get_glvm_vg_list(computed_vg_list, site1_shared_wwn_disks, site2_shared_wwn_disks)
+
+    pha_site1_network_list = get_pha_network_list(site1_subnet_list)
+    pha_site2_network_list = get_pha_network_list(site2_subnet_list)
+    # Verify this with the team and remove this comment
+    pha_network_list = pha_site1_network_list
+    if len(pha_site2_network_list) > len(pha_site2_network_list):
+        pha_network_list = pha_site2_network_list
+
+    # update pha_network_list for first 2 networks
+    for idx in range(0,len(pha_network_list)):
+        if(idx<2):
+            pha_network_list[idx]["TYPE"] = "XD_data"
+            pha_network_list[idx]["NAME"] = "net_XD_data_"+"{0:02d}".format(idx+1)
+
+    site1_pha_persistent_nws = get_persistent_nws(site1_node_details,site1_persistent_ip_data, pha_network_list)
+    site2_pha_persistent_nws = get_persistent_nws(site2_node_details,site2_persistent_ip_data, pha_network_list, len(site1_pha_persistent_nws))
+    persistent_nw_list = site1_pha_persistent_nws + site2_pha_persistent_nws
+
+    site1_pha_interface_list = get_pha_interface_list(site1_node_details,len(pha_site1_network_list),pha_network_list)
+    site2_pha_interface_list = get_pha_interface_list(site2_node_details,len(pha_site2_network_list),pha_network_list)
+    pha_interface_list = site1_pha_interface_list+site2_pha_interface_list
+
+    # After discussion create service ip
+    service_ip_flag = True
+    pha_service_ip_list = []
+    if(service_ip_flag):
+        pha_site1_service_ip_list = get_service_ip_list(site1_reserve_ip_data,pha_site1_network_list, "site1")
+        pha_site2_service_ip_list = get_service_ip_list(site2_reserve_ip_data,pha_site1_network_list, "site2", increment_by=len(pha_site1_service_ip_list))
+        pha_service_ip_list = pha_site1_service_ip_list + pha_site2_service_ip_list
+
+        difference = abs(len(pha_site1_service_ip_list) - len(pha_site2_service_ip_list))
+        if len(pha_site1_service_ip_list) > len(pha_site2_service_ip_list):
+            for index in range(0,difference):
+                pha_site2_service_ip_list.append({"NAME" : ""})
+        else:
+            for index in range(0,difference):
+                pha_site1_service_ip_list.append({"NAME" : ""})
+
+        pha_service_ip_combined_list = []
+        for site1_data, site2_data in zip(pha_site1_service_ip_list,pha_site2_service_ip_list):
+            pha_service_ip_combined_list.append({"NAME": ",".join([data for data in [site1_data.get("NAME"),site2_data.get("NAME")] if data])})
+
+        serviceip_with_rg = get_serviceip_with_rg(pha_service_ip_combined_list, glvm_vg_list)
+
+    # Create YAML String
+    yaml_data = create_yaml_content(site1_node_details, site2_node_details, site1_repository_disk_wwn, site2_repository_disk_wwn, powerha_build_path, glvm_vg_list, pha_network_list, pha_interface_list, pha_service_ip_list, persistent_nw_list)
+    # # write data in yaml file
+    with open(ansible_dir,"w+") as fp:
+        fp.write(yaml_data)
