@@ -49,7 +49,7 @@ The basic example automates the following tasks:
 | Name | Source | Version |
 |------|--------|---------|
 | <a name="module_cloud_connection_network_attach"></a> [cloud\_connection\_network\_attach](#module\_cloud\_connection\_network\_attach) | ../../modules/cloud-connection-network-attach | n/a |
-| <a name="module_fullstack"></a> [fullstack](#module\_fullstack) | terraform-ibm-modules/powervs-infrastructure/ibm//modules/powervs-vpc-landing-zone | 4.11.0 |
+| <a name="module_fullstack"></a> [fullstack](#module\_fullstack) | terraform-ibm-modules/powervs-infrastructure/ibm//modules/powervs-vpc-landing-zone | 7.0.0 |
 | <a name="module_powervs_instance"></a> [powervs\_instance](#module\_powervs\_instance) | ../../modules/powervs-instance-custom | n/a |
 | <a name="module_powervs_workspace_update"></a> [powervs\_workspace\_update](#module\_powervs\_workspace\_update) | ../../modules/powervs-workspace-update | n/a |
 
