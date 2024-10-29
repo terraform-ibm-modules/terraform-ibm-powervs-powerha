@@ -7,7 +7,7 @@
 
 module "fullstack" {
   source  = "terraform-ibm-modules/powervs-infrastructure/ibm//modules/powervs-vpc-landing-zone"
-  version = "5.2.1"
+  version = "6.0.0"
 
   providers = { ibm.ibm-is = ibm.ibm-is, ibm.ibm-pi = ibm.ibm-pi, ibm.ibm-sm = ibm.ibm-sm }
 
@@ -24,7 +24,7 @@ module "fullstack" {
 }
 
 resource "time_sleep" "wait_10_mins" {
-  create_duration = "600s"
+  create_duration = "1500s"
 }
 
 ############################################################

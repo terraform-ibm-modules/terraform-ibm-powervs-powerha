@@ -1,5 +1,5 @@
 #####################################################
-# PowerHA Standard Edition solution
+# PowerHA GLVM Edition solution
 #####################################################
 
 terraform {
@@ -7,7 +7,7 @@ terraform {
   required_providers {
     ibm = {
       source  = "IBM-Cloud/ibm"
-      version = "=1.67.1"
+      version = "=1.69.2"
     }
   }
 }

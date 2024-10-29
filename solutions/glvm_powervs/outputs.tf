@@ -1,5 +1,5 @@
 ########################################################################
-# PowerHA Standard Edition outputs
+# PowerHA GLVM Edition outputs
 ########################################################################
 
 output "site1_powervs_zone" {
