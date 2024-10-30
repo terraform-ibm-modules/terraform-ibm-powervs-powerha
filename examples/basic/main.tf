@@ -23,7 +23,7 @@ module "fullstack" {
   powervs_image_names         = []
 }
 
-resource "time_sleep" "wait_10_mins" {
+resource "time_sleep" "wait_25_mins" {
   create_duration = "1500s"
 }
 
@@ -32,7 +32,7 @@ resource "time_sleep" "wait_10_mins" {
 ############################################################
 
 module "powervs_workspace_update" {
-  depends_on = [time_sleep.wait_10_mins]
+  depends_on = [time_sleep.wait_25_mins]
   source     = "../../modules/powervs-workspace-update"
   providers  = { ibm = ibm.ibm-pi }
 

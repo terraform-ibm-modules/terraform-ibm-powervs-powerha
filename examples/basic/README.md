@@ -64,7 +64,7 @@ PowerHA Standard Edition
 
 | Name | Type |
 |------|------|
-| [time_sleep.wait_10_mins](https://registry.terraform.io/providers/hashicorp/time/latest/docs/resources/sleep) | resource |
+| [time_sleep.wait_25_mins](https://registry.terraform.io/providers/hashicorp/time/latest/docs/resources/sleep) | resource |
 
 ### Inputs
 
