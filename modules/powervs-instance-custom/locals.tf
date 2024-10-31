@@ -4,10 +4,10 @@ locals {
   #####################################################
 
   default_pi_storage_config = var.dedicated_volume_count > 0 ? [
-    { name = "${var.pi_prefix}-extended-volume", size = "80", count = "1", tier = var.pi_storage_type, mount = null },
-    { name = "${var.pi_prefix}-volume", size = var.dedicated_volume_attributes.size, count = var.dedicated_volume_count, tier = var.dedicated_volume_attributes.tier, mount = null }
+    { name = "extended-volume", size = "80", count = "1", tier = var.pi_storage_type, mount = null },
+    { name = "volume", size = var.dedicated_volume_attributes.size, count = var.dedicated_volume_count, tier = var.dedicated_volume_attributes.tier, mount = null }
     ] : [
-    { name = "${var.pi_prefix}-extended-volume", size = "80", count = "1", tier = var.pi_storage_type, mount = null }
+    { name = "extended-volume", size = "80", count = "1", tier = var.pi_storage_type, mount = null }
   ]
 
 
@@ -43,4 +43,20 @@ locals {
     }
   ]
 
+  #####################################################
+  # Persistent IP Object Creation
+  #####################################################
+
+  persistent_ips = var.powervs_persistent_subnet_list == null ? [] : [for i, pairs in setproduct(flatten([
+    for item in var.powervs_persistent_subnet_list : [
+      for i in range(item.reserved_ip_count) : {
+        name = item.name
+        ip   = item.cidr
+    }]
+    ]), local.powervs_all_instances) : {
+    ip              = cidrhost(pairs[0].ip, i + 5)
+    name            = pairs[0].name
+    pvm_instance_id = pairs[1].pvm_instance_id
+    }
+  ]
 }

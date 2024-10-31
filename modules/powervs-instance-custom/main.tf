@@ -74,10 +74,10 @@ locals {
 
 module "powervs_instance_node_1" {
   source     = "terraform-ibm-modules/powervs-instance/ibm"
-  version    = "1.1.0"
+  version    = "2.0.2"
   depends_on = [ibm_pi_placement_group.placement_group, ibm_pi_volume.shared_volumes]
 
-  pi_instance_name           = "${var.pi_prefix}-pvs-1"
+  pi_instance_name           = "${var.pi_prefix}-1"
   pi_workspace_guid          = var.powervs_workspace_guid
   pi_ssh_public_key_name     = var.ssh_public_key_name
   pi_image_id                = var.pi_image_id
@@ -101,11 +101,11 @@ resource "time_sleep" "wait_60_sec_1" {
 
 module "powervs_instance_node_2" {
   source     = "terraform-ibm-modules/powervs-instance/ibm"
-  version    = "1.1.0"
+  version    = "2.0.2"
   count      = var.pi_instance_count > 1 ? 1 : 0
   depends_on = [module.powervs_instance_node_1, time_sleep.wait_60_sec_1]
 
-  pi_instance_name           = "${var.pi_prefix}-pvs-2"
+  pi_instance_name           = "${var.pi_prefix}-2"
   pi_workspace_guid          = var.powervs_workspace_guid
   pi_ssh_public_key_name     = var.ssh_public_key_name
   pi_image_id                = var.pi_image_id
@@ -130,11 +130,11 @@ resource "time_sleep" "wait_60_sec_2" {
 
 module "powervs_instance_node_3" {
   source     = "terraform-ibm-modules/powervs-instance/ibm"
-  version    = "1.1.0"
+  version    = "2.0.2"
   count      = var.pi_instance_count > 2 ? 1 : 0
   depends_on = [module.powervs_instance_node_2, time_sleep.wait_60_sec_2]
 
-  pi_instance_name           = "${var.pi_prefix}-pvs-3"
+  pi_instance_name           = "${var.pi_prefix}-3"
   pi_workspace_guid          = var.powervs_workspace_guid
   pi_ssh_public_key_name     = var.ssh_public_key_name
   pi_image_id                = var.pi_image_id
@@ -159,11 +159,11 @@ resource "time_sleep" "wait_60_sec_3" {
 
 module "powervs_instance_node_4" {
   source     = "terraform-ibm-modules/powervs-instance/ibm"
-  version    = "1.1.0"
+  version    = "2.0.2"
   count      = var.pi_instance_count > 3 ? 1 : 0
   depends_on = [module.powervs_instance_node_3, time_sleep.wait_60_sec_3]
 
-  pi_instance_name           = "${var.pi_prefix}-pvs-4"
+  pi_instance_name           = "${var.pi_prefix}-4"
   pi_workspace_guid          = var.powervs_workspace_guid
   pi_ssh_public_key_name     = var.ssh_public_key_name
   pi_image_id                = var.pi_image_id
@@ -188,11 +188,11 @@ resource "time_sleep" "wait_60_sec_4" {
 
 module "powervs_instance_node_5" {
   source     = "terraform-ibm-modules/powervs-instance/ibm"
-  version    = "1.1.0"
+  version    = "2.0.2"
   count      = var.pi_instance_count > 4 ? 1 : 0
   depends_on = [module.powervs_instance_node_4, time_sleep.wait_60_sec_4]
 
-  pi_instance_name           = "${var.pi_prefix}-pvs-5"
+  pi_instance_name           = "${var.pi_prefix}-5"
   pi_workspace_guid          = var.powervs_workspace_guid
   pi_ssh_public_key_name     = var.ssh_public_key_name
   pi_image_id                = var.pi_image_id
@@ -217,11 +217,11 @@ resource "time_sleep" "wait_60_sec_5" {
 
 module "powervs_instance_node_6" {
   source     = "terraform-ibm-modules/powervs-instance/ibm"
-  version    = "1.1.0"
+  version    = "2.0.2"
   count      = var.pi_instance_count > 5 ? 1 : 0
   depends_on = [module.powervs_instance_node_5, time_sleep.wait_60_sec_5]
 
-  pi_instance_name           = "${var.pi_prefix}-pvs-6"
+  pi_instance_name           = "${var.pi_prefix}-6"
   pi_workspace_guid          = var.powervs_workspace_guid
   pi_ssh_public_key_name     = var.ssh_public_key_name
   pi_image_id                = var.pi_image_id
@@ -246,11 +246,11 @@ resource "time_sleep" "wait_60_sec_6" {
 
 module "powervs_instance_node_7" {
   source     = "terraform-ibm-modules/powervs-instance/ibm"
-  version    = "1.1.0"
+  version    = "2.0.2"
   count      = var.pi_instance_count > 6 ? 1 : 0
   depends_on = [module.powervs_instance_node_6, time_sleep.wait_60_sec_6]
 
-  pi_instance_name           = "${var.pi_prefix}-pvs-7"
+  pi_instance_name           = "${var.pi_prefix}-7"
   pi_workspace_guid          = var.powervs_workspace_guid
   pi_ssh_public_key_name     = var.ssh_public_key_name
   pi_image_id                = var.pi_image_id
@@ -275,11 +275,11 @@ resource "time_sleep" "wait_60_sec_7" {
 
 module "powervs_instance_node_8" {
   source     = "terraform-ibm-modules/powervs-instance/ibm"
-  version    = "1.1.0"
+  version    = "2.0.2"
   count      = var.pi_instance_count > 7 ? 1 : 0
   depends_on = [module.powervs_instance_node_7, time_sleep.wait_60_sec_7]
 
-  pi_instance_name           = "${var.pi_prefix}-pvs-8"
+  pi_instance_name           = "${var.pi_prefix}-8"
   pi_workspace_guid          = var.powervs_workspace_guid
   pi_ssh_public_key_name     = var.ssh_public_key_name
   pi_image_id                = var.pi_image_id
@@ -302,7 +302,7 @@ resource "time_sleep" "wait_60_sec_8" {
 }
 
 
-resource "ibm_pi_network_port_attach" "port_attach" {
+resource "ibm_pi_network_port_attach" "port_attach_reserve" {
   depends_on = [module.powervs_instance_node_8, time_sleep.wait_60_sec_8]
   count      = length(local.reserve_ips) > 0 ? length(local.reserve_ips) : 0
 
@@ -310,4 +310,21 @@ resource "ibm_pi_network_port_attach" "port_attach" {
   pi_instance_id            = local.reserve_ips[count.index].pvm_instance_id
   pi_network_name           = local.reserve_ips[count.index].name
   pi_network_port_ipaddress = local.reserve_ips[count.index].ip
+}
+
+resource "time_sleep" "wait_60_sec_reserve_port" {
+  depends_on      = [ibm_pi_network_port_attach.port_attach_reserve, time_sleep.wait_60_sec_8]
+  count           = length(local.reserve_ips) > 0 ? length(local.reserve_ips) : 0
+  create_duration = "60s"
+}
+
+
+resource "ibm_pi_network_port_attach" "port_attach_persistent" {
+  depends_on = [ibm_pi_network_port_attach.port_attach_reserve, time_sleep.wait_60_sec_reserve_port]
+  count      = length(local.persistent_ips) > 0 ? length(local.persistent_ips) : 0
+
+  pi_cloud_instance_id      = var.powervs_workspace_guid
+  pi_instance_id            = local.persistent_ips[count.index].pvm_instance_id
+  pi_network_name           = local.persistent_ips[count.index].name
+  pi_network_port_ipaddress = local.persistent_ips[count.index].ip
 }

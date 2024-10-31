@@ -5,7 +5,7 @@
 # Adding sleep because of PER enabled workspace
 # which needs some time to initialize
 resource "time_sleep" "wait_30_sec" {
-  depends_on      = [ibm_pi_image.import_images]
+  depends_on      = [module.powervs_workspace]
   create_duration = "30s"
 }
 
@@ -13,7 +13,7 @@ resource "ibm_pi_network" "private_subnet_1" {
   depends_on = [time_sleep.wait_30_sec]
   count      = length(var.powervs_subnet_list) > 0 ? 1 : 0
 
-  pi_cloud_instance_id = var.powervs_workspace_guid
+  pi_cloud_instance_id = module.powervs_workspace.pi_workspace_guid
   pi_network_name      = var.powervs_subnet_list[0].name
   pi_cidr              = var.powervs_subnet_list[0].cidr
   pi_network_type      = "vlan"
@@ -24,7 +24,7 @@ resource "ibm_pi_network" "private_subnet_2" {
   depends_on = [ibm_pi_network.private_subnet_1]
   count      = length(var.powervs_subnet_list) > 1 ? 1 : 0
 
-  pi_cloud_instance_id = var.powervs_workspace_guid
+  pi_cloud_instance_id = module.powervs_workspace.pi_workspace_guid
   pi_network_name      = var.powervs_subnet_list[1].name
   pi_cidr              = var.powervs_subnet_list[1].cidr
   pi_network_type      = "vlan"
@@ -35,7 +35,7 @@ resource "ibm_pi_network" "private_subnet_3" {
   depends_on = [ibm_pi_network.private_subnet_2]
   count      = length(var.powervs_subnet_list) > 2 ? 1 : 0
 
-  pi_cloud_instance_id = var.powervs_workspace_guid
+  pi_cloud_instance_id = module.powervs_workspace.pi_workspace_guid
   pi_network_name      = var.powervs_subnet_list[2].name
   pi_cidr              = var.powervs_subnet_list[2].cidr
   pi_network_type      = "vlan"
@@ -46,7 +46,7 @@ resource "ibm_pi_network" "private_subnet_4" {
   depends_on = [ibm_pi_network.private_subnet_3]
   count      = length(var.powervs_subnet_list) > 3 ? 1 : 0
 
-  pi_cloud_instance_id = var.powervs_workspace_guid
+  pi_cloud_instance_id = module.powervs_workspace.pi_workspace_guid
   pi_network_name      = var.powervs_subnet_list[3].name
   pi_cidr              = var.powervs_subnet_list[3].cidr
   pi_network_type      = "vlan"
@@ -57,7 +57,7 @@ resource "ibm_pi_network" "private_subnet_5" {
   depends_on = [ibm_pi_network.private_subnet_4]
   count      = length(var.powervs_subnet_list) > 4 ? 1 : 0
 
-  pi_cloud_instance_id = var.powervs_workspace_guid
+  pi_cloud_instance_id = module.powervs_workspace.pi_workspace_guid
   pi_network_name      = var.powervs_subnet_list[4].name
   pi_cidr              = var.powervs_subnet_list[4].cidr
   pi_network_type      = "vlan"
@@ -68,7 +68,7 @@ resource "ibm_pi_network" "private_subnet_6" {
   depends_on = [ibm_pi_network.private_subnet_5]
   count      = length(var.powervs_subnet_list) > 5 ? 1 : 0
 
-  pi_cloud_instance_id = var.powervs_workspace_guid
+  pi_cloud_instance_id = module.powervs_workspace.pi_workspace_guid
   pi_network_name      = var.powervs_subnet_list[5].name
   pi_cidr              = var.powervs_subnet_list[5].cidr
   pi_network_type      = "vlan"
@@ -79,7 +79,7 @@ resource "ibm_pi_network" "private_subnet_7" {
   depends_on = [ibm_pi_network.private_subnet_6]
   count      = length(var.powervs_subnet_list) > 6 ? 1 : 0
 
-  pi_cloud_instance_id = var.powervs_workspace_guid
+  pi_cloud_instance_id = module.powervs_workspace.pi_workspace_guid
   pi_network_name      = var.powervs_subnet_list[6].name
   pi_cidr              = var.powervs_subnet_list[6].cidr
   pi_network_type      = "vlan"
@@ -90,7 +90,7 @@ resource "ibm_pi_network" "private_subnet_8" {
   depends_on = [ibm_pi_network.private_subnet_7]
   count      = length(var.powervs_subnet_list) > 7 ? 1 : 0
 
-  pi_cloud_instance_id = var.powervs_workspace_guid
+  pi_cloud_instance_id = module.powervs_workspace.pi_workspace_guid
   pi_network_name      = var.powervs_subnet_list[7].name
   pi_cidr              = var.powervs_subnet_list[7].cidr
   pi_network_type      = "vlan"
@@ -101,7 +101,7 @@ resource "ibm_pi_network" "private_subnet_9" {
   depends_on = [ibm_pi_network.private_subnet_8]
   count      = length(var.powervs_subnet_list) > 8 ? 1 : 0
 
-  pi_cloud_instance_id = var.powervs_workspace_guid
+  pi_cloud_instance_id = module.powervs_workspace.pi_workspace_guid
   pi_network_name      = var.powervs_subnet_list[8].name
   pi_cidr              = var.powervs_subnet_list[8].cidr
   pi_network_type      = "vlan"
@@ -112,7 +112,7 @@ resource "ibm_pi_network" "private_subnet_10" {
   depends_on = [ibm_pi_network.private_subnet_9]
   count      = length(var.powervs_subnet_list) > 9 ? 1 : 0
 
-  pi_cloud_instance_id = var.powervs_workspace_guid
+  pi_cloud_instance_id = module.powervs_workspace.pi_workspace_guid
   pi_network_name      = var.powervs_subnet_list[9].name
   pi_cidr              = var.powervs_subnet_list[9].cidr
   pi_network_type      = "vlan"
@@ -123,7 +123,7 @@ resource "ibm_pi_network" "private_subnet_11" {
   depends_on = [ibm_pi_network.private_subnet_10]
   count      = length(var.powervs_subnet_list) > 10 ? 1 : 0
 
-  pi_cloud_instance_id = var.powervs_workspace_guid
+  pi_cloud_instance_id = module.powervs_workspace.pi_workspace_guid
   pi_network_name      = var.powervs_subnet_list[10].name
   pi_cidr              = var.powervs_subnet_list[10].cidr
   pi_network_type      = "vlan"
@@ -134,7 +134,7 @@ resource "ibm_pi_network" "private_subnet_12" {
   depends_on = [ibm_pi_network.private_subnet_11]
   count      = length(var.powervs_subnet_list) > 11 ? 1 : 0
 
-  pi_cloud_instance_id = var.powervs_workspace_guid
+  pi_cloud_instance_id = module.powervs_workspace.pi_workspace_guid
   pi_network_name      = var.powervs_subnet_list[11].name
   pi_cidr              = var.powervs_subnet_list[11].cidr
   pi_network_type      = "vlan"
@@ -145,7 +145,7 @@ resource "ibm_pi_network" "private_subnet_13" {
   depends_on = [ibm_pi_network.private_subnet_12]
   count      = length(var.powervs_subnet_list) > 12 ? 1 : 0
 
-  pi_cloud_instance_id = var.powervs_workspace_guid
+  pi_cloud_instance_id = module.powervs_workspace.pi_workspace_guid
   pi_network_name      = var.powervs_subnet_list[12].name
   pi_cidr              = var.powervs_subnet_list[12].cidr
   pi_network_type      = "vlan"
@@ -156,7 +156,7 @@ resource "ibm_pi_network" "private_subnet_14" {
   depends_on = [ibm_pi_network.private_subnet_13]
   count      = length(var.powervs_subnet_list) > 13 ? 1 : 0
 
-  pi_cloud_instance_id = var.powervs_workspace_guid
+  pi_cloud_instance_id = module.powervs_workspace.pi_workspace_guid
   pi_network_name      = var.powervs_subnet_list[13].name
   pi_cidr              = var.powervs_subnet_list[13].cidr
   pi_network_type      = "vlan"
@@ -167,7 +167,7 @@ resource "ibm_pi_network" "private_subnet_15" {
   depends_on = [ibm_pi_network.private_subnet_14]
   count      = length(var.powervs_subnet_list) > 14 ? 1 : 0
 
-  pi_cloud_instance_id = var.powervs_workspace_guid
+  pi_cloud_instance_id = module.powervs_workspace.pi_workspace_guid
   pi_network_name      = var.powervs_subnet_list[14].name
   pi_cidr              = var.powervs_subnet_list[14].cidr
   pi_network_type      = "vlan"
@@ -178,7 +178,7 @@ resource "ibm_pi_network" "private_subnet_16" {
   depends_on = [ibm_pi_network.private_subnet_15]
   count      = length(var.powervs_subnet_list) > 15 ? 1 : 0
 
-  pi_cloud_instance_id = var.powervs_workspace_guid
+  pi_cloud_instance_id = module.powervs_workspace.pi_workspace_guid
   pi_network_name      = var.powervs_subnet_list[15].name
   pi_cidr              = var.powervs_subnet_list[15].cidr
   pi_network_type      = "vlan"

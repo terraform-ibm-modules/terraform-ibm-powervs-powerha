@@ -11,7 +11,8 @@ locals {
   destination_python_file_path = "download_files.py"
   destination_ansible_yml_file = "/external_var.yml"
   python_path                  = "/usr/bin/python3"
-  nodes_ip                     = var.node_details[*].pi_instance_primary_ip
+  all_node_details             = concat(var.site1_node_details, var.site2_node_details)
+  nodes_ip                     = local.all_node_details[*].pi_instance_primary_ip
   pha_build_path               = "/${var.pha_cos_data.folder_name}/"
 }
 
@@ -39,7 +40,7 @@ resource "terraform_data" "extend_increase_filesystem" {
 
   ####### Copy Template file to target host ############
   provisioner "file" {
-    content     = templatefile(local.src_extend_filesystem, { "extend_volume_wwn" = var.node_details[count.index].pi_extend_volume })
+    content     = templatefile(local.src_extend_filesystem, { "extend_volume_wwn" = local.all_node_details[count.index].pi_extend_volume })
     destination = local.dst_extend_filesystem
   }
 
@@ -202,13 +203,14 @@ resource "terraform_data" "copy_files_to_remote" {
   }
 
   provisioner "file" {
-    content = templatefile("${path.module}/template-files/ansible_config.py.tftpl", { "rg_count" = var.powerha_resource_group_count, "rg_list" = jsonencode(var.powerha_resource_group_list),
-      "vg_count"             = var.volume_group_count, "vg_list" = jsonencode(var.volume_group_list),
-      "fs_count"             = var.file_system_count, "fs_list" = jsonencode(var.file_system_list),
-      "repository_disk_wwn"  = jsonencode(var.repository_disk_wwn),
-      "shared_wwn_disks"     = jsonencode(var.shared_disk_wwns), "node_details" = jsonencode(var.node_details),
-      "subnet_list"          = jsonencode(var.subnet_list), "reserve_ip_data" = jsonencode(var.reserve_ip_data),
-      "reserved_subnet_list" = jsonencode(var.reserved_subnet_list),
+    content = templatefile("${path.module}/template-files/ansible_config.py.tftpl", {
+      "glvm_vg_count"             = var.powerha_glvm_volume_group, "glvm_vg_list" = jsonencode(var.powerha_glvm_volume_group_list),
+      "site1_repository_disk_wwn" = jsonencode(var.site1_repository_disk_wwn), "site2_repository_disk_wwn" = jsonencode(var.site2_repository_disk_wwn),
+      "site1_shared_wwn_disks"    = jsonencode(var.site1_shared_disk_wwns), "site2_shared_wwn_disks" = jsonencode(var.site2_shared_disk_wwns),
+      "site1_node_details"        = jsonencode(var.site1_node_details), "site2_node_details" = jsonencode(var.site2_node_details),
+      "site1_subnet_list"         = jsonencode(var.site1_subnet_list), "site2_subnet_list" = jsonencode(var.site2_subnet_list),
+      "site1_reserve_ip_data"     = jsonencode(var.site1_reserve_ip_data), "site2_reserve_ip_data" = jsonencode(var.site2_reserve_ip_data),
+      "site1_persistent_ip_data"  = jsonencode(var.site1_persistent_ip_data), "site2_persistent_ip_data" = jsonencode(var.site2_persistent_ip_data),
     "pha_build_path" = jsonencode(local.pha_build_path), "destination_ansible_yml_file" = jsonencode(local.destination_ansible_yml_file) })
     destination = "ansible_config.py"
   }
@@ -260,7 +262,7 @@ resource "terraform_data" "ansible_playbook_execution" {
   provisioner "remote-exec" {
     inline = [
       "cd /playbooks",
-      "ANSIBLE_CONFIG=/ansible.cfg /opt/freeware/bin/ansible-playbook -i /hosts demo_cluster.yml --tags standard"
+      "ANSIBLE_CONFIG=/ansible.cfg /opt/freeware/bin/ansible-playbook -i /hosts demo_cluster.yml --tags linked"
     ]
   }
 
@@ -268,6 +270,13 @@ resource "terraform_data" "ansible_playbook_execution" {
     inline = [
       "cd /playbooks",
       "ANSIBLE_CONFIG=/ansible.cfg /opt/freeware/bin/ansible-playbook -i /hosts demo_network.yml --tags create"
+    ]
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "cd /playbooks",
+      "ANSIBLE_CONFIG=/ansible.cfg /opt/freeware/bin/ansible-playbook -i /hosts demo_persistent_ip.yml --tags create"
     ]
   }
 
@@ -288,29 +297,7 @@ resource "terraform_data" "ansible_playbook_execution" {
   provisioner "remote-exec" {
     inline = [
       "cd /playbooks",
-      "ANSIBLE_CONFIG=/ansible.cfg /opt/freeware/bin/ansible-playbook -i /hosts demo_resource_group.yml --tags create"
-
-    ]
-  }
-
-  provisioner "remote-exec" {
-    inline = [
-      "cd /playbooks",
-      "ANSIBLE_CONFIG=/ansible.cfg /opt/freeware/bin/ansible-playbook -i /hosts demo_volume_groups.yml --tags create"
-    ]
-  }
-
-  provisioner "remote-exec" {
-    inline = [
-      "cd /playbooks",
-      "ANSIBLE_CONFIG=/ansible.cfg /opt/freeware/bin/ansible-playbook -i /hosts demo_file_system.yml --tags create"
-    ]
-  }
-
-  provisioner "remote-exec" {
-    inline = [
-      "cd /playbooks",
-      "ANSIBLE_CONFIG=/ansible.cfg /opt/freeware/bin/ansible-playbook -i /hosts demo_add_vg_to_rg.yml"
+      "ANSIBLE_CONFIG=/ansible.cfg /opt/freeware/bin/ansible-playbook -i /hosts demo_glvm.yml --tags create,sync"
     ]
   }
 
