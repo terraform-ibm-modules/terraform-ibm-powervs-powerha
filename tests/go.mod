@@ -2,7 +2,7 @@ module github.com/terraform-ibm-modules/terraform-ibm-powervs-powerha
 
 go 1.22.4
 
-toolchain go1.23.3
+toolchain go1.23.4
 
 require (
 	github.com/gruntwork-io/terratest v0.47.2
