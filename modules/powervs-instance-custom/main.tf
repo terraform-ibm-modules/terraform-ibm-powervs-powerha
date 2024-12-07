@@ -74,7 +74,7 @@ locals {
 
 module "powervs_instance_node_1" {
   source     = "terraform-ibm-modules/powervs-instance/ibm"
-  version    = "2.1.0"
+  version    = "2.2.1"
   depends_on = [ibm_pi_placement_group.placement_group, ibm_pi_volume.shared_volumes]
 
   pi_instance_name           = "${var.pi_prefix}-1"
@@ -101,7 +101,7 @@ resource "time_sleep" "wait_60_sec_1" {
 
 module "powervs_instance_node_2" {
   source     = "terraform-ibm-modules/powervs-instance/ibm"
-  version    = "2.1.0"
+  version    = "2.2.1"
   count      = var.pi_instance_count > 1 ? 1 : 0
   depends_on = [module.powervs_instance_node_1, time_sleep.wait_60_sec_1]
 
@@ -130,7 +130,7 @@ resource "time_sleep" "wait_60_sec_2" {
 
 module "powervs_instance_node_3" {
   source     = "terraform-ibm-modules/powervs-instance/ibm"
-  version    = "2.1.0"
+  version    = "2.2.1"
   count      = var.pi_instance_count > 2 ? 1 : 0
   depends_on = [module.powervs_instance_node_2, time_sleep.wait_60_sec_2]
 
@@ -159,7 +159,7 @@ resource "time_sleep" "wait_60_sec_3" {
 
 module "powervs_instance_node_4" {
   source     = "terraform-ibm-modules/powervs-instance/ibm"
-  version    = "2.1.0"
+  version    = "2.2.1"
   count      = var.pi_instance_count > 3 ? 1 : 0
   depends_on = [module.powervs_instance_node_3, time_sleep.wait_60_sec_3]
 
@@ -188,7 +188,7 @@ resource "time_sleep" "wait_60_sec_4" {
 
 module "powervs_instance_node_5" {
   source     = "terraform-ibm-modules/powervs-instance/ibm"
-  version    = "2.1.0"
+  version    = "2.2.1"
   count      = var.pi_instance_count > 4 ? 1 : 0
   depends_on = [module.powervs_instance_node_4, time_sleep.wait_60_sec_4]
 
@@ -217,7 +217,7 @@ resource "time_sleep" "wait_60_sec_5" {
 
 module "powervs_instance_node_6" {
   source     = "terraform-ibm-modules/powervs-instance/ibm"
-  version    = "2.1.0"
+  version    = "2.2.1"
   count      = var.pi_instance_count > 5 ? 1 : 0
   depends_on = [module.powervs_instance_node_5, time_sleep.wait_60_sec_5]
 
@@ -246,7 +246,7 @@ resource "time_sleep" "wait_60_sec_6" {
 
 module "powervs_instance_node_7" {
   source     = "terraform-ibm-modules/powervs-instance/ibm"
-  version    = "2.1.0"
+  version    = "2.2.1"
   count      = var.pi_instance_count > 6 ? 1 : 0
   depends_on = [module.powervs_instance_node_6, time_sleep.wait_60_sec_6]
 
@@ -275,7 +275,7 @@ resource "time_sleep" "wait_60_sec_7" {
 
 module "powervs_instance_node_8" {
   source     = "terraform-ibm-modules/powervs-instance/ibm"
-  version    = "2.1.0"
+  version    = "2.2.1"
   count      = var.pi_instance_count > 7 ? 1 : 0
   depends_on = [module.powervs_instance_node_7, time_sleep.wait_60_sec_7]
 
