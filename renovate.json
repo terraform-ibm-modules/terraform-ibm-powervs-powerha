@@ -1,14 +1,3 @@
 {
-  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "local>terraform-ibm-modules/common-dev-assets:commonRenovateConfig"
-  ],
-  "packageRules": [
-    {
-      "matchPackagePatterns": [
-        "*"
-      ],
-      "semanticCommitType": "chore"
-    }
-  ]
+  "enabled": false
 }
